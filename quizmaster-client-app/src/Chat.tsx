@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
 import "./Chat.css";
 import HubConnection, { HubConnectionBuilder } from "@microsoft/signalr";
+import { useParams } from "react-router-dom";
 
 function Chat() {
   const [message, setMessage] = useState<string>("");
@@ -9,6 +10,8 @@ function Chat() {
   const [hubConnection, setHubConnection] = useState<
     HubConnection.HubConnection
   >();
+
+  let { id } = useParams();
 
   useEffect(() => {
     // Set the initial SignalR Hub Connection.
@@ -42,7 +45,6 @@ function Chat() {
       messages.push(message);
 
       if (hubConnection) {
-        debugger;
         hubConnection.invoke("sendMessage", message);
       }
     }
@@ -64,7 +66,6 @@ function Chat() {
   }
 
   function handleEnter(e: React.KeyboardEvent<HTMLInputElement>) {
-    debugger;
     if (e.charCode === 13) {
       onMessageSubmit();
     }
