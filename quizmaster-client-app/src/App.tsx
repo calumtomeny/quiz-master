@@ -15,6 +15,7 @@ function App() {
     const createHubConnection = async () => {
       // Build new Hub Connection, url is currently hard coded.
       const hubConnect = new HubConnectionBuilder()
+        .withAutomaticReconnect()
         .withUrl("http://localhost:5000/chat")
         .build();
       try {
@@ -31,7 +32,7 @@ function App() {
     };
 
     createHubConnection();
-  }, [chatText]);
+  }, []);
 
   async function onMessageSubmit() {
     let messages: string[] = [];
@@ -51,15 +52,7 @@ function App() {
   }
 
   function messageReceived(receivedMessage: string) {
-    // let messages: string[] = [];
-    // messages = chatText;
-    // debugger;
-    // if (receivedMessage) {
-    //   messages.push(receivedMessage);
-    // }
-
-    setChatText(chatText.concat(receivedMessage));
-    //setChatText(messages);
+    setChatText(m => [...m, receivedMessage]);
   }
 
   function onMessageChange(e: React.FormEvent<HTMLInputElement>) {
