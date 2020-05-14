@@ -11,8 +11,6 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import PeopleIcon from "@material-ui/icons/People";
-import PostAddIcon from '@material-ui/icons/PostAdd';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import quiz from "./quiz.jpeg";
@@ -73,7 +71,7 @@ function App() {
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
-            <PostAddIcon />
+            <QuestionAnswerIcon />
           </Avatar>
           <form className={classes.form}>
             <Typography component="h2" variant="h5">
@@ -100,7 +98,7 @@ function App() {
             </Button>
           </form>
           <Avatar className={classes.avatar}>
-            <GroupAddIcon />
+            <PeopleIcon />
           </Avatar>
           <form className={classes.form}>
             <Typography component="h2" variant="h5">

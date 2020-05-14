@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
-import "./App.css";
+import "./Chat.css";
 import HubConnection, { HubConnectionBuilder } from "@microsoft/signalr";
 
-function App() {
+function Chat() {
   const [message, setMessage] = useState<string>("");
   const [chatText, setChatText] = useState<string[]>([]);
   const [hubConnection, setHubConnection] = useState<
@@ -52,8 +52,6 @@ function App() {
   }
 
   function messageReceived(receivedMessage: string) {
-    setChatText([...chatText].concat(receivedMessage));
-
     setChatText(m => [...m, receivedMessage]);
   }
 
@@ -101,4 +99,4 @@ function App() {
   );
 }
 
-export default App;
+export default Chat;
