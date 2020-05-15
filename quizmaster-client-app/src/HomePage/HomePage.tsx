@@ -85,7 +85,7 @@ function HomePage() {
               fullWidth
               id="quiz-name"
               label="Quiz Name"
-              name="email"
+              name="quiz-name"
               autoFocus
             />
             <Button

@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using QuizMaster.Api.SignalR;
+using QuizMaster.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuizMaster.Api
 {
@@ -26,6 +28,9 @@ namespace QuizMaster.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<QuizContext>(opt => {
+                opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            });
             services.AddControllers();
             services.AddSignalR();
             services.AddCors(opt => {

@@ -3,25 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using QuizMaster.Domain;
+using QuizMaster.Persistence;
 
 namespace TodoApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class QuizzesController : ControllerBase
     {
+        private readonly QuizContext context;
+
+        public QuizzesController(QuizContext context)
+        {
+            this.context = context;
+        }
+
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<ActionResult<IEnumerable<Quiz>>> Get()
         {
-            return new string[] { "value1", "value2" };
+            var quizzes = await context.Quiz.ToListAsync();
+            return Ok(quizzes);
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public async Task<ActionResult<IEnumerable<Quiz>>> Get(Guid id)
         {
-            return "value";
+            var quiz = await context.Quiz.FindAsync(id);
+            return Ok(quiz);
         }
 
         // POST api/values
