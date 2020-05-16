@@ -14,10 +14,7 @@ namespace QuizMaster.Persistence
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Quiz>().HasData(
-                new Quiz { Id = Guid.NewGuid(), Name = "AOE Quiz" },
-                new Quiz { Id = Guid.NewGuid(), Name = "Sports Quiz" }
-            );
+
         }
     }
 }

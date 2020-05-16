@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using QuizMaster.Api.SignalR;
 using QuizMaster.Persistence;
 using Microsoft.EntityFrameworkCore;
+using MediatR;
+using QuizMaster.Application.Quizzes;
 
 namespace QuizMaster.Api
 {
@@ -28,16 +30,21 @@ namespace QuizMaster.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<QuizContext>(opt => {
+            services.AddDbContext<QuizContext>(opt =>
+            {
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
             services.AddControllers();
             services.AddSignalR();
-            services.AddCors(opt => {
-                opt.AddPolicy("CorsPolicy", policy => {
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
                     policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
                 });
             });
+
+            services.AddMediatR(typeof(List.Handler).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

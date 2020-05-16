@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
-    <ProjectReference Include="..\QuizMaster.Domain\QuizMaster.Domain.csproj" />
-    <ProjectReference Include="..\QuizMaster.Persistence\QuizMaster.Persistence.csproj" />
+    <ProjectReference Include="..\QuizMaster.Domain\QuizMaster.Domain.csproj"/>
+    <ProjectReference Include="..\QuizMaster.Persistence\QuizMaster.Persistence.csproj"/>
   </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0"/>
+  </ItemGroup>
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
 </Project>

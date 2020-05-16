@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuizMaster.Application.Quizzes;
 using QuizMaster.Domain;
 using QuizMaster.Persistence;
 
@@ -13,33 +15,33 @@ namespace TodoApi.Controllers
     [ApiController]
     public class QuizzesController : ControllerBase
     {
-        private readonly QuizContext context;
+        private readonly IMediator mediator;
 
-        public QuizzesController(QuizContext context)
+        public QuizzesController(IMediator mediator)
         {
-            this.context = context;
+            this.mediator = mediator;
         }
 
         // GET api/values
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Quiz>>> Get()
         {
-            var quizzes = await context.Quiz.ToListAsync();
-            return Ok(quizzes);
+            return Ok(await mediator.Send(new List.Query()));
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Quiz>>> Get(Guid id)
+        public async Task<ActionResult<Quiz>> Get(Guid id)
         {
-            var quiz = await context.Quiz.FindAsync(id);
+            var quiz = await mediator.Send(new Details.Query(id));
             return Ok(quiz);
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<Quiz>> Post(Create.Command command)
         {
+            return Ok(await mediator.Send(command));
         }
 
         // PUT api/values/5

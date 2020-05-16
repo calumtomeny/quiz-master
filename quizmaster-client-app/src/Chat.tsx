@@ -3,6 +3,7 @@ import logo from "./logo.svg";
 import "./Chat.css";
 import HubConnection, { HubConnectionBuilder } from "@microsoft/signalr";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 
 function Chat() {
   const [message, setMessage] = useState<string>("");
@@ -14,6 +15,10 @@ function Chat() {
   let { id } = useParams();
 
   useEffect(() => {
+    axios.get("http://localhost:5000/api/quizzes").then((response) => {
+      console.log(response);
+    });
+
     // Set the initial SignalR Hub Connection.
     const createHubConnection = async () => {
       // Build new Hub Connection, url is currently hard coded.
@@ -21,6 +26,7 @@ function Chat() {
         .withAutomaticReconnect()
         .withUrl("http://localhost:5000/chat")
         .build();
+
       try {
         await hubConnect.start();
         console.log("Connection successful!");
@@ -54,7 +60,7 @@ function Chat() {
   }
 
   function messageReceived(receivedMessage: string) {
-    setChatText(m => [...m, receivedMessage]);
+    setChatText((m) => [...m, receivedMessage]);
   }
 
   function onMessageChange(e: React.FormEvent<HTMLInputElement>) {

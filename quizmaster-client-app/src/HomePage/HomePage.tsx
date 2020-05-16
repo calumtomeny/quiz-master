@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, ChangeEvent } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -13,8 +13,10 @@ import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import PeopleIcon from "@material-ui/icons/People";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import PostAddIcon from '@material-ui/icons/PostAdd';
+import PostAddIcon from "@material-ui/icons/PostAdd";
 import quiz from "./quiz.jpeg";
+import { useHistory } from "react-router-dom";
+import Axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,7 +65,21 @@ function Copyright() {
 }
 
 function HomePage() {
+  const history = useHistory();
   const classes = useStyles();
+
+  const [quizName, setQuizName] = useState("");
+
+  function onHostQuizSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    Axios.post("http://localhost:5000/api/quizzes", {"name": `${quizName}`}).then(res => {
+      console.log(res);
+      history.push(`/quiz/${quizName}`);
+    });    
+  }
+
+  const onQuizNameChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setQuizName(e.currentTarget.value);
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -74,7 +90,7 @@ function HomePage() {
           <Avatar className={classes.avatar}>
             <PostAddIcon />
           </Avatar>
-          <form className={classes.form}>
+          <form className={classes.form} onSubmit={onHostQuizSubmit}>
             <Typography component="h2" variant="h5">
               Host quiz
             </Typography>
@@ -87,6 +103,8 @@ function HomePage() {
               label="Quiz Name"
               name="quiz-name"
               autoFocus
+              onChange={onQuizNameChange}
+              value={quizName}
             />
             <Button
               type="submit"

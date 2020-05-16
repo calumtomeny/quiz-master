@@ -25,6 +25,7 @@ namespace QuizMaster.Api
                 {
                     var context = services.GetRequiredService<QuizContext>();
                     context.Database.Migrate();
+                    Seed.SeedData(context);
                 }
                 catch (Exception e)
                 {
