@@ -17,6 +17,10 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import quiz from "./quiz.jpeg";
 import { useHistory } from "react-router-dom";
 import Axios from "axios";
+import Copyright from "../Common/Copyright";
+import { EPERM } from "constants";
+import { Snackbar, SnackbarCloseReason } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,17 +55,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Quiz Master
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
+function Alert(props: any) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
 function HomePage() {
@@ -69,17 +64,48 @@ function HomePage() {
   const classes = useStyles();
 
   const [quizName, setQuizName] = useState("");
+  const [quizCode, setQuizCode] = useState("");
+  const [open, setOpen] = React.useState(false);
 
-  function onHostQuizSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const onHostQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    Axios.post("http://localhost:5000/api/quizzes", {"name": `${quizName}`}).then(res => {
-      console.log(res);
-      history.push(`/quiz/${quizName}`);
-    });    
-  }
+    Axios.post("http://localhost:5000/api/quizzes", {
+      name: `${quizName}`,
+    }).then((res) => {
+      debugger;
+      history.push(`/quiz/${res.data.id}/lobby`);
+    });
+  };
+
+  const onJoinQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    Axios.get(`http://localhost:5000/api/quizzes?quizCode=${quizCode}`).then(
+      (res) => {
+        if (!res.data.length) {
+          setOpen(true);
+        } else {
+          console.log("ID:", res.data[0].id);
+          history.push(`/quiz/${res.data[0].id}`);
+        }
+      }
+    );
+  };
+
+  const handleClose = (
+    event: React.SyntheticEvent<any, Event>,
+    reason: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   const onQuizNameChange = (e: ChangeEvent<HTMLInputElement>) =>
     setQuizName(e.currentTarget.value);
+  const onQuizCodeChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setQuizCode(e.currentTarget.value);
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -119,7 +145,7 @@ function HomePage() {
           <Avatar className={classes.avatar}>
             <PeopleIcon />
           </Avatar>
-          <form className={classes.form}>
+          <form className={classes.form} onSubmit={onJoinQuizSubmit}>
             <Typography component="h2" variant="h5">
               Join quiz
             </Typography>
@@ -130,9 +156,9 @@ function HomePage() {
               fullWidth
               name="quiz-code"
               label="Quiz Code"
-              type="password"
-              id="password"
-              autoComplete="current-password"
+              id="quiz-code"
+              onChange={onQuizCodeChange}
+              value={quizCode}
             />
             <Button
               type="submit"
@@ -146,6 +172,12 @@ function HomePage() {
             <Box mt={5}>
               <Copyright />
             </Box>
+
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity="error">
+                Could not find quiz with specified code.
+              </Alert>
+            </Snackbar>
           </form>
         </div>
       </Grid>

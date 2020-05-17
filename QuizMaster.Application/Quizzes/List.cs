@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -10,7 +11,10 @@ namespace QuizMaster.Application.Quizzes
 {
     public class List
     {
-        public class Query : IRequest<List<Quiz>> { }
+        public class Query : IRequest<List<Quiz>>
+        {
+            public string QuizCode { get; set; }
+        }
 
         public class Handler : IRequestHandler<Query, List<Quiz>>
         {
@@ -23,7 +27,16 @@ namespace QuizMaster.Application.Quizzes
 
             public async Task<List<Quiz>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var quizzes = await context.Quiz.ToListAsync();
+                List<Quiz> quizzes = null;
+
+                if (string.IsNullOrWhiteSpace(request.ToString()))
+                {
+                    quizzes = await context.Quiz.ToListAsync();
+                }
+                else
+                {
+                    quizzes = await context.Quiz.Where(x => x.Code == request.QuizCode).ToListAsync();
+                }
 
                 return quizzes;
             }

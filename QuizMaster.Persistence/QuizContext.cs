@@ -11,6 +11,7 @@ namespace QuizMaster.Persistence
 
         }
         public DbSet<Quiz> Quiz { get; set; }
+        public DbSet<Contestant> Contestants { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

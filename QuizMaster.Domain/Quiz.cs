@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace QuizMaster.Domain
 {
@@ -14,6 +15,7 @@ namespace QuizMaster.Domain
         public Guid Id { get; private set; }
         public String Name { get; private set; }
         public String Code { get; private set; }
+        public List<Contestant> Contestants { get; set; }
 
         static string GenerateCode()
         {

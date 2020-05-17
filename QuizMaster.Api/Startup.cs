@@ -66,7 +66,7 @@ namespace QuizMaster.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<ChatHub>("/chat");
+                endpoints.MapHub<QuizHub>("/quiz");
             });
         }
     }

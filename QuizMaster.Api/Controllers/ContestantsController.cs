@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using QuizMaster.Application.Quizzes;
+using QuizMaster.Api.SignalR;
+using QuizMaster.Application.Contestants;
 using QuizMaster.Domain;
 using QuizMaster.Persistence;
 
@@ -13,35 +15,24 @@ namespace TodoApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class QuizzesController : ControllerBase
+    public class ContestantsController : ControllerBase
     {
         private readonly IMediator mediator;
+        private readonly IHubContext<QuizHub> hubContext;
 
-        public QuizzesController(IMediator mediator)
+        public ContestantsController(IMediator mediator, IHubContext<QuizHub> hubContext)
         {
+            this.hubContext = hubContext;
             this.mediator = mediator;
-        }
-
-        // GET api/values
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Quiz>>> Get(string quizCode)
-        {
-            return Ok(await mediator.Send(new List.Query() { QuizCode = quizCode }));
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Quiz>> Get(Guid id)
-        {
-            var quiz = await mediator.Send(new Details.Query(id));
-            return Ok(quiz);
         }
 
         // POST api/values
         [HttpPost]
-        public async Task<ActionResult<Quiz>> Post(Create.Command command)
+        public async Task<ActionResult<Contestant>> Post(Create.Command command)
         {
-            return Ok(await mediator.Send(command));
+            var contestant = await mediator.Send(command);
+            await hubContext.Clients.Group(command.QuizId.ToString()).SendAsync("ContestantUpdate", contestant);
+            return Ok();
         }
 
         // PUT api/values/5
