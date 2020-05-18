@@ -16,6 +16,7 @@ namespace QuizMaster.Domain
         public String Name { get; private set; }
         public String Code { get; private set; }
         public List<Contestant> Contestants { get; set; }
+        public List<QuizQuestion> QuizQuestions { get; set; }
 
         static string GenerateCode()
         {

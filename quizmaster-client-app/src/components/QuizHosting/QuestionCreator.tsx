@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useEffect } from "react";
+import React, { ChangeEvent, useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -14,6 +14,7 @@ import { TextField, Button } from "@material-ui/core";
 import MaterialTable, { Column } from "material-table";
 import AccessAlarmIcon from "@material-ui/icons/AccessAlarm";
 import Axios from "axios";
+import QuizQuestion from "./QuizQuestion";
 
 interface Row {
   number: number;
@@ -57,17 +58,25 @@ export default function QuestionCreator(props: any) {
         answer: "Paris",
       },
       {
-        number: 1,
+        number: 2,
         question: "What is the capital of England?",
         answer: "London",
       },
     ],
   });
 
+  const isFirstRun = useRef(true);
   useEffect(() => {
-    Axios.post(`http://localhost:5000/api/quizzes/${props.quizId}/questions`, state).then((res: any) => {
-      console.log(res.status)
-    });
+    debugger;
+    if (!isFirstRun.current) {
+      Axios.post(
+        `http://localhost:5000/api/quizzes/${props.quizId}/questions`,
+        state.data.map((x) => new QuizQuestion(x.question, x.answer, x.number))
+      ).then((res: any) => {
+        console.log(res.status);
+      });
+    }
+    isFirstRun.current = false;
   }, [state]);
 
   return (
