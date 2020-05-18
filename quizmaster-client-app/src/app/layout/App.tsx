@@ -1,14 +1,16 @@
 import React from "react";
 import { Route } from "react-router-dom";
-import HostLobby from "../../components/Lobby/HostLobby";
 import HomePage from "../../components/HomePage/HomePage";
-import ContestantLobby from "../../components/Lobby/ContestantLobby";
+import Layout from "./Layout";
+import QuizWizard from "../../components/QuizHosting/QuizWizard";
+import ContestantLobby from "../../components/QuizJoining/QuizSetup";
 
 function App() {
+const quizSetup: any = () => <Layout><QuizWizard/></Layout>;
   return (
     <>
       <Route exact path="/" component={HomePage} />
-      <Route exact path="/quiz/:id/lobby" component={HostLobby} />
+      <Route exact path="/quiz/:id/lobby" component={quizSetup} />
       <Route exact path="/quiz/:id" component={ContestantLobby} />
     </>
   );

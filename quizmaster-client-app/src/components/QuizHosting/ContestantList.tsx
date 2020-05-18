@@ -18,14 +18,6 @@ function createData(name: string) {
   return { name };
 }
 
-const rows = [
-  createData('Frozen yoghurt'),
-  createData('Ice cream sandwich'),
-  createData('Eclair'),
-  createData('Cupcake'),
-  createData('Gingerbread'),
-];
-
 export default function ContestantList(props: any) {
   const classes = useStyles();
 
