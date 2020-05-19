@@ -29,7 +29,7 @@ namespace QuizMaster.Application.Quizzes
             {
                 List<Quiz> quizzes = null;
 
-                if (string.IsNullOrWhiteSpace(request.ToString()))
+                if (string.IsNullOrWhiteSpace(request.QuizCode.ToString()))
                 {
                     quizzes = await context.Quiz.ToListAsync();
                 }
