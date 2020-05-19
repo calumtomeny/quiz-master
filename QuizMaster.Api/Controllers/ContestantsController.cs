@@ -27,7 +27,7 @@ namespace TodoApi.Controllers
         {
             var contestant = await mediator.Send(command);
             await hubContext.Clients.Group(command.QuizId.ToString()).SendAsync("ContestantUpdate", contestant);
-            return Ok();
+            return Ok(contestant);
         }
 
         // PUT api/values/5

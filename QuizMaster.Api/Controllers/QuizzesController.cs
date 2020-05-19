@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using QuizMaster.Api.SignalR;
+using QuizMaster.Application;
 using QuizMaster.Application.Quizzes;
 using QuizMaster.Domain;
 
@@ -14,9 +17,13 @@ namespace TodoApi.Controllers
     {
         private readonly IMediator mediator;
 
-        public QuizzesController(IMediator mediator)
+        private readonly IHubContext<QuizHub> hubContext;
+
+
+        public QuizzesController(IMediator mediator, IHubContext<QuizHub> hubContext)
         {
             this.mediator = mediator;
+            this.hubContext = hubContext;
         }
 
         // GET api/values
@@ -39,6 +46,13 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<Quiz>> Post(Create.Command command)
         {
             return Ok(await mediator.Send(command));
+        }
+
+        [HttpPost("{id}/command/message")]
+        public async Task<ActionResult> Start(ParticipantMessage message, Guid id)
+        {
+            await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
+            return Ok();
         }
 
         // POST api/quizzes/{id}/questions

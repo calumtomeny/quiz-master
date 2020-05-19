@@ -10,7 +10,9 @@ import Copyright from "../Common/Copyright";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Paper } from "@material-ui/core";
-import "./QuizSetup.css";
+import { useHistory } from "react-router-dom";
+import "./QuizJoiner.css";
+import QuizQuestion from "../QuizHosting/QuizQuestion";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -31,14 +33,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ContestantLobby() {
+export default function QuizJoiner() {
   const classes = useStyles();
   let { id } = useParams();
+  const history = useHistory();
 
-  const [, setQuizCode] = useState("");
   const [quizName, setQuizName] = useState("");
   const [quizId, setQuizId] = useState("");
   const [name, setName] = useState("");
+
+  const [currentQuestion, setCurrentQuestion] = useState<QuizQuestion | null>(
+    null
+  );
 
   const onNameChange = (e: ChangeEvent<HTMLInputElement>) =>
     setName(e.currentTarget.value);
@@ -51,52 +57,46 @@ export default function ContestantLobby() {
         contestantName: name,
       })
       .then((res) => {
-        //TODO: go to quiz start screen.
+        console.log(res.data);
+        history.push(`/quiz/${id}/participants/${res.data.id}`);
       });
   };
 
   useEffect(() => {
     axios.get(`http://localhost:5000/api/quizzes/${id}`).then((res) => {
-      setQuizCode(res.data.code);
       setQuizName(res.data.name);
       setQuizId(res.data.id);
     });
   }, []);
 
   return (
-    <Container component={Paper} maxWidth="md">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <form className={classes.form} onSubmit={onHostQuizSubmit}>
-          <Typography component="h2" variant="h5">
-            Quiz: {quizName}
-          </Typography>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="your-name"
-            label="Your Name"
-            name="your-name"
-            autoFocus
-            onChange={onNameChange}
-            value={name}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Let's go!
-          </Button>
-        </form>
-      </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
-    </Container>
+    <>
+      <Typography component="h2" variant="h5">
+        Joining '{quizName}'...
+      </Typography>
+      <form className={classes.form} onSubmit={onHostQuizSubmit}>
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          id="your-name"
+          label="Your Name"
+          name="your-name"
+          autoFocus
+          onChange={onNameChange}
+          value={name}
+        />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+          className={classes.submit}
+        >
+          Let's go!
+        </Button>
+      </form>
+    </>
   );
 }

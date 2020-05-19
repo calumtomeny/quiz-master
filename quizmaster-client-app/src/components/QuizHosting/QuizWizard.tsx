@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { Box } from "@material-ui/core";
 import QuestionCreator from "./QuestionCreator";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import HostLobby from "./HostLobby";
 import axios from "axios";
 
@@ -34,28 +34,18 @@ function getSteps() {
   return ["Create questions", "Set options", "Invite your friends"];
 }
 
-function getStepContent(step: Number) {
-  switch (step) {
-    case 0:
-      return "Create questions for your quiz.";
-    case 2:
-      return "Invite people to your quiz.";
-    default:
-      return "Unknown step";
-  }
-}
-
-export default function QuizWizard(props: any) {
+export default function QuizWizard() {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
   const steps = getSteps();
   let { id } = useParams();
+  const history = useHistory();
 
   const [quizCode, setQuizCode] = useState("");
   const [quizName, setQuizName] = useState("");
   const [quizId, setQuizId] = useState("");
-  const [contestants, setContestants] = useState<string[]>([]);
+  const [] = useState<string[]>([]);
 
   useEffect(() => {
     axios.get(`http://localhost:5000/api/quizzes/${id}`).then((res) => {
@@ -84,6 +74,11 @@ export default function QuizWizard(props: any) {
   };
 
   const handleNext = () => {
+    debugger;
+    if (activeStep === steps.length - 1) {
+      history.push(`/quiz/${id}/host`);
+    }
+
     let newSkipped = skipped;
 
     if (isStepSkipped(activeStep)) {
@@ -99,10 +94,6 @@ export default function QuizWizard(props: any) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
   return (
     <div className={classes.root}>
       <Box mt={2}>
@@ -116,7 +107,7 @@ export default function QuizWizard(props: any) {
         </Typography>
       </Box>
       <Stepper activeStep={activeStep}>
-        {steps.map((label, index) => {
+        {steps.map((label) => {
           const stepProps = { optional: {}, completed: false };
           const labelProps = {};
           return (
@@ -127,16 +118,7 @@ export default function QuizWizard(props: any) {
         })}
       </Stepper>
       <div>
-        {activeStep === steps.length ? (
-          <div>
-            <Typography className={classes.instructions}>
-              All steps completed - you&apos;re finished
-            </Typography>
-            <Button onClick={handleReset} className={classes.button}>
-              Reset
-            </Button>
-          </div>
-        ) : (
+        {
           <div>
             {getStepContent()}
             <div className={classes.buttons}>
@@ -157,7 +139,7 @@ export default function QuizWizard(props: any) {
               </Button>
             </div>
           </div>
-        )}
+        }
       </div>
     </div>
   );
