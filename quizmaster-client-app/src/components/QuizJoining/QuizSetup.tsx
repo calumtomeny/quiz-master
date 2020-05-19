@@ -51,7 +51,7 @@ export default function ContestantLobby() {
         contestantName: name,
       })
       .then((res) => {
-        console.log(res.status);
+        //TODO: go to quiz start screen.
       });
   };
 

@@ -69,7 +69,6 @@ export default function QuestionCreator(props: any) {
   const doneInitialGet = useRef(false);
 
   useEffect(() => {
-    console.log("Do get.");
     Axios.get(
       `http://localhost:5000/api/quizzes/${props.quizId}/questions`
     ).then((results) => {
@@ -79,7 +78,6 @@ export default function QuestionCreator(props: any) {
         return { ...prevState, data };
       });
       doneInitialGet.current = true;
-      console.log("Done get.");
     });
   }, []);
 
@@ -90,8 +88,6 @@ export default function QuestionCreator(props: any) {
         `http://localhost:5000/api/quizzes/${props.quizId}/questions`,
         state.data.map((x) => new QuizQuestion(x.question, x.answer, x.number))
       ).then((res: any) => {
-        console.log("Done post.");
-        console.log(res.status);
       });
     }
     isFirstRun.current = false;
