@@ -92,27 +92,15 @@ export default function HostLobby() {
   }, []);
 
   return (
-    <Container component={Paper} maxWidth="md">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Box mt={2}>
-          <Typography component="h1" variant="h4">
-            {quizName}
-          </Typography>
-        </Box>
-        <Box pt={3} pb={3}>
-          <Typography variant="body2" gutterBottom>
-            Give your friends the quiz code to let them join: <b>{quizCode}</b>
-          </Typography>
-        </Box>
-        <Typography component="h1" variant="h6">
-          Lobby
-        </Typography>
+    <>
+      <Typography component="h1" variant="h6">
+        Lobby
+      </Typography>
+      {contestants.length == 0 ? (
+        <p>Your friends will appear here when they have joined.</p>
+      ) : (
         <ContestantList contestants={contestants} />
-      </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
-    </Container>
+      )}
+    </>
   );
 }

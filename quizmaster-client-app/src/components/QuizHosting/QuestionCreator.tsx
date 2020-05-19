@@ -51,18 +51,7 @@ export default function QuestionCreator(props: any) {
       { title: "Question", field: "question" },
       { title: "Answer", field: "answer" },
     ],
-    data: [
-      {
-        number: 1,
-        question: "What is the capital of France?",
-        answer: "Paris",
-      },
-      {
-        number: 2,
-        question: "What is the capital of England?",
-        answer: "London",
-      },
-    ],
+    data: [],
   });
 
   const isFirstRun = useRef(true);
@@ -83,12 +72,10 @@ export default function QuestionCreator(props: any) {
 
   useEffect(() => {
     if (!isFirstRun.current && doneInitialGet.current) {
-      console.log("Do post.");
       Axios.post(
         `http://localhost:5000/api/quizzes/${props.quizId}/questions`,
         state.data.map((x) => new QuizQuestion(x.question, x.answer, x.number))
-      ).then((res: any) => {
-      });
+      ).then((res: any) => {});
     }
     isFirstRun.current = false;
   }, [state]);

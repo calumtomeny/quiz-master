@@ -67,8 +67,7 @@ function HomePage() {
     Axios.post("http://localhost:5000/api/quizzes", {
       name: `${quizName}`,
     }).then((res) => {
-      debugger;
-      history.push(`/quiz/${res.data.id}/lobby`);
+      history.push(`/quiz/${res.data.id}/setup`);
     });
   };
 
@@ -79,7 +78,6 @@ function HomePage() {
         if (!res.data.length) {
           setOpen(true);
         } else {
-          console.log("ID:", res.data[0].id);
           history.push(`/quiz/${res.data[0].id}`);
         }
       }
@@ -93,7 +91,6 @@ function HomePage() {
     if (reason === "clickaway") {
       return;
     }
-
     setOpen(false);
   };
 

@@ -20,7 +20,6 @@ function createData(name: string) {
 
 export default function ContestantList(props: any) {
   const classes = useStyles();
-
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
