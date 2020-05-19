@@ -66,13 +66,31 @@ export default function QuestionCreator(props: any) {
   });
 
   const isFirstRun = useRef(true);
+  const doneInitialGet = useRef(false);
+
   useEffect(() => {
-    debugger;
-    if (!isFirstRun.current) {
+    console.log("Do get.");
+    Axios.get(
+      `http://localhost:5000/api/quizzes/${props.quizId}/questions`
+    ).then((results) => {
+      debugger;
+      setState((prevState) => {
+        const data: Row[] = [...results.data];
+        return { ...prevState, data };
+      });
+      doneInitialGet.current = true;
+      console.log("Done get.");
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isFirstRun.current && doneInitialGet.current) {
+      console.log("Do post.");
       Axios.post(
         `http://localhost:5000/api/quizzes/${props.quizId}/questions`,
         state.data.map((x) => new QuizQuestion(x.question, x.answer, x.number))
       ).then((res: any) => {
+        console.log("Done post.");
         console.log(res.status);
       });
     }
