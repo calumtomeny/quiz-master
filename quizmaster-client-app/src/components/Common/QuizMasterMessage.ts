@@ -3,6 +3,7 @@ interface QuizMasterMessage {
   complete: boolean;
   question: string;
   answer: string;
+  questionNumber: number;
 }
 
 export default QuizMasterMessage;

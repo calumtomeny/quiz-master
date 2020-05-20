@@ -7,6 +7,8 @@ import "./QuestionResponder.css";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { LinearProgress } from "@material-ui/core";
 import QuizMasterMessage from "../Common/QuizMasterMessage";
+import QuizQuestion from "../Common/QuizQuestion";
+import QuizQuestionDisplay from "../QuizHosting/QuizQuestionDisplay";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -26,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 export default function QuestionResponder() {
   const [quizCode, setQuizCode] = useState("");
   const [quizName, setQuizName] = useState("");
+  const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>();
   const [quizInitialized, setQuizInitialized] = useState(false);
   let { quizId } = useParams();
   let { participantId } = useParams();
@@ -51,7 +54,6 @@ export default function QuestionResponder() {
           .start()
           .then(() => console.log(hubConnect.state))
           .then(() => {
-            debugger;
             console.log("Joining group...");
             hubConnect.invoke("AddToGroup", quizId);
             console.log("Connection successful!");
@@ -61,16 +63,23 @@ export default function QuestionResponder() {
           });
 
         hubConnect.on("ContestantUpdate", (message: QuizMasterMessage) => {
+          debugger;
           if (message.start) {
             setQuizInitialized(true);
           } else if (message.complete) {
           } else {
+            setQuizQuestion(
+              new QuizQuestion(
+                message.question,
+                message.answer,
+                message.questionNumber
+              )
+            );
           }
         });
       } catch (err) {
         alert(err);
       }
-      //setHubConnection(hubConnect);
     };
     createHubConnection();
   }, []);
@@ -81,11 +90,13 @@ export default function QuestionResponder() {
       <Typography component="h2" variant="h5">
         You're all set...
       </Typography>
-      {quizInitialized ? (
+      {quizInitialized && !quizQuestion ? (
         <>
           <p>The quiz is about to start, get ready!</p>
           <LinearProgress />
         </>
+      ) : quizQuestion ? (
+        <QuizQuestionDisplay quizQuestion={quizQuestion} />
       ) : (
         <p>The quiz will start soon.</p>
       )}

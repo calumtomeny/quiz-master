@@ -12,7 +12,7 @@ import { useParams } from "react-router-dom";
 import { Paper } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import "./QuizJoiner.css";
-import QuizQuestion from "../QuizHosting/QuizQuestion";
+import QuizQuestion from "../Common/QuizQuestion";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

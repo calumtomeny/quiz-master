@@ -1,12 +1,12 @@
 class QuizQuestion{
-    constructor(question: string, answer: string, number: number) {
+    constructor(question: string, answer: string, questionNumber: number) {
         this.Question = question;
         this.Answer = answer;
-        this.Number = number;        
+        this.QuestionNumber = questionNumber;        
     }
     Question: string;
     Answer: string;
-    Number: number;
+    QuestionNumber: number;
 }
 
 export default QuizQuestion;

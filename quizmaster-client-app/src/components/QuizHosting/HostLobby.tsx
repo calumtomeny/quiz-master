@@ -13,14 +13,14 @@ export default function HostLobby() {
   const [contestants, setContestants] = useState<string[]>([]);
 
   useEffect(() => {
-    // Set the initial SignalR Hub Connection.
-    const createHubConnection = async () => {
       // Build new Hub Connection, url is currently hard coded.
       const hubConnect = new HubConnectionBuilder()
         .withAutomaticReconnect()
         .withUrl("http://localhost:5000/quiz")
         .build();
 
+    // Set the initial SignalR Hub Connection.
+    const createHubConnection = async () => {
       try {
         await hubConnect
           .start()
@@ -42,8 +42,8 @@ export default function HostLobby() {
         alert(err);
       }
     };
-
     createHubConnection();
+    return () => {hubConnect.stop();}
   }, []);
 
   return (
