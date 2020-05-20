@@ -57,14 +57,14 @@ namespace TodoApi.Controllers
 
         // POST api/quizzes/{id}/questions
         [HttpPost("{id}/questions")]
-        public async Task<ActionResult<List<Quiz>>> QuizQuestions(List<QuizMaster.Application.Questions.Create.CommandItem> command, Guid id)
+        public async Task<ActionResult<List<QuizQuestion>>> QuizQuestions(List<QuizMaster.Application.Questions.Create.CommandItem> command, Guid id)
         {
             return Ok(await mediator.Send(new QuizMaster.Application.Questions.Create.Command() { QuizItems = command, QuizId = id }));
         }
 
         // GET api/quizzes/{id}/questions
         [HttpGet("{id}/questions")]
-        public async Task<ActionResult<List<Quiz>>> Questions(Guid id)
+        public async Task<ActionResult<List<QuizQuestion>>> Questions(Guid id)
         {
             return Ok(await mediator.Send(new QuizMaster.Application.Questions.List.Query() { QuizId = id }));
         }

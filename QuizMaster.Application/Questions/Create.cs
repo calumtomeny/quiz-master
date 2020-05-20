@@ -45,7 +45,7 @@ namespace QuizMaster.Application.Questions
 
             public async Task<List<QuizQuestion>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var questions = request.QuizItems.Select(x => new QuizQuestion(x.Question, x.Answer, request.QuizId, x.Number));
+                var questions = request.QuizItems.Select((x, i) => new QuizQuestion(x.Question, x.Answer, request.QuizId, i + 1));
 
                 var quiz = await context.Quiz.Include(x => x.QuizQuestions).SingleOrDefaultAsync(x => x.Id == request.QuizId, cancellationToken);
 
