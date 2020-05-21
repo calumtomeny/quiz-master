@@ -16,6 +16,8 @@ import { Box } from "@material-ui/core";
 import QuizMarker from "./QuizQuestionDisplay";
 import QuizQuestionDisplay from "./QuizQuestionDisplay";
 import QuestionMarker from "./QuestionMarker";
+import Data from "./Data";
+import ParticipantMessage from "../Common/ParticipantMessage";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,6 +31,11 @@ export default function QuizHoster(props: any) {
   const [quizCode, setQuizCode] = useState("");
   const [quizName, setQuizName] = useState("");
   const [quizId, setQuizId] = useState("");
+  const [answers, setAnswers] = useState<Data[]>([
+    createData("Paris", "Ewan"),
+    createData("London", "Richard"),
+  ] as Data[]);
+
   const [contestantScores, setContestantScores] = useState<ContestantScore[]>(
     []
   );
@@ -44,27 +51,35 @@ export default function QuizHoster(props: any) {
       question: getQuizQuestion(currentQuestionNumber + 1)?.Question ?? "",
       answer: getQuizQuestion(currentQuestionNumber + 1)?.Answer ?? "",
       complete: false,
-      questionNumber: getQuizQuestion(currentQuestionNumber + 1)?.QuestionNumber ?? 1,
+      questionNumber:
+        getQuizQuestion(currentQuestionNumber + 1)?.QuestionNumber ?? 1,
     };
-    
-    axios.post(
-      `http://localhost:5000/api/quizzes/${id}/command/message`,
-      message
-    ).then(x => {
-      setCurrentQuestionNumber(1);
-    });
+
+    axios
+      .post(`http://localhost:5000/api/quizzes/${id}/command/quizmastermessage`, message)
+      .then((x) => {
+        setCurrentQuestionNumber(1);
+      });
   };
 
   const getCurrentQuizQuestion = () => {
-    let question = quizQuestions.find((x) => x.QuestionNumber == currentQuestionNumber);
+    let question = quizQuestions.find(
+      (x) => x.QuestionNumber == currentQuestionNumber
+    );
     debugger;
     return question;
   };
 
   const getQuizQuestion = (questionNumber: number) => {
-    let question = quizQuestions.find((x) => x.QuestionNumber == questionNumber);
+    let question = quizQuestions.find(
+      (x) => x.QuestionNumber == questionNumber
+    );
     return question;
   };
+
+  function createData(answer: string, name: string): Data {
+    return { answer, name };
+  }
 
   useEffect(() => {
     let isCancelled = false;
@@ -73,7 +88,6 @@ export default function QuizHoster(props: any) {
       setQuizName(res.data.name);
       setQuizId(res.data.id);
       setQuizCode(res.data.code);
-      debugger;
 
       axios
         .get(`http://localhost:5000/api/quizzes/${id}/questions`)
@@ -83,11 +97,11 @@ export default function QuizHoster(props: any) {
             question: "",
             answer: "",
             complete: false,
-            questionNumber: 1
+            questionNumber: 1,
           };
-          
+
           axios.post(
-            `http://localhost:5000/api/quizzes/${id}/command/message`,
+            `http://localhost:5000/api/quizzes/${id}/command/quizmastermessage`,
             message
           );
 
@@ -99,38 +113,39 @@ export default function QuizHoster(props: any) {
         });
     });
 
-    // const createHubConnection = async () => {
-    //   // Build new Hub Connection, url is currently hard coded.
-    //   const hubConnect = new HubConnectionBuilder()
-    //     .withAutomaticReconnect()
-    //     .withUrl("http://localhost:5000/quiz")
-    //     .build();
+    const createHubConnection = async () => {
+      // Build new Hub Connection, url is currently hard coded.
+      const hubConnect = new HubConnectionBuilder()
+        .withAutomaticReconnect()
+        .withUrl("http://localhost:5000/quiz")
+        .build();
 
-    //   try {
-    //     await hubConnect
-    //       .start()
-    //       .then(() => console.log(hubConnect.state))
-    //       .then(() => {
-    //         debugger;
-    //         console.log("Joining group...");
-    //         hubConnect.invoke("AddToGroup", id);
-    //         console.log("Connection successful!");
-    //       })
-    //       .catch(() => {
-    //         console.log("Error adding to quiz group.");
-    //       });
+      try {
+        await hubConnect
+          .start()
+          .then(() => console.log(hubConnect.state))
+          .then(() => {
+            debugger;
+            console.log("Joining group...");
+            hubConnect.invoke("AddToGroup", id);
+            console.log("Connection successful!");
+          })
+          .catch(() => {
+            console.log("Error adding to quiz group.");
+          });
 
-    //     hubConnect.on("ContestantUpdate", (contestant: Contestant) => {
-    //       setContestants((c) => [...c, contestant.name]);
-    //     });
-    //   } catch (err) {
-    //     alert(err);
-    //   }
-    // };
+        hubConnect.on("QuizMasterUpdate", (message: ParticipantMessage) => {
+       
+          setAnswers(answers => [...answers, {answer: message.answer, name: message.participantId}])
+        });
+      } catch (err) {
+        alert(err);
+      }
+    };
+    createHubConnection();
     return () => {
       isCancelled = true;
     };
-    // createHubConnection();
   }, []);
 
   return (
@@ -145,8 +160,8 @@ export default function QuizHoster(props: any) {
           <QuizInitiator quizName={quizName} clickHandler={onQuizInitiate} />
         ) : (
           <>
-          <QuizQuestionDisplay quizQuestion={getCurrentQuizQuestion()} />
-          <QuestionMarker/>
+            <QuizQuestionDisplay quizQuestion={getCurrentQuizQuestion()} />
+            <QuestionMarker rows={answers} />
           </>
         )}
       </Box>

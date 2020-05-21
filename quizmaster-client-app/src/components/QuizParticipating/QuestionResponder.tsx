@@ -5,39 +5,68 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./QuestionResponder.css";
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import { LinearProgress } from "@material-ui/core";
+import { LinearProgress, TextField, Button, Paper } from "@material-ui/core";
 import QuizMasterMessage from "../Common/QuizMasterMessage";
 import QuizQuestion from "../Common/QuizQuestion";
 import QuizQuestionDisplay from "../QuizHosting/QuizQuestionDisplay";
+import ParticipantMessage from "../Common/ParticipantMessage";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    [theme.breakpoints.up("md")]: { marginTop: theme.spacing(8) },
+  button: {
+    margin: theme.spacing(4, 0, 4, 0),
+    width: "80%",
+  },
+  textArea: {
+    margin: theme.spacing(4, 0, 4, 0),
+    width: "80%",
+  },
+  answer: {
+    width: "100%",
+    alignItems: "center",
     display: "flex",
     flexDirection: "column",
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
+    padding: theme.spacing(2),
+    margin: theme.spacing(1),
   },
 }));
 
 export default function QuestionResponder() {
-  const [quizCode, setQuizCode] = useState("");
+  const classes = useStyles();
   const [quizName, setQuizName] = useState("");
+  const [answer, setAnswer] = useState("");
   const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>();
   const [quizInitialized, setQuizInitialized] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   let { quizId } = useParams();
   let { participantId } = useParams();
 
-  debugger;
+  const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setAnswer(e.currentTarget.value);
 
+  const onAnswerSubmit = () => {
+    const message: ParticipantMessage = {
+      participantId: participantId,   
+      answer: answer,
+    };
+    axios.post(
+      `http://localhost:5000/api/quizzes/${quizId}/command/participantmessage`,
+      message
+    );
+
+    alert(answer);
+    setButtonDisabled(true);
+  };
+
+  function handleEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.charCode === 13) {
+      onAnswerSubmit();
+    }
+    if (e.keyCode === 13) {
+      onAnswerSubmit();
+    }
+  }
   useEffect(() => {
     axios.get(`http://localhost:5000/api/quizzes/${quizId}`).then((res) => {
-      setQuizCode(res.data.code);
       setQuizName(res.data.name);
     });
 
@@ -83,12 +112,11 @@ export default function QuestionResponder() {
     };
     createHubConnection();
   }, []);
-  let { id } = useParams();
 
   return (
     <>
       <Typography component="h2" variant="h5">
-        You're all set...
+        {quizInitialized && !quizQuestion ? "You're all set..." : quizName}
       </Typography>
       {quizInitialized && !quizQuestion ? (
         <>
@@ -96,7 +124,32 @@ export default function QuestionResponder() {
           <LinearProgress />
         </>
       ) : quizQuestion ? (
-        <QuizQuestionDisplay quizQuestion={quizQuestion} />
+        <>
+          <QuizQuestionDisplay quizQuestion={quizQuestion} />
+          <Paper elevation={1} className={classes.answer}>
+            <TextField
+              autoFocus
+              required
+              id="standard-required"
+              label="Answer"
+              defaultValue=""
+              className={classes.textArea}
+              onChange={onAnswerChange}
+              value={answer}
+              onKeyPress={handleEnter}
+            />
+            <Button
+              variant="contained"
+              size="large"
+              color="primary"
+              className={classes.button}
+              onClick={onAnswerSubmit}
+              disabled={buttonDisabled}
+            >
+              Submit
+            </Button>
+          </Paper>
+        </>
       ) : (
         <p>The quiz will start soon.</p>
       )}

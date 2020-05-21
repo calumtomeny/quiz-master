@@ -48,10 +48,17 @@ namespace TodoApi.Controllers
             return Ok(await mediator.Send(command));
         }
 
-        [HttpPost("{id}/command/message")]
-        public async Task<ActionResult> Start(ParticipantMessage message, Guid id)
+        [HttpPost("{id}/command/quizmastermessage")]
+        public async Task<ActionResult> Start(QuizMasterMessage message, Guid id)
         {
             await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
+            return Ok();
+        }
+
+        [HttpPost("{id}/command/participantmessage")]
+        public async Task<ActionResult> Start(ParticipantMessage message, Guid id)
+        {
+            await hubContext.Clients.Group(id.ToString()).SendAsync("QuizMasterUpdate", message);
             return Ok();
         }
 

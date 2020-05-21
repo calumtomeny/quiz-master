@@ -20,24 +20,10 @@ import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
-import DeleteIcon from "@material-ui/icons/Delete";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import FilterListIcon from "@material-ui/icons/FilterList";
 import PlaylistAddCheckIcon from "@material-ui/icons/PlaylistAddCheck";
 import { green } from "@material-ui/core/colors";
-
-interface Data {
-  answer: string;
-  name: string;
-}
-
-function createData(answer: string, name: string): Data {
-  return { answer, name };
-}
-
-const rows = [createData("Paris", "Ewan"), createData("London", "Richard")];
+import Data from "./Data";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -186,7 +172,7 @@ const useTableStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const useCheckboxStyles = makeStyles((theme: Theme) =>
+const useCheckboxStyles = makeStyles(() =>
   createStyles({
     root: {
       color: green[400] + "!important",
@@ -227,7 +213,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+          Answers
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -271,7 +257,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function QuestionMarker() {
+export default function QuestionMarker(props: { rows: Data[] }) {
   const tableClasses = useTableStyles();
   const checkboxClasses = useCheckboxStyles();
   const classes = useStyles();
@@ -292,7 +278,7 @@ export default function QuestionMarker() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
+      const newSelecteds = props.rows.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -333,7 +319,7 @@ export default function QuestionMarker() {
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, props.rows.length - page * rowsPerPage);
 
   return (
     <div className={classes.root}>
@@ -353,10 +339,10 @@ export default function QuestionMarker() {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={props.rows.length}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
+              {stableSort(props.rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.name);
@@ -400,7 +386,7 @@ export default function QuestionMarker() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={props.rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
