@@ -5,6 +5,6 @@ namespace QuizMaster.Application
     {
         public Guid ParticipantId { get; set; }
         public string Answer { get; set; }
- 
+
     }
 }

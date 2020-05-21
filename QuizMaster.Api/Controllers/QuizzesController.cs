@@ -19,7 +19,6 @@ namespace TodoApi.Controllers
 
         private readonly IHubContext<QuizHub> hubContext;
 
-
         public QuizzesController(IMediator mediator, IHubContext<QuizHub> hubContext)
         {
             this.mediator = mediator;
@@ -40,6 +39,14 @@ namespace TodoApi.Controllers
             var quiz = await mediator.Send(new Details.Query(id));
             return Ok(quiz);
         }
+
+        [HttpGet("{id}/Contestants")]
+        public async Task<ActionResult<Contestant>> GetContestants(Guid id)
+        {
+            var quiz = await mediator.Send(new QuizMaster.Application.Contestants.List.Query(id));
+            return Ok(quiz);
+        }
+
 
         // POST api/values
         [HttpPost]
