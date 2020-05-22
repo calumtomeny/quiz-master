@@ -38,6 +38,10 @@ steps:
     versionSpec: '10.x'
     displayName: 'Install Node.js'
 
+- task: CmdLine@2
+  inputs:
+    script: 'cd .\quizmaster-client-app'
+
 - task: Npm@1
   inputs:
     command: 'install'
