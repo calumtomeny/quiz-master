@@ -56,8 +56,19 @@ steps:
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: True
 
-# this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/quizmaster-client-app/build'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/quiz-master-client-app'
+
 - task: PublishBuildArtifacts@1
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
     artifactName: 'QuizMaster'
+
+
+
+
+
+
