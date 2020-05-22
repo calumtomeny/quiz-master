@@ -74,7 +74,6 @@ export default function QuizWizard() {
   };
 
   const handleNext = () => {
-    debugger;
     if (activeStep === steps.length - 1) {
       history.push(`/quiz/${id}/host`);
     }

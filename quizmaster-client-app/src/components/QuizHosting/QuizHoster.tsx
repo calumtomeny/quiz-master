@@ -181,7 +181,6 @@ export default function QuizHoster(props: any) {
               message
             )
             .then(() => {
-              debugger;
               axios
                 .get(`http://localhost:5000/api/quizzes/${id}/contestants`)
                 .then((res) => {
@@ -216,7 +215,6 @@ export default function QuizHoster(props: any) {
           .start()
           .then(() => console.log(hubConnect.state))
           .then(() => {
-            debugger;
             console.log("Joining group...");
             hubConnect.invoke("AddToGroup", id);
             console.log("Connection successful!");

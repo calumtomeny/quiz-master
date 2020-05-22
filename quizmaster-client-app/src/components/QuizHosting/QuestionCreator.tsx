@@ -48,7 +48,6 @@ export default function QuestionCreator(props: any) {
     Axios.get(
       `http://localhost:5000/api/quizzes/${props.quizId}/questions`
     ).then((results) => {
-      debugger;
       setState((prevState) => {
         const data: Row[] = [...results.data];
         return { ...prevState, data };

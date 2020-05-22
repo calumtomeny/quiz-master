@@ -32,7 +32,6 @@ export default function HostLobby() {
               .start()
               .then(() => console.log(hubConnect.state))
               .then(() => {
-                debugger;
                 console.log("Joining group...");
                 hubConnect.invoke("AddToGroup", id);
                 console.log("Connection successful!");

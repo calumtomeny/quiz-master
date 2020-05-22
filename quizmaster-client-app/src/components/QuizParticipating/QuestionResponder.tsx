@@ -111,7 +111,6 @@ export default function QuestionResponder() {
           });
 
         hubConnect.on("ContestantUpdate", (message: QuizMasterMessage) => {
-          debugger;
           if (message.start) {
             setQuizInitialized(true);
           } else if (message.complete) {
