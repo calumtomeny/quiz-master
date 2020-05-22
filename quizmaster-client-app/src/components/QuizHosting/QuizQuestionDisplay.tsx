@@ -2,7 +2,7 @@ import React from "react";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import "./HostLobby.css";
-import { Paper } from "@material-ui/core";
+import { Paper, LinearProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   question: {
@@ -11,7 +11,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     padding: theme.spacing(2),
-    margin: theme.spacing(1),
+  },
+  progressBar: {
+    width: "100%",
+    margin: theme.spacing(2,0,2,0),
   },
 }));
 
@@ -25,6 +28,9 @@ export default function QuizQuestionDisplay(props: any) {
         </Typography>
         {props.quizQuestion.Question}
       </Paper>
+      <div className={classes.progressBar}>
+        <LinearProgress variant="determinate" value={props.timeLeftAsAPercentage} />
+      </div>
     </div>
   );
 }

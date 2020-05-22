@@ -13,37 +13,46 @@ export default function HostLobby() {
   const [contestants, setContestants] = useState<string[]>([]);
 
   useEffect(() => {
-      // Build new Hub Connection, url is currently hard coded.
-      const hubConnect = new HubConnectionBuilder()
-        .withAutomaticReconnect()
-        .withUrl("http://localhost:5000/quiz")
-        .build();
+    // Build new Hub Connection, url is currently hard coded.
+    const hubConnect = new HubConnectionBuilder()
+      .withAutomaticReconnect()
+      .withUrl("http://localhost:5000/quiz")
+      .build();
 
     // Set the initial SignalR Hub Connection.
     const createHubConnection = async () => {
-      try {
-        await hubConnect
-          .start()
-          .then(() => console.log(hubConnect.state))
-          .then(() => {
-            debugger;
-            console.log("Joining group...");
-            hubConnect.invoke("AddToGroup", id);
-            console.log("Connection successful!");
-          })
-          .catch(() => {
-            console.log("Error adding to quiz group.");
-          });
+      axios
+        .get(`http://localhost:5000/api/quizzes/${id}/contestants`)
+        .then((res) => {
+          setContestants(res.data.map((contestant: any) => contestant.name));
+        })
+        .then(async () => {
+          try {
+            await hubConnect
+              .start()
+              .then(() => console.log(hubConnect.state))
+              .then(() => {
+                debugger;
+                console.log("Joining group...");
+                hubConnect.invoke("AddToGroup", id);
+                console.log("Connection successful!");
+              })
+              .catch(() => {
+                console.log("Error adding to quiz group.");
+              });
 
-        hubConnect.on("ContestantUpdate", (contestant: Contestant) => {
-          setContestants((c) => [...c, contestant.name]);
+            hubConnect.on("ContestantUpdate", (contestant: Contestant) => {
+              setContestants((c) => [...c, contestant.name]);
+            });
+          } catch (err) {
+            alert(err);
+          }
         });
-      } catch (err) {
-        alert(err);
-      }
     };
     createHubConnection();
-    return () => {hubConnect.stop();}
+    return () => {
+      hubConnect.stop();
+    };
   }, []);
 
   return (

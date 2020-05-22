@@ -12,16 +12,27 @@ import Button from "@material-ui/core/Button";
 import ContestantScore from "./ContestantScore";
 import QuizQuestion from "../Common/QuizQuestion";
 import QuizInitiator from "./QuizInitiator";
-import { Box } from "@material-ui/core";
+import { Box, Paper } from "@material-ui/core";
 import QuizMarker from "./QuizQuestionDisplay";
 import QuizQuestionDisplay from "./QuizQuestionDisplay";
 import QuestionMarker from "./QuestionMarker";
-import Data from "./Data";
+import Data from "./QuestionResponse";
 import ParticipantMessage from "../Common/ParticipantMessage";
+import QuizStandings from "./QuizStandings";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
+  },
+  paper: {
+    width: "100%",
+    marginBottom: theme.spacing(2),
+    minHeight: "15rem",
+    textAlign: "center",
+  },
+  nextQuestion: {
+    verticalAlign: "middle",
+    marginTop: theme.spacing(10),
   },
 }));
 
@@ -31,21 +42,21 @@ export default function QuizHoster(props: any) {
   const [quizCode, setQuizCode] = useState("");
   const [quizName, setQuizName] = useState("");
   const [quizId, setQuizId] = useState("");
-  const [answers, setAnswers] = useState<Data[]>([
-    createData("Paris", "Ewan"),
-    createData("London", "Richard"),
-  ] as Data[]);
-
+  const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState(0);
+  const [contestants, setContestants] = useState<Contestant[]>([]);
+  const [currentAnswer, setCurrentAnswer] = useState("");
+  const [showQuizMarker, setShowQuizMarker] = useState(true);
+  const [quizIsComplete, setQuizIsComplete] = useState(false);
+  const [answers, setAnswers] = useState<Data[]>([])
   const [contestantScores, setContestantScores] = useState<ContestantScore[]>(
     []
   );
-  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>(
-    props.QuizQuestions
-  );
+
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
 
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(0);
 
-  const onQuizInitiate = () => {
+  const messageContestants = () => {
     const message: QuizMasterMessage = {
       start: false,
       question: getQuizQuestion(currentQuestionNumber + 1)?.Question ?? "",
@@ -56,17 +67,24 @@ export default function QuizHoster(props: any) {
     };
 
     axios
-      .post(`http://localhost:5000/api/quizzes/${id}/command/quizmastermessage`, message)
+      .post(
+        `http://localhost:5000/api/quizzes/${id}/command/quizmastermessage`,
+        message
+      )
       .then((x) => {
-        setCurrentQuestionNumber(1);
+        setCurrentQuestionNumber((currentNumber) => currentNumber + 1);
       });
+    setTimeLeftAsAPercentage(100);
+  };
+
+  const onQuizInitiate = () => {
+    messageContestants();
   };
 
   const getCurrentQuizQuestion = () => {
     let question = quizQuestions.find(
       (x) => x.QuestionNumber == currentQuestionNumber
     );
-    debugger;
     return question;
   };
 
@@ -77,13 +95,70 @@ export default function QuizHoster(props: any) {
     return question;
   };
 
-  function createData(answer: string, name: string): Data {
-    return { answer, name };
+  const isFinalQuestion = () => currentQuestionNumber == quizQuestions.length;
+
+  const onGoToNextQuestion = () => {
+    if (isFinalQuestion()) {
+      const message: QuizMasterMessage = {
+        start: false,
+        question: "",
+        answer: "",
+        complete: true,
+        questionNumber: 0,
+      };
+
+      axios
+        .post(
+          `http://localhost:5000/api/quizzes/${id}/command/quizmastermessage`,
+          message
+        )
+        .then((x) => {
+          setQuizIsComplete(true);
+        });
+    } else {
+      setShowQuizMarker(true);
+      setAnswers([])
+      messageContestants();
+    }
+  };
+
+  const onAcceptAnswers = (
+    contestantsWithCorrectAnswerToCurrentQuestion: string[]
+  ) => {
+    setContestants((contestants) =>
+      contestants.map((contestant) => {
+        return {
+          ...contestant,
+          score: contestantsWithCorrectAnswerToCurrentQuestion.includes(
+            contestant.id
+          )
+            ? contestant.score + 1
+            : contestant.score,
+        };
+      })
+    );
+    setShowQuizMarker(false);
+  };
+
+  function createData(answer: string, name: string, id: string): Data {
+    return { answer, name, id };
   }
 
   useEffect(() => {
-    let isCancelled = false;
+    function progress() {
+      setTimeLeftAsAPercentage((oldCompleted) => {
+        return Math.max(oldCompleted - 10, 0);
+      });
+    }
+    const timer = setInterval(progress, 1000);
 
+    return () => {
+      clearInterval(timer);
+    };
+  }, [timeLeftAsAPercentage]);
+
+  useEffect(() => {
+    let contestantsList: Contestant[] = [];
     axios.get(`http://localhost:5000/api/quizzes/${id}`).then((res) => {
       setQuizName(res.data.name);
       setQuizId(res.data.id);
@@ -100,10 +175,26 @@ export default function QuizHoster(props: any) {
             questionNumber: 1,
           };
 
-          axios.post(
-            `http://localhost:5000/api/quizzes/${id}/command/quizmastermessage`,
-            message
-          );
+          axios
+            .post(
+              `http://localhost:5000/api/quizzes/${id}/command/quizmastermessage`,
+              message
+            )
+            .then(() => {
+              debugger;
+              axios
+                .get(`http://localhost:5000/api/quizzes/${id}/contestants`)
+                .then((res) => {
+                  contestantsList = res.data.map((contestant: any) => {
+                    return {
+                      name: contestant.name,
+                      id: contestant.id,
+                      score: 0,
+                    } as Contestant;
+                  });
+                  setContestants(contestantsList);
+                });
+            });
 
           setQuizQuestions((x) =>
             results.data.map(
@@ -135,17 +226,22 @@ export default function QuizHoster(props: any) {
           });
 
         hubConnect.on("QuizMasterUpdate", (message: ParticipantMessage) => {
-       
-          setAnswers(answers => [...answers, {answer: message.answer, name: message.participantId}])
+          setAnswers((answers) => [
+            ...answers,
+            {
+              answer: message.answer,
+              id: message.participantId,
+              name: contestantsList.filter(
+                (x) => x.id === message.participantId
+              )[0].name,
+            },
+          ]);
         });
       } catch (err) {
         alert(err);
       }
     };
     createHubConnection();
-    return () => {
-      isCancelled = true;
-    };
   }, []);
 
   return (
@@ -160,8 +256,43 @@ export default function QuizHoster(props: any) {
           <QuizInitiator quizName={quizName} clickHandler={onQuizInitiate} />
         ) : (
           <>
-            <QuizQuestionDisplay quizQuestion={getCurrentQuizQuestion()} />
-            <QuestionMarker rows={answers} />
+            {!quizIsComplete ? (
+              <QuizQuestionDisplay
+                quizQuestion={getCurrentQuizQuestion()}
+                timeLeftAsAPercentage={timeLeftAsAPercentage}
+              />
+            ) : (
+              <></>
+            )}
+            <Typography component="h1" variant="h5">
+              Answer: {getCurrentQuizQuestion()?.Answer}
+            </Typography>
+            {!quizIsComplete ? <>
+            <Paper className={classes.paper}>
+              {showQuizMarker ? (
+                <QuestionMarker
+                  rows={answers}
+                  answer={getCurrentQuizQuestion()?.Answer ?? ""}
+                  onAcceptAnswers={onAcceptAnswers}
+                />
+              ) : (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className={classes.nextQuestion}
+                  onClick={onGoToNextQuestion}
+                >
+                  {isFinalQuestion()
+                    ? "Show final standings"
+                    : "Go to next question"}
+                </Button>
+              )}
+            </Paper>
+            <Typography component="h1" variant="h5">
+              {quizIsComplete ? "Final Standings" : "Quiz Standings"}
+            </Typography></> : <></>}
+            <QuizStandings contestantStandings={contestants} />
           </>
         )}
       </Box>

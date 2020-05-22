@@ -28,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     margin: theme.spacing(1),
   },
+  thankYou: {
+    textAlign: "center",
+  },
 }));
 
 export default function QuestionResponder() {
@@ -37,6 +40,9 @@ export default function QuestionResponder() {
   const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>();
   const [quizInitialized, setQuizInitialized] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState(0);
+  const [quizIsComplete, setQuizIsComplete] = useState(false);
+
   let { quizId } = useParams();
   let { participantId } = useParams();
 
@@ -45,7 +51,7 @@ export default function QuestionResponder() {
 
   const onAnswerSubmit = () => {
     const message: ParticipantMessage = {
-      participantId: participantId,   
+      participantId: participantId,
       answer: answer,
     };
     axios.post(
@@ -53,7 +59,6 @@ export default function QuestionResponder() {
       message
     );
 
-    alert(answer);
     setButtonDisabled(true);
   };
 
@@ -65,6 +70,20 @@ export default function QuestionResponder() {
       onAnswerSubmit();
     }
   }
+
+  useEffect(() => {
+    function progress() {
+      setTimeLeftAsAPercentage((oldCompleted) => {
+        return Math.max(oldCompleted - 10, 0);
+      });
+    }
+    const timer = setInterval(progress, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [timeLeftAsAPercentage]);
+
   useEffect(() => {
     axios.get(`http://localhost:5000/api/quizzes/${quizId}`).then((res) => {
       setQuizName(res.data.name);
@@ -96,6 +115,7 @@ export default function QuestionResponder() {
           if (message.start) {
             setQuizInitialized(true);
           } else if (message.complete) {
+            setQuizIsComplete(true);
           } else {
             setQuizQuestion(
               new QuizQuestion(
@@ -104,6 +124,9 @@ export default function QuestionResponder() {
                 message.questionNumber
               )
             );
+            setTimeLeftAsAPercentage(100);
+            setAnswer("");
+            setButtonDisabled(false);
           }
         });
       } catch (err) {
@@ -116,16 +139,31 @@ export default function QuestionResponder() {
   return (
     <>
       <Typography component="h2" variant="h5">
-        {quizInitialized && !quizQuestion ? "You're all set..." : quizName}
+        {!quizIsComplete
+          ? quizInitialized && !quizQuestion
+            ? "You're all set..."
+            : quizName
+          : ""}
       </Typography>
-      {quizInitialized && !quizQuestion ? (
+
+      {quizIsComplete ? (
+        <>
+          <div className={classes.thankYou}>
+            <h1>The quiz is over, thank you for playing!</h1>
+          </div>
+        </>
+      ) :
+      quizInitialized && !quizQuestion ? (
         <>
           <p>The quiz is about to start, get ready!</p>
           <LinearProgress />
         </>
       ) : quizQuestion ? (
         <>
-          <QuizQuestionDisplay quizQuestion={quizQuestion} />
+          <QuizQuestionDisplay
+            quizQuestion={quizQuestion}
+            timeLeftAsAPercentage={timeLeftAsAPercentage}
+          />
           <Paper elevation={1} className={classes.answer}>
             <TextField
               autoFocus
@@ -144,7 +182,7 @@ export default function QuestionResponder() {
               color="primary"
               className={classes.button}
               onClick={onAnswerSubmit}
-              disabled={buttonDisabled}
+              disabled={buttonDisabled || timeLeftAsAPercentage === 0}
             >
               Submit
             </Button>

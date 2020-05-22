@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import {
   createStyles,
@@ -21,9 +21,9 @@ import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import PlaylistAddCheckIcon from "@material-ui/icons/PlaylistAddCheck";
 import { green } from "@material-ui/core/colors";
-import Data from "./Data";
+import QuestionResponse from "./QuestionResponse";
+import CancelIcon from "@material-ui/icons/Cancel";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -61,7 +61,7 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Data;
+  id: keyof QuestionResponse;
   label: string;
   numeric: boolean;
 }
@@ -76,7 +76,7 @@ interface EnhancedTableProps {
   numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
-    property: keyof Data
+    property: keyof QuestionResponse
   ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
@@ -94,7 +94,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     rowCount,
     onRequestSort,
   } = props;
-  const createSortHandler = (property: keyof Data) => (
+  const createSortHandler = (property: keyof QuestionResponse) => (
     event: React.MouseEvent<unknown>
   ) => {
     onRequestSort(event, property);
@@ -185,6 +185,7 @@ const useCheckboxStyles = makeStyles(() =>
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
+  onAcceptAnswers: any;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
@@ -218,13 +219,15 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
       )}
       {numSelected > 0 ? (
         <Tooltip title="Accept answers">
-          <IconButton aria-label="delete">
-            <CheckCircleIcon />
+          <IconButton aria-label="accept">
+            <CheckCircleIcon onClick={props.onAcceptAnswers} />
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Select the right answers">
-          <PlaylistAddCheckIcon />
+        <Tooltip title="No right answers!">
+          <IconButton aria-label="close">
+            <CancelIcon onClick={props.onAcceptAnswers} />
+          </IconButton>
         </Tooltip>
       )}
     </Toolbar>
@@ -235,10 +238,6 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: "100%",
-    },
-    paper: {
-      width: "100%",
-      marginBottom: theme.spacing(2),
     },
     table: {
       minWidth: 750,
@@ -257,19 +256,34 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function QuestionMarker(props: { rows: Data[] }) {
+export default function QuestionMarker(props: {
+  rows: QuestionResponse[];
+  answer: string;
+  onAcceptAnswers: any;
+}) {
   const tableClasses = useTableStyles();
   const checkboxClasses = useCheckboxStyles();
   const classes = useStyles();
-  const [order, setOrder] = React.useState<Order>("desc");
-  const [orderBy, setOrderBy] = React.useState<keyof Data>("name");
-  const [selected, setSelected] = React.useState<string[]>([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [order, setOrder] = useState<Order>("desc");
+  const [orderBy, setOrderBy] = useState<keyof QuestionResponse>("name");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  useEffect(() => {
+    console.log("doing stuff...");
+    setSelected(
+      props.rows.filter((x) => x.answer === props.answer).map((x) => x.id)
+    );
+  }, [props.answer, props.rows]);
+
+  const onAcceptAnswers = () => {
+    props.onAcceptAnswers(selected);
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data
+    property: keyof QuestionResponse
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -278,8 +292,8 @@ export default function QuestionMarker(props: { rows: Data[] }) {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = props.rows.map((n) => n.name);
-      setSelected(newSelecteds);
+      const newSelected = props.rows.map((n) => n.id);
+      setSelected(newSelected);
       return;
     }
     setSelected([]);
@@ -301,7 +315,6 @@ export default function QuestionMarker(props: { rows: Data[] }) {
         selected.slice(selectedIndex + 1)
       );
     }
-
     setSelected(newSelected);
   };
 
@@ -316,83 +329,87 @@ export default function QuestionMarker(props: { rows: Data[] }) {
     setPage(0);
   };
 
-  const isSelected = (name: string) => selected.indexOf(name) !== -1;
+  const isSelected = (name: string) => {
+    console.log("name:", name, "selected:", selected);
+    return selected.indexOf(name) !== -1;
+  };
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.rows.length - page * rowsPerPage);
 
   return (
-    <div className={classes.root}>
-      <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer>
-          <Table
-            className={classes.table}
-            aria-labelledby="tableTitle"
-            size={"small"}
-            aria-label="enhanced table"
-          >
-            <EnhancedTableHead
-              classes={classes}
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={props.rows.length}
-            />
-            <TableBody>
-              {stableSort(props.rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
-                  const labelId = `enhanced-table-checkbox-${index}`;
+    <>
+      <EnhancedTableToolbar
+        numSelected={selected.length}
+        onAcceptAnswers={onAcceptAnswers}
+      />
+      <TableContainer>
+        <Table
+          className={classes.table}
+          aria-labelledby="tableTitle"
+          size={"small"}
+          aria-label="enhanced table"
+        >
+          <EnhancedTableHead
+            classes={classes}
+            numSelected={selected.length}
+            order={order}
+            orderBy={orderBy}
+            onSelectAllClick={handleSelectAllClick}
+            onRequestSort={handleRequestSort}
+            rowCount={props.rows.length}
+          />
+          <TableBody>
+            {stableSort(props.rows, getComparator(order, orderBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => {
+                const isItemSelected = isSelected(row.id);
+                const labelId = `enhanced-table-checkbox-${index}`;
 
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row.name)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.name}
-                      selected={isItemSelected}
-                      classes={{
-                        hover: tableClasses.hover,
-                        selected: tableClasses.selected,
-                      }}
-                      className={tableClasses.tableRow}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ "aria-labelledby": labelId }}
-                          className={checkboxClasses.root}
-                        />
-                      </TableCell>
-                      <TableCell align="center">{row.answer}</TableCell>
-                      <TableCell align="center">{row.name}</TableCell>
-                    </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 33 * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={props.rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-      </Paper>
-    </div>
+                return (
+                  <TableRow
+                    hover
+                    onClick={(event) => handleClick(event, row.id)}
+                    role="checkbox"
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    key={row.name}
+                    selected={isItemSelected}
+                    classes={{
+                      hover: tableClasses.hover,
+                      selected: tableClasses.selected,
+                    }}
+                    className={tableClasses.tableRow}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={isItemSelected}
+                        inputProps={{ "aria-labelledby": labelId }}
+                        className={checkboxClasses.root}
+                      />
+                    </TableCell>
+                    <TableCell align="center">{row.answer}</TableCell>
+                    <TableCell align="center">{row.name}</TableCell>
+                  </TableRow>
+                );
+              })}
+            {emptyRows > 0 && (
+              <TableRow style={{ height: 33 * emptyRows }}>
+                <TableCell colSpan={6} />
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={props.rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+    </>
   );
 }
