@@ -38,17 +38,15 @@ steps:
     versionSpec: '10.x'
     displayName: 'Install Node.js'
 
-- task: CmdLine@2
-  inputs:
-    script: 'cd .\quizmaster-client-app'
-
 - task: Npm@1
   inputs:
     command: 'install'
+    workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
 
 - task: Npm@1
   inputs:
     command: 'custom'
+    workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
     customCommand: 'run build'
 
 - task: DotNetCoreCLI@2
