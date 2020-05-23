@@ -15,6 +15,9 @@ using QuizMaster.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using QuizMaster.Application.Quizzes;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using System.IO;
+using System.Reflection;
 
 namespace QuizMaster.Api
 {
@@ -45,6 +48,11 @@ namespace QuizMaster.Api
             });
 
             services.AddMediatR(typeof(List.Handler).Assembly);
+
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,11 +65,21 @@ namespace QuizMaster.Api
 
             // app.UseHttpsRedirection(); Disable this initially
 
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+
+            app.UseHttpsRedirection();
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp/build";
+            });
+
             app.UseCors("CorsPolicy");
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            // app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
