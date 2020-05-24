@@ -15,7 +15,7 @@ function Chat() {
   let { id } = useParams();
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/quizzes").then((response) => {
+    axios.get("/api/quizzes").then((response) => {
       console.log(response);
     });
 
@@ -24,7 +24,7 @@ function Chat() {
       // Build new Hub Connection, url is currently hard coded.
       const hubConnect = new HubConnectionBuilder()
         .withAutomaticReconnect()
-        .withUrl("http://localhost:5000/chat")
+        .withUrl(process.env.REACT_APP_BASE_API_URL + "/chat")
         .build();
 
       try {

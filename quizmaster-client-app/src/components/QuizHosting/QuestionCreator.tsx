@@ -46,7 +46,7 @@ export default function QuestionCreator(props: any) {
 
   useEffect(() => {
     Axios.get(
-      `http://localhost:5000/api/quizzes/${props.quizId}/questions`
+      `/api/quizzes/${props.quizId}/questions`
     ).then((results) => {
       setState((prevState) => {
         const data: Row[] = [...results.data];
@@ -59,7 +59,7 @@ export default function QuestionCreator(props: any) {
   useEffect(() => {
     if (!isFirstRun.current && doneInitialGet.current) {
       Axios.post(
-        `http://localhost:5000/api/quizzes/${props.quizId}/questions`,
+        `/api/quizzes/${props.quizId}/questions`,
         state.data.map((x) => new QuizQuestion(x.question, x.answer, x.number))
       ).then(() => {});
     }

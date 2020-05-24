@@ -47,7 +47,7 @@ export default function QuizHoster(props: any) {
   const [currentAnswer, setCurrentAnswer] = useState("");
   const [showQuizMarker, setShowQuizMarker] = useState(true);
   const [quizIsComplete, setQuizIsComplete] = useState(false);
-  const [answers, setAnswers] = useState<Data[]>([])
+  const [answers, setAnswers] = useState<Data[]>([]);
   const [contestantScores, setContestantScores] = useState<ContestantScore[]>(
     []
   );
@@ -67,10 +67,7 @@ export default function QuizHoster(props: any) {
     };
 
     axios
-      .post(
-        `http://localhost:5000/api/quizzes/${id}/command/quizmastermessage`,
-        message
-      )
+      .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
       .then((x) => {
         setCurrentQuestionNumber((currentNumber) => currentNumber + 1);
       });
@@ -108,16 +105,13 @@ export default function QuizHoster(props: any) {
       };
 
       axios
-        .post(
-          `http://localhost:5000/api/quizzes/${id}/command/quizmastermessage`,
-          message
-        )
+        .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
         .then((x) => {
           setQuizIsComplete(true);
         });
     } else {
       setShowQuizMarker(true);
-      setAnswers([])
+      setAnswers([]);
       messageContestants();
     }
   };
@@ -159,55 +153,48 @@ export default function QuizHoster(props: any) {
 
   useEffect(() => {
     let contestantsList: Contestant[] = [];
-    axios.get(`http://localhost:5000/api/quizzes/${id}`).then((res) => {
+    axios.get(`/api/quizzes/${id}`).then((res) => {
       setQuizName(res.data.name);
       setQuizId(res.data.id);
       setQuizCode(res.data.code);
 
-      axios
-        .get(`http://localhost:5000/api/quizzes/${id}/questions`)
-        .then((results) => {
-          const message: QuizMasterMessage = {
-            start: true,
-            question: "",
-            answer: "",
-            complete: false,
-            questionNumber: 1,
-          };
+      axios.get(`/api/quizzes/${id}/questions`).then((results) => {
+        const message: QuizMasterMessage = {
+          start: true,
+          question: "",
+          answer: "",
+          complete: false,
+          questionNumber: 1,
+        };
 
-          axios
-            .post(
-              `http://localhost:5000/api/quizzes/${id}/command/quizmastermessage`,
-              message
-            )
-            .then(() => {
-              axios
-                .get(`http://localhost:5000/api/quizzes/${id}/contestants`)
-                .then((res) => {
-                  contestantsList = res.data.map((contestant: any) => {
-                    return {
-                      name: contestant.name,
-                      id: contestant.id,
-                      score: 0,
-                    } as Contestant;
-                  });
-                  setContestants(contestantsList);
-                });
+        axios
+          .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
+          .then(() => {
+            axios.get(`/api/quizzes/${id}/contestants`).then((res) => {
+              contestantsList = res.data.map((contestant: any) => {
+                return {
+                  name: contestant.name,
+                  id: contestant.id,
+                  score: 0,
+                } as Contestant;
+              });
+              setContestants(contestantsList);
             });
+          });
 
-          setQuizQuestions((x) =>
-            results.data.map(
-              (x: any) => new QuizQuestion(x.question, x.answer, x.number)
-            )
-          );
-        });
+        setQuizQuestions((x) =>
+          results.data.map(
+            (x: any) => new QuizQuestion(x.question, x.answer, x.number)
+          )
+        );
+      });
     });
 
     const createHubConnection = async () => {
       // Build new Hub Connection, url is currently hard coded.
       const hubConnect = new HubConnectionBuilder()
         .withAutomaticReconnect()
-        .withUrl("http://localhost:5000/quiz")
+        .withUrl(process.env.REACT_APP_BASE_API_URL + "/quiz")
         .build();
 
       try {
@@ -265,31 +252,36 @@ export default function QuizHoster(props: any) {
             <Typography component="h1" variant="h5">
               Answer: {getCurrentQuizQuestion()?.Answer}
             </Typography>
-            {!quizIsComplete ? <>
-            <Paper className={classes.paper}>
-              {showQuizMarker ? (
-                <QuestionMarker
-                  rows={answers}
-                  answer={getCurrentQuizQuestion()?.Answer ?? ""}
-                  onAcceptAnswers={onAcceptAnswers}
-                />
-              ) : (
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  className={classes.nextQuestion}
-                  onClick={onGoToNextQuestion}
-                >
-                  {isFinalQuestion()
-                    ? "Show final standings"
-                    : "Go to next question"}
-                </Button>
-              )}
-            </Paper>
-            <Typography component="h1" variant="h5">
-              {quizIsComplete ? "Final Standings" : "Quiz Standings"}
-            </Typography></> : <></>}
+            {!quizIsComplete ? (
+              <>
+                <Paper className={classes.paper}>
+                  {showQuizMarker ? (
+                    <QuestionMarker
+                      rows={answers}
+                      answer={getCurrentQuizQuestion()?.Answer ?? ""}
+                      onAcceptAnswers={onAcceptAnswers}
+                    />
+                  ) : (
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      className={classes.nextQuestion}
+                      onClick={onGoToNextQuestion}
+                    >
+                      {isFinalQuestion()
+                        ? "Show final standings"
+                        : "Go to next question"}
+                    </Button>
+                  )}
+                </Paper>
+                <Typography component="h1" variant="h5">
+                  {quizIsComplete ? "Final Standings" : "Quiz Standings"}
+                </Typography>
+              </>
+            ) : (
+              <></>
+            )}
             <QuizStandings contestantStandings={contestants} />
           </>
         )}

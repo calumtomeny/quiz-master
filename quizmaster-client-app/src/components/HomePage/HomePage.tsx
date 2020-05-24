@@ -65,7 +65,8 @@ function HomePage() {
 
   const onHostQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    Axios.post("http://localhost:5000/api/quizzes", {
+
+    Axios.post("/api/quizzes", {
       name: `${quizName}`,
     }).then((res) => {
       history.push(`/quiz/${res.data.id}/setup`);
@@ -74,7 +75,7 @@ function HomePage() {
 
   const onJoinQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    Axios.get(`http://localhost:5000/api/quizzes?quizCode=${quizCode}`).then(
+    Axios.get(`/api/quizzes?quizCode=${quizCode}`).then(
       (res) => {
         if (!res.data.length) {
           setOpen(true);

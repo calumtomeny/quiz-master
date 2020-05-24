@@ -16,13 +16,13 @@ export default function HostLobby() {
     // Build new Hub Connection, url is currently hard coded.
     const hubConnect = new HubConnectionBuilder()
       .withAutomaticReconnect()
-      .withUrl("http://localhost:5000/quiz")
+      .withUrl(process.env.REACT_APP_BASE_API_URL + "/quiz")
       .build();
 
     // Set the initial SignalR Hub Connection.
     const createHubConnection = async () => {
       axios
-        .get(`http://localhost:5000/api/quizzes/${id}/contestants`)
+        .get(`/api/quizzes/${id}/contestants`)
         .then((res) => {
           setContestants(res.data.map((contestant: any) => contestant.name));
         })

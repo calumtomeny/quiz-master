@@ -52,7 +52,7 @@ export default function QuizJoiner() {
   const onHostQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
-      .post("http://localhost:5000/api/contestants", {
+      .post("/api/contestants", {
         quizId: `${quizId}`,
         contestantName: name,
       })
@@ -63,7 +63,7 @@ export default function QuizJoiner() {
   };
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/quizzes/${id}`).then((res) => {
+    axios.get(`/api/quizzes/${id}`).then((res) => {
       setQuizName(res.data.name);
       setQuizId(res.data.id);
     });

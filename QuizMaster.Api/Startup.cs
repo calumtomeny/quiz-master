@@ -64,17 +64,7 @@ namespace QuizMaster.Api
             }
 
             // app.UseHttpsRedirection(); Disable this initially
-
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-
             app.UseHttpsRedirection();
-
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp/build";
-            });
-
             app.UseCors("CorsPolicy");
 
             app.UseRouting();
@@ -85,6 +75,16 @@ namespace QuizMaster.Api
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<QuizHub>("/quiz");
+            });
+
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+
+
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp/build";
             });
         }
     }

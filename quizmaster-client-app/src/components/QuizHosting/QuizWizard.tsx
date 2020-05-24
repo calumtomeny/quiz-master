@@ -48,7 +48,7 @@ export default function QuizWizard() {
   const [] = useState<string[]>([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/quizzes/${id}`).then((res) => {
+    axios.get(`/api/quizzes/${id}`).then((res) => {
       setQuizCode(res.data.code);
       setQuizName(res.data.name);
       setQuizId(res.data.id);

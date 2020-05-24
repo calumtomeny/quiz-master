@@ -55,7 +55,7 @@ export default function QuestionResponder() {
       answer: answer,
     };
     axios.post(
-      `http://localhost:5000/api/quizzes/${quizId}/command/participantmessage`,
+      `/api/quizzes/${quizId}/command/participantmessage`,
       message
     );
 
@@ -85,7 +85,7 @@ export default function QuestionResponder() {
   }, [timeLeftAsAPercentage]);
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/quizzes/${quizId}`).then((res) => {
+    axios.get(`/api/quizzes/${quizId}`).then((res) => {
       setQuizName(res.data.name);
     });
 
@@ -94,7 +94,7 @@ export default function QuestionResponder() {
       // Build new Hub Connection, url is currently hard coded.
       const hubConnect = new HubConnectionBuilder()
         .withAutomaticReconnect()
-        .withUrl("http://localhost:5000/quiz")
+        .withUrl(process.env.REACT_APP_BASE_API_URL + "/quiz")
         .build();
 
       try {
