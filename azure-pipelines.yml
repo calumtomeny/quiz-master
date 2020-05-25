@@ -60,11 +60,11 @@ steps:
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/quizmaster-client-app/build'
     Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/quizmaster-client-app/ClientApp/build'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/ClientApp/build'
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/quizmaster-client-app'
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/ClientApp'
     includeRootFolder: true
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/quizmaster-client-app.zip'
