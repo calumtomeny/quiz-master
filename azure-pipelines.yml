@@ -60,7 +60,15 @@ steps:
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/quizmaster-client-app/build'
     Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/quiz-master-client-app'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/quizmaster-client-app/ClientApp/build'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/quizmaster-client-app'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/quizmaster-client-app.zip'
+    replaceExistingArchive: true
 
 - task: PublishBuildArtifacts@1
   inputs:
