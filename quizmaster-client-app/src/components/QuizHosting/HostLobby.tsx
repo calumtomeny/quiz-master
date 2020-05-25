@@ -40,7 +40,7 @@ export default function HostLobby() {
                 console.log("Error adding to quiz group.");
               });
 
-            hubConnect.on("ContestantUpdate", (contestant: Contestant) => {
+            hubConnect.on("ContestantJoined", (contestant: Contestant) => {
               setContestants((c) => [...c, contestant.name]);
             });
           } catch (err) {

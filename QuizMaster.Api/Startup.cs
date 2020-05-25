@@ -79,9 +79,7 @@ namespace QuizMaster.Api
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-
-
-
+            
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp/build";
