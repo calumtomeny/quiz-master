@@ -26,7 +26,7 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<Contestant>> Post(Create.Command command)
         {
             var contestant = await mediator.Send(command);
-            await hubContext.Clients.Group(command.QuizId.ToString()).SendAsync("ContestantUpdate", contestant);
+            await hubContext.Clients.Group(command.QuizId.ToString()).SendAsync("ContestantJoined", contestant);
             return Ok(contestant);
         }
 
