@@ -10,10 +10,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-```
-Node.js 12.17.0
-.NET Core 3.1
-```
+* [.NET Core 3.1](https://dotnet.microsoft.com/download) - Used to power the API
+* [Node.js 12.17](https://nodejs.org/en/) - Used to power the API
 
 ### Installing
 
