@@ -62,6 +62,12 @@ steps:
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/ClientApp/build'
 
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/QuizMaster.Api/Postman Tests'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/API_SmokeTest'
+
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/ClientApp'
