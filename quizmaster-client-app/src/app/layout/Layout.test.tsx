@@ -1,15 +1,13 @@
-import React from 'react';
-import { cleanup, render } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import Layout from './Layout';
+import React from "react";
+import { cleanup, render } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
+import Layout from "./Layout";
+import ReactDOM from "react-dom";
 
-describe('<Layout />', () => {
+describe("When testing directly", () => {
   afterEach(cleanup);
-
-  test('it should mount', () => {
-    const { getByTestId } = render(<Layout />);
-    const hostLobby = getByTestId('Layout');
-
-    expect(hostLobby).toBeInTheDocument();
+  it("renders without crashing", () => {
+    const div = document.createElement("div");
+    ReactDOM.render(<Layout />, div);
   });
 });
