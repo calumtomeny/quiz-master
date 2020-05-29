@@ -64,6 +64,12 @@ steps:
     searchFolder: '$(System.DefaultWorkingDirectory)/quizmaster-client-app/'
     testRunTitle: 'Publish Jest Test Results'
 
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/quizmaster-client-app/coverage/cobertura-coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/quizmaster-client-app/coverage/'
+
 - task: DotNetCoreCLI@2
   inputs:
     command: publish
