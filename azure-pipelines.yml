@@ -55,7 +55,7 @@ steps:
     script: |
       cd $(Build.SourcesDirectory)/quizmaster-client-app/
       ($env:CI = "true")
-      npm test
+      npm run-script ci-test
 
 - task: PublishTestResults@2
   inputs:
