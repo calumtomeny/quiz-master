@@ -68,7 +68,7 @@ steps:
   inputs:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/quizmaster-client-app/coverage/coverage.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/quizmaster-client-app/coveragelcov-report'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/quizmaster-client-app/coverage/lcov-report'
 
 - task: DotNetCoreCLI@2
   inputs:
