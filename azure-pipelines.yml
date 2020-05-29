@@ -49,25 +49,20 @@ steps:
     workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
     customCommand: 'run build'
 
-- task: Npm@1
+- task: PowerShell@2
   inputs:
-    command: 'custom'
-    workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
-    customCommand: 'jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --coverageReporters=html'
+    targetType: 'inline'
+    script: |
+      cd $(Build.SourcesDirectory)/quizmaster-client-app/
+      $(env:CI = "true")
+      npm test
 
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: 'junit.xml'
-    mergeTestResults: true
-    failTaskOnFailedTests: true
-    testRunTitle: 'Jest Test Results'
-
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/coverage'
+    testResultsFiles: 'test-report.xml'
+    searchFolder: '$(System.DefaultWorkingDirectory)/quizmaster-client-app/'
+    testRunTitle: 'Publish Jest Test Results'
 
 - task: DotNetCoreCLI@2
   inputs:
