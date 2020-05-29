@@ -54,7 +54,7 @@ steps:
     targetType: 'inline'
     script: |
       cd $(Build.SourcesDirectory)/quizmaster-client-app/
-      $(env:CI = "true")
+      ($env:CI = "true")
       npm test
 
 - task: PublishTestResults@2
