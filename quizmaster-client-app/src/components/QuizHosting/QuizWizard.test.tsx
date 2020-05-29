@@ -1,15 +1,22 @@
-import React from 'react';
-import { cleanup, render } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import ContestantList from './ContestantList';
+import React from "react";
+import { cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
+import QuizWizard from "./QuizWizard";
+import { shallow } from "enzyme";
 
-describe('<ContestantList />', () => {
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"), // use actual for all non-hook parts
+  useParams: () => ({
+    id: "1234",
+  }),
+  useRouteMatch: () => ({
+    url: "/quiz/f37ff3b7-284f-4915-81dd-f1edce15acb4/setup/",
+  }),
+}));
+
+describe("When testing directly", () => {
   afterEach(cleanup);
-
-  test('it should mount', () => {
-    const { getByTestId } = render(<ContestantList />);
-    const contestantList = getByTestId('ContestantList');
-
-    expect(contestantList).toBeInTheDocument();
+  it("renders without crashing", () => {
+    shallow(<QuizWizard />);
   });
 });

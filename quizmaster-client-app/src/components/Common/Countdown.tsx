@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function LinearDeterminate(props: any) {
+export default function Countdown(props: any) {
   const classes = useStyles();
   const [completed, setCompleted] = useState(100);
 

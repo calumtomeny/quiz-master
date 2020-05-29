@@ -16,7 +16,6 @@ import Axios from "axios";
 import Copyright from "../Common/Copyright";
 import { Snackbar, SnackbarCloseReason } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
-import LinearDeterminate from "../Common/Countdown";
 
 const useStyles = makeStyles((theme) => ({
   root: {

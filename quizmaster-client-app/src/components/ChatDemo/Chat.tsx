@@ -12,8 +12,6 @@ function Chat() {
     HubConnection.HubConnection
   >();
 
-  let { id } = useParams();
-
   useEffect(() => {
     axios.get("/api/quizzes").then((response) => {
       console.log(response);

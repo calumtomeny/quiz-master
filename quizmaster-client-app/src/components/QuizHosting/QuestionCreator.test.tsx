@@ -1,15 +1,13 @@
 import React from 'react';
 import { cleanup, render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import HostLobby from './HostLobby';
+import QuestionCreator from './QuestionCreator';
+import ReactDOM from 'react-dom';
 
-describe('<HostLobby />', () => {
+describe('When testing directly', () => {
   afterEach(cleanup);
-
-  test('it should mount', () => {
-    const { getByTestId } = render(<HostLobby />);
-    const hostLobby = getByTestId('HostLobby');
-
-    expect(hostLobby).toBeInTheDocument();
+  test('renders without crashing', () => {
+    const div = document.createElement("div");
+    ReactDOM.render(<QuestionCreator />, div);
   });
 });
