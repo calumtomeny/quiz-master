@@ -8,6 +8,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function QuizInitiator(props: any) {
+  debugger;
   const classes = useStyles();
   return (
     <>
