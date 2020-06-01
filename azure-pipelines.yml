@@ -43,7 +43,6 @@ steps:
     command: 'install'
     workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
 
-
 - task: Npm@1
   inputs:
     command: 'custom'
