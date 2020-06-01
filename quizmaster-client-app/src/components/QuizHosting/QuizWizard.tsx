@@ -41,19 +41,16 @@ export default function QuizWizard() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
   const steps = getSteps();
-  let { id } = useParams();
+  const { id } = useParams();
   const history = useHistory();
 
   const [quizCode, setQuizCode] = useState("");
   const [quizName, setQuizName] = useState("");
-  const [quizId, setQuizId] = useState("");
-  const [] = useState<string[]>([]);
 
   useEffect(() => {
     axios.get(`/api/quizzes/${id}`).then((res) => {
       setQuizCode(res.data.code);
       setQuizName(res.data.name);
-      setQuizId(res.data.id);
     });
   }, []);
 
@@ -71,7 +68,7 @@ export default function QuizWizard() {
     );
   };
 
-  const isStepSkipped = (step: Number) => {
+  const isStepSkipped = (step: number) => {
     return skipped.has(step);
   };
 

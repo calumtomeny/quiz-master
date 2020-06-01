@@ -17,6 +17,7 @@
     "axios": "^0.19.2",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
+    "eslint-plugin-react": "^7.20.0",
     "jest-junit-reporter": "^1.1.0",
     "material-table": "^1.57.2",
     "react": "^16.13.1",
@@ -35,7 +36,9 @@
     "eject": "react-scripts eject",
     "start": "npm-run-all --parallel start-api start-web-app",
     "ci-test": "react-scripts test --coverage --coverageReporters=cobertura --watchAll=false --testResultsProcessor ./node_modules/jest-junit-reporter",
-    "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache"
+    "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
+    "lint": "eslint \"./src/**/*.{js,ts,tsx}\" --quiet --fix",
+    "ci-lint": "eslint \"./src/**/*.{js,ts,tsx}\" --fix"
   },
   "eslintConfig": {
     "extends": "react-app"
