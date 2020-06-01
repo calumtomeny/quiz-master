@@ -42,7 +42,7 @@ export default function QuestionResponder() {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState(0);
   const [quizIsComplete, setQuizIsComplete] = useState(false);
-
+  const [submitText, setSubmitText] = useState("Submit");
   const { quizId } = useParams();
   const { participantId } = useParams();
 
@@ -54,6 +54,8 @@ export default function QuestionResponder() {
       participantId: participantId,
       answer: answer,
     };
+
+    setSubmitText("Submitted. Please Wait.");
     axios.post(`/api/quizzes/${quizId}/command/participantmessage`, message);
 
     setButtonDisabled(true);
@@ -123,6 +125,7 @@ export default function QuestionResponder() {
             setTimeLeftAsAPercentage(100);
             setAnswer("");
             setButtonDisabled(false);
+            setSubmitText("Submit");
           }
         });
       } catch (err) {
@@ -179,7 +182,7 @@ export default function QuestionResponder() {
               onClick={onAnswerSubmit}
               disabled={buttonDisabled || timeLeftAsAPercentage === 0}
             >
-              Submit
+              {submitText}
             </Button>
           </Paper>
         </>
