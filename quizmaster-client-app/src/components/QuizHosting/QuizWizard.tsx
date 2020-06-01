@@ -1,13 +1,15 @@
+import {
+  makeStyles,
+  Box,
+  Typography,
+  Stepper,
+  Step,
+  StepLabel,
+  Button,
+} from "@material-ui/core";
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import { Box } from "@material-ui/core";
-import QuestionCreator from "./QuestionCreator";
 import { useParams, useHistory } from "react-router-dom";
+import QuestionCreator from "./QuestionCreator/QuestionCreator";
 import HostLobby from "./HostLobby";
 import axios from "axios";
 

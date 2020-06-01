@@ -1,19 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import MaterialTable, { Column } from "material-table";
+import { makeStyles } from "@material-ui/core";
+import React, { useReducer, useRef, useEffect } from "react";
 import Axios from "axios";
-import QuizQuestion from "../Common/QuizQuestion";
-
-interface Row {
-  number: number;
-  question: string;
-  answer: string;
-}
-
-interface TableState {
-  columns: Array<Column<Row>>;
-  data: Row[];
-}
+import QuizQuestion from "../../Common/QuizQuestion";
+import MaterialTable, { Column } from "material-table";
+import Row from "./Row";
+import reducer from "./QuestionReducer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,8 +23,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function QuestionCreator(props: any) {
-
-  const [state, setState] = useState<TableState>({
+  const [state, dispatch] = useReducer(reducer, {
     columns: [
       { title: "Question", field: "question" },
       { title: "Answer", field: "answer" },
@@ -45,13 +35,8 @@ export default function QuestionCreator(props: any) {
   const doneInitialGet = useRef(false);
 
   useEffect(() => {
-    Axios.get(
-      `/api/quizzes/${props.quizId}/questions`
-    ).then((results) => {
-      setState((prevState) => {
-        const data: Row[] = [...results.data];
-        return { ...prevState, data };
-      });
+    Axios.get(`/api/quizzes/${props.quizId}/questions`).then((results) => {
+      dispatch({ type: "set", payload: [results.data] });
       doneInitialGet.current = true;
     });
   }, []);
@@ -60,7 +45,9 @@ export default function QuestionCreator(props: any) {
     if (!isFirstRun.current && doneInitialGet.current) {
       Axios.post(
         `/api/quizzes/${props.quizId}/questions`,
-        state.data.map((x) => new QuizQuestion(x.question, x.answer, x.number))
+        state.data.map(
+          (x: any) => new QuizQuestion(x.question, x.answer, x.number)
+        )
       ).then(() => {});
     }
     isFirstRun.current = false;
@@ -76,11 +63,7 @@ export default function QuestionCreator(props: any) {
           new Promise((resolve) => {
             setTimeout(() => {
               resolve();
-              setState((prevState) => {
-                const data = [...prevState.data];
-                data.push(newData);
-                return { ...prevState, data };
-              });
+              dispatch({ type: "add", payload: newData });
             }, 600);
           }),
         onRowUpdate: (newData, oldData) =>
@@ -88,11 +71,7 @@ export default function QuestionCreator(props: any) {
             setTimeout(() => {
               resolve();
               if (oldData) {
-                setState((prevState) => {
-                  const data = [...prevState.data];
-                  data[data.indexOf(oldData)] = newData;
-                  return { ...prevState, data };
-                });
+                dispatch({ type: "update", payload: newData });
               }
             }, 600);
           }),
@@ -100,11 +79,7 @@ export default function QuestionCreator(props: any) {
           new Promise((resolve) => {
             setTimeout(() => {
               resolve();
-              setState((prevState) => {
-                const data = [...prevState.data];
-                data.splice(data.indexOf(oldData), 1);
-                return { ...prevState, data };
-              });
+              dispatch({ type: "delete", payload: oldData });
             }, 600);
           }),
       }}
