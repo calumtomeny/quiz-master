@@ -27,4 +27,4 @@ function Reducer(state: any, action: any) {
   }
 }
 
-export default Reducer
+export default Reducer;
