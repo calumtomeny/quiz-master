@@ -42,7 +42,7 @@ export default function QuestionResponder() {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState(0);
   const [quizIsComplete, setQuizIsComplete] = useState(false);
-
+  const [submitText, setSubmitText] = useState("Submit");
   let { quizId } = useParams();
   let { participantId } = useParams();
 
@@ -58,6 +58,7 @@ export default function QuestionResponder() {
       `/api/quizzes/${quizId}/command/participantmessage`,
       message
     );
+    setSubmitText("Submitted. Please Wait");
 
     setButtonDisabled(true);
   };
@@ -126,6 +127,7 @@ export default function QuestionResponder() {
             setTimeLeftAsAPercentage(100);
             setAnswer("");
             setButtonDisabled(false);
+            setSubmitText("Submit");
           }
         });
       } catch (err) {
@@ -183,7 +185,7 @@ export default function QuestionResponder() {
               onClick={onAnswerSubmit}
               disabled={buttonDisabled || timeLeftAsAPercentage === 0}
             >
-              Submit
+              {submitText}
             </Button>
           </Paper>
         </>
