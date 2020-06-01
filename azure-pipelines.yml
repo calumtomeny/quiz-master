@@ -43,6 +43,13 @@ steps:
     command: 'install'
     workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
 
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
+    customCommand: 'run ci-lint'
+
 - task: Npm@1
   inputs:
     command: 'custom'
