@@ -43,8 +43,8 @@ export default function QuestionResponder() {
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState(0);
   const [quizIsComplete, setQuizIsComplete] = useState(false);
   const [submitText, setSubmitText] = useState("Submit");
-  let { quizId } = useParams();
-  let { participantId } = useParams();
+  const { quizId } = useParams();
+  const { participantId } = useParams();
 
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
     setAnswer(e.currentTarget.value);
@@ -54,11 +54,9 @@ export default function QuestionResponder() {
       participantId: participantId,
       answer: answer,
     };
-    axios.post(
-      `/api/quizzes/${quizId}/command/participantmessage`,
-      message
-    );
+
     setSubmitText("Submitted. Please Wait");
+    axios.post(`/api/quizzes/${quizId}/command/participantmessage`, message);
 
     setButtonDisabled(true);
   };
@@ -121,8 +119,8 @@ export default function QuestionResponder() {
               new QuizQuestion(
                 message.question,
                 message.answer,
-                message.questionNumber
-              )
+                message.questionNumber,
+              ),
             );
             setTimeLeftAsAPercentage(100);
             setAnswer("");
@@ -153,8 +151,7 @@ export default function QuestionResponder() {
             <h1>The quiz is over, thank you for playing!</h1>
           </div>
         </>
-      ) :
-      quizInitialized && !quizQuestion ? (
+      ) : quizInitialized && !quizQuestion ? (
         <>
           <p>The quiz is about to start, get ready!</p>
           <LinearProgress />

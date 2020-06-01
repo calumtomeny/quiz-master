@@ -1,15 +1,19 @@
-import React from 'react';
-import { cleanup, render } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import HostLobby from './HostLobby';
+import React from "react";
+import { cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
+import QuizStandings from "./QuizStandings";
+import ReactDOM from "react-dom";
+import Contestant from "./Contestant";
 
-describe('<HostLobby />', () => {
+describe("When testing directly", () => {
+  const contestants: Contestant[] = [
+    { score: 2, name: "Sarah", id: "123" },
+    { score: 1, name: "David", id: "456" },
+  ];
+
   afterEach(cleanup);
-
-  test('it should mount', () => {
-    const { getByTestId } = render(<HostLobby />);
-    const hostLobby = getByTestId('HostLobby');
-
-    expect(hostLobby).toBeInTheDocument();
+  it("renders without crashing", () => {
+    const div = document.createElement("div");
+    ReactDOM.render(<QuizStandings contestantStandings={contestants} />, div);
   });
 });

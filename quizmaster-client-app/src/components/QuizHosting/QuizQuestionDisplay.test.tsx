@@ -1,15 +1,22 @@
-import React from 'react';
-import { cleanup, render } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import HostLobby from './HostLobby';
+import React from "react";
+import { cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
+import QuizQuestionDisplay from "./QuizQuestionDisplay";
+import ReactDOM from "react-dom";
+import QuizQuestion from "../Common/QuizQuestion";
 
-describe('<HostLobby />', () => {
+const quizQuestion: QuizQuestion = new QuizQuestion("What is 1 + 1?", "2", 1);
+
+describe("When testing directly", () => {
   afterEach(cleanup);
-
-  test('it should mount', () => {
-    const { getByTestId } = render(<HostLobby />);
-    const hostLobby = getByTestId('HostLobby');
-
-    expect(hostLobby).toBeInTheDocument();
+  it("renders without crashing", () => {
+    const div = document.createElement("div");
+    ReactDOM.render(
+      <QuizQuestionDisplay
+        quizQuestion={quizQuestion}
+        timeLeftAsAPercentage={50}
+      />,
+      div,
+    );
   });
 });

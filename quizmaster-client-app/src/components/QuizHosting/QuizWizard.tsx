@@ -1,13 +1,15 @@
+import {
+  makeStyles,
+  Box,
+  Typography,
+  Stepper,
+  Step,
+  StepLabel,
+  Button,
+} from "@material-ui/core";
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import { Box } from "@material-ui/core";
-import QuestionCreator from "./QuestionCreator";
 import { useParams, useHistory } from "react-router-dom";
+import QuestionCreator from "./QuestionCreator/QuestionCreator";
 import HostLobby from "./HostLobby";
 import axios from "axios";
 
@@ -39,19 +41,16 @@ export default function QuizWizard() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
   const steps = getSteps();
-  let { id } = useParams();
+  const { id } = useParams();
   const history = useHistory();
 
   const [quizCode, setQuizCode] = useState("");
   const [quizName, setQuizName] = useState("");
-  const [quizId, setQuizId] = useState("");
-  const [] = useState<string[]>([]);
 
   useEffect(() => {
     axios.get(`/api/quizzes/${id}`).then((res) => {
       setQuizCode(res.data.code);
       setQuizName(res.data.name);
-      setQuizId(res.data.id);
     });
   }, []);
 
@@ -69,7 +68,7 @@ export default function QuizWizard() {
     );
   };
 
-  const isStepSkipped = (step: Number) => {
+  const isStepSkipped = (step: number) => {
     return skipped.has(step);
   };
 

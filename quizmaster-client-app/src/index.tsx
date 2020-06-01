@@ -5,7 +5,7 @@ import * as serviceWorker from "./serviceWorker";
 import "typeface-roboto";
 import { BrowserRouter } from "react-router-dom";
 import App from "./app/layout/App";
-import axios from 'axios';
+import axios from "axios";
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_API_URL;
 
@@ -15,7 +15,7 @@ ReactDOM.render(
       <App />
     </BrowserRouter>
   </React.StrictMode>,
-  document.getElementById("root")
+  document.getElementById("root"),
 );
 
 // If you want your app to work offline and load faster, you can change

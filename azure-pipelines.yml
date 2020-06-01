@@ -47,7 +47,34 @@ steps:
   inputs:
     command: 'custom'
     workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
+    customCommand: 'run ci-lint'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
     customCommand: 'run build'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      cd $(Build.SourcesDirectory)/quizmaster-client-app/
+      ($env:CI = "true")
+      npm run-script ci-test
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'test-report.xml'
+    searchFolder: '$(System.DefaultWorkingDirectory)/quizmaster-client-app/'
+    testRunTitle: 'Publish Jest Test Results'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/quizmaster-client-app/coverage/cobertura-coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/quizmaster-client-app/coverage/'
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -61,6 +88,12 @@ steps:
     SourceFolder: '$(Build.SourcesDirectory)/quizmaster-client-app/build'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/ClientApp/build'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/QuizMaster.Api/Postman Tests'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/API_SmokeTest'
 
 - task: ArchiveFiles@2
   inputs:

@@ -52,7 +52,9 @@ namespace TodoApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Quiz>> Post(Create.Command command)
         {
-            return Ok(await mediator.Send(command));
+            var item = await mediator.Send(command);
+
+            return CreatedAtAction("Get", new { id = item.Id }, item);
         }
 
         [HttpPost("{id}/command/quizmastermessage")]

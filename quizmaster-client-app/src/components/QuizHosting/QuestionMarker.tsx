@@ -16,7 +16,6 @@ import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -37,12 +36,45 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = "asc" | "desc";
 
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      width: "100%",
+    },
+    table: {
+      minWidth: 750,
+    },
+    visuallyHidden: {
+      border: 0,
+      clip: "rect(0 0 0 0)",
+      height: 1,
+      margin: -1,
+      overflow: "hidden",
+      padding: 0,
+      position: "absolute",
+      top: 20,
+      width: 1,
+    },
+  }),
+);
+
+const useCheckboxStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      color: green[400] + "!important",
+      "&$checked": {
+        color: green[600] + "!important",
+      },
+    },
+  }),
+);
+
 function getComparator<Key extends keyof any>(
   order: Order,
-  orderBy: Key
+  orderBy: Key,
 ): (
   a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
+  b: { [key in Key]: number | string },
 ) => number {
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -76,7 +108,7 @@ interface EnhancedTableProps {
   numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
-    property: keyof QuestionResponse
+    property: keyof QuestionResponse,
   ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
@@ -95,7 +127,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     onRequestSort,
   } = props;
   const createSortHandler = (property: keyof QuestionResponse) => (
-    event: React.MouseEvent<unknown>
+    event: React.MouseEvent<unknown>,
   ) => {
     onRequestSort(event, property);
   };
@@ -146,19 +178,14 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(1),
     },
-    highlight: true
-      ? {
-          color: theme.palette.success.main,
-          backgroundColor: lighten(theme.palette.success.light, 0.85),
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+    highlight: {
+      color: theme.palette.success.main,
+      backgroundColor: lighten(theme.palette.success.light, 0.85),
+    },
     title: {
       flex: "1 1 100%",
     },
-  })
+  }),
 );
 const useTableStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -169,18 +196,7 @@ const useTableStyles = makeStyles((theme: Theme) =>
     },
     hover: {},
     selected: {},
-  })
-);
-
-const useCheckboxStyles = makeStyles(() =>
-  createStyles({
-    root: {
-      color: green[400] + "!important",
-      "&$checked": {
-        color: green[600] + "!important",
-      },
-    },
-  })
+  }),
 );
 
 interface EnhancedTableToolbarProps {
@@ -234,28 +250,6 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   );
 };
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-    },
-    table: {
-      minWidth: 750,
-    },
-    visuallyHidden: {
-      border: 0,
-      clip: "rect(0 0 0 0)",
-      height: 1,
-      margin: -1,
-      overflow: "hidden",
-      padding: 0,
-      position: "absolute",
-      top: 20,
-      width: 1,
-    },
-  })
-);
-
 export default function QuestionMarker(props: {
   rows: QuestionResponse[];
   answer: string;
@@ -273,7 +267,7 @@ export default function QuestionMarker(props: {
   useEffect(() => {
     console.log("doing stuff...");
     setSelected(
-      props.rows.filter((x) => x.answer === props.answer).map((x) => x.id)
+      props.rows.filter((x) => x.answer === props.answer).map((x) => x.id),
     );
   }, [props.answer, props.rows]);
 
@@ -283,7 +277,7 @@ export default function QuestionMarker(props: {
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof QuestionResponse
+    property: keyof QuestionResponse,
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -312,7 +306,7 @@ export default function QuestionMarker(props: {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
+        selected.slice(selectedIndex + 1),
       );
     }
     setSelected(newSelected);
@@ -323,7 +317,7 @@ export default function QuestionMarker(props: {
   };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);

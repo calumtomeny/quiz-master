@@ -16,7 +16,6 @@ import Axios from "axios";
 import Copyright from "../Common/Copyright";
 import { Snackbar, SnackbarCloseReason } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
-import LinearDeterminate from "../Common/Countdown";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -75,20 +74,18 @@ function HomePage() {
 
   const onJoinQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    Axios.get(`/api/quizzes?quizCode=${quizCode}`).then(
-      (res) => {
-        if (!res.data.length) {
-          setOpen(true);
-        } else {
-          history.push(`/quiz/${res.data[0].id}`);
-        }
+    Axios.get(`/api/quizzes?quizCode=${quizCode}`).then((res) => {
+      if (!res.data.length) {
+        setOpen(true);
+      } else {
+        history.push(`/quiz/${res.data[0].id}`);
       }
-    );
+    });
   };
 
   const handleClose = (
     event: React.SyntheticEvent<any, Event>,
-    reason: SnackbarCloseReason
+    reason: SnackbarCloseReason,
   ) => {
     if (reason === "clickaway") {
       return;

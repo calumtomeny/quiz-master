@@ -14,10 +14,6 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(name: string) {
-  return { name };
-}
-
 export default function ContestantList(props: any) {
   const classes = useStyles();
   return (

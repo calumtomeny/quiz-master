@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import logo from "./logo.svg";
 import "./Chat.css";
 import HubConnection, { HubConnectionBuilder } from "@microsoft/signalr";
-import { useParams } from "react-router-dom";
 import axios from "axios";
 
 function Chat() {
@@ -12,7 +10,42 @@ function Chat() {
     HubConnection.HubConnection
   >();
 
-  let { id } = useParams();
+  function messageReceived(receivedMessage: string) {
+    setChatText((m) => [...m, receivedMessage]);
+  }
+
+  function onMessageChange(e: React.FormEvent<HTMLInputElement>) {
+    setMessage(e.currentTarget.value);
+  }
+
+  function onClearHistory() {
+    setChatText([]);
+  }
+
+  async function onMessageSubmit() {
+    let messages: string[] = [];
+    messages = chatText;
+
+    if (message.length) {
+      messages.push(message);
+
+      if (hubConnection) {
+        hubConnection.invoke("sendMessage", message);
+      }
+    }
+
+    setMessage("");
+    setChatText(messages);
+  }
+
+  function handleEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.charCode === 13) {
+      onMessageSubmit();
+    }
+    if (e.keyCode === 13) {
+      onMessageSubmit();
+    }
+  }
 
   useEffect(() => {
     axios.get("/api/quizzes").then((response) => {
@@ -43,47 +76,10 @@ function Chat() {
     createHubConnection();
   }, []);
 
-  async function onMessageSubmit() {
-    let messages: string[] = [];
-    messages = chatText;
-
-    if (message.length) {
-      messages.push(message);
-
-      if (hubConnection) {
-        hubConnection.invoke("sendMessage", message);
-      }
-    }
-
-    setMessage("");
-    setChatText(messages);
-  }
-
-  function messageReceived(receivedMessage: string) {
-    setChatText((m) => [...m, receivedMessage]);
-  }
-
-  function onMessageChange(e: React.FormEvent<HTMLInputElement>) {
-    setMessage(e.currentTarget.value);
-  }
-
-  function onClearHistory() {
-    setChatText([]);
-  }
-
-  function handleEnter(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.charCode === 13) {
-      onMessageSubmit();
-    }
-    if (e.keyCode === 13) {
-      onMessageSubmit();
-    }
-  }
-
   return (
     <div className="App">
       <header className="App-header">
-        <label htmlFor="chat-text">Cal's chat app...</label>
+        <label htmlFor="chat-text">Cal&apos;s chat app...</label>
         <input
           name="chat-text"
           onChange={onMessageChange}

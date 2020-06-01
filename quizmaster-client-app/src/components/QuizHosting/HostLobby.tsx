@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import ContestantList from "./ContestantList";
@@ -9,7 +8,7 @@ import { HubConnectionBuilder } from "@microsoft/signalr";
 import Contestant from "./Contestant";
 
 export default function HostLobby() {
-  let { id } = useParams();
+  const { id } = useParams();
   const [contestants, setContestants] = useState<string[]>([]);
 
   useEffect(() => {

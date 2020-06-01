@@ -1,5 +1,5 @@
-interface IIndexable {
+interface Indexable {
   [key: string]: any;
 }
 
-export default IIndexable;
+export default Indexable;
