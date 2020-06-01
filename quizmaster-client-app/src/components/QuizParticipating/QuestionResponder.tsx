@@ -43,8 +43,8 @@ export default function QuestionResponder() {
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState(0);
   const [quizIsComplete, setQuizIsComplete] = useState(false);
 
-  let { quizId } = useParams();
-  let { participantId } = useParams();
+  const { quizId } = useParams();
+  const { participantId } = useParams();
 
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
     setAnswer(e.currentTarget.value);

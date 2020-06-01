@@ -5,7 +5,7 @@ import QuizQuestionDisplay from './QuizQuestionDisplay';
 import ReactDOM from 'react-dom';
 import QuizQuestion from '../Common/QuizQuestion';
 
-let quizQuestion: QuizQuestion = new QuizQuestion("What is 1 + 1?", "2", 1);
+const quizQuestion: QuizQuestion = new QuizQuestion("What is 1 + 1?", "2", 1);
 
 describe("When testing directly", () => {
   afterEach(cleanup);
