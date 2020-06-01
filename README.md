@@ -1,3 +1,4 @@
+[![Build Status](https://tomeny.visualstudio.com/QuizMaster/_apis/build/status/calumtomeny.quiz-master?branchName=master)](https://tomeny.visualstudio.com/QuizMaster/_build/latest?definitionId=12&branchName=master)
 # Quick Quiz
 
 A quiz hosting app with the aim to streamline your remote quizzes over video conferencing apps.
