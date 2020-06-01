@@ -55,7 +55,7 @@ export default function QuestionResponder() {
       answer: answer,
     };
 
-    setSubmitText("Submitted. Please Wait");
+    setSubmitText("Submitted. Please Wait.");
     axios.post(`/api/quizzes/${quizId}/command/participantmessage`, message);
 
     setButtonDisabled(true);
