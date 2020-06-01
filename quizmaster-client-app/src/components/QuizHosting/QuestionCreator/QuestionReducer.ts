@@ -15,7 +15,6 @@ function Reducer(state: any, action: any) {
       );
       return { ...state, data };
     case "delete":
-      debugger;
       data = state.data.filter((x: any) => x !== action.payload);
       return { ...state, data };
     case "set":

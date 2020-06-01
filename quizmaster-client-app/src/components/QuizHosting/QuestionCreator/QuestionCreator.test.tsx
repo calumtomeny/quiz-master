@@ -71,7 +71,6 @@ describe("Reducer", () => {
         answer: "UpdatedAnswer",
       },
     });
-    debugger;
     expect(state.data.find((x) => x.number === 2)?.question).toEqual(
       "UpdatedQuestion"
     );
