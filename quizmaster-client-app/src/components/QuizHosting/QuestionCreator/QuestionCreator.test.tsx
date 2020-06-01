@@ -55,7 +55,6 @@ describe("Reducer", () => {
           question: "Test question1",
           answer: "Test answer1",
         },
-
         {
           number: 2,
           question: "Test question2",
@@ -93,7 +92,6 @@ describe("Reducer", () => {
           question: "Test question1",
           answer: "Test answer1",
         },
-
         {
           number: 2,
           question: "Test question2",
