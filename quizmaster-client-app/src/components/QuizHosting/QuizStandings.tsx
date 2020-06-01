@@ -30,14 +30,16 @@ export default function QuizStandings(props: {
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.contestantStandings.sort((a, b) => b.score-a.score).map((contestantStanding) => (
-            <TableRow key={contestantStanding.name}>
-              <TableCell component="th" scope="row">
-                {contestantStanding.name}
-              </TableCell>
-              <TableCell align="center">{contestantStanding.score}</TableCell>
-            </TableRow>
-          ))}
+          {props.contestantStandings
+            .sort((a, b) => b.score - a.score)
+            .map((contestantStanding) => (
+              <TableRow key={contestantStanding.name}>
+                <TableCell component="th" scope="row">
+                  {contestantStanding.name}
+                </TableCell>
+                <TableCell align="center">{contestantStanding.score}</TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </TableContainer>

@@ -48,7 +48,7 @@ export default function QuizHoster() {
 
   const getQuizQuestion = (questionNumber: number) => {
     const question = quizQuestions.find(
-      (x) => x.QuestionNumber == questionNumber
+      (x) => x.QuestionNumber == questionNumber,
     );
     return question;
   };
@@ -77,7 +77,7 @@ export default function QuizHoster() {
 
   const getCurrentQuizQuestion = () => {
     const question = quizQuestions.find(
-      (x) => x.QuestionNumber == currentQuestionNumber
+      (x) => x.QuestionNumber == currentQuestionNumber,
     );
     return question;
   };
@@ -107,19 +107,19 @@ export default function QuizHoster() {
   };
 
   const onAcceptAnswers = (
-    contestantsWithCorrectAnswerToCurrentQuestion: string[]
+    contestantsWithCorrectAnswerToCurrentQuestion: string[],
   ) => {
     setContestants((contestants) =>
       contestants.map((contestant) => {
         return {
           ...contestant,
           score: contestantsWithCorrectAnswerToCurrentQuestion.includes(
-            contestant.id
+            contestant.id,
           )
             ? contestant.score + 1
             : contestant.score,
         };
-      })
+      }),
     );
     setShowQuizMarker(false);
   };
@@ -168,8 +168,8 @@ export default function QuizHoster() {
 
         setQuizQuestions(() =>
           results.data.map(
-            (x: any) => new QuizQuestion(x.question, x.answer, x.number)
-          )
+            (x: any) => new QuizQuestion(x.question, x.answer, x.number),
+          ),
         );
       });
     });
@@ -201,7 +201,7 @@ export default function QuizHoster() {
               answer: message.answer,
               id: message.participantId,
               name: contestantsList.filter(
-                (x) => x.id === message.participantId
+                (x) => x.id === message.participantId,
               )[0].name,
             },
           ]);

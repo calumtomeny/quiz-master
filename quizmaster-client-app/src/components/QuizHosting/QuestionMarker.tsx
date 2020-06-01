@@ -55,7 +55,7 @@ const useStyles = makeStyles(() =>
       top: 20,
       width: 1,
     },
-  })
+  }),
 );
 
 const useCheckboxStyles = makeStyles(() =>
@@ -66,15 +66,15 @@ const useCheckboxStyles = makeStyles(() =>
         color: green[600] + "!important",
       },
     },
-  })
+  }),
 );
 
 function getComparator<Key extends keyof any>(
   order: Order,
-  orderBy: Key
+  orderBy: Key,
 ): (
   a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
+  b: { [key in Key]: number | string },
 ) => number {
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -108,7 +108,7 @@ interface EnhancedTableProps {
   numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
-    property: keyof QuestionResponse
+    property: keyof QuestionResponse,
   ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
@@ -127,7 +127,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     onRequestSort,
   } = props;
   const createSortHandler = (property: keyof QuestionResponse) => (
-    event: React.MouseEvent<unknown>
+    event: React.MouseEvent<unknown>,
   ) => {
     onRequestSort(event, property);
   };
@@ -185,7 +185,7 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
     title: {
       flex: "1 1 100%",
     },
-  })
+  }),
 );
 const useTableStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -196,7 +196,7 @@ const useTableStyles = makeStyles((theme: Theme) =>
     },
     hover: {},
     selected: {},
-  })
+  }),
 );
 
 interface EnhancedTableToolbarProps {
@@ -267,7 +267,7 @@ export default function QuestionMarker(props: {
   useEffect(() => {
     console.log("doing stuff...");
     setSelected(
-      props.rows.filter((x) => x.answer === props.answer).map((x) => x.id)
+      props.rows.filter((x) => x.answer === props.answer).map((x) => x.id),
     );
   }, [props.answer, props.rows]);
 
@@ -277,7 +277,7 @@ export default function QuestionMarker(props: {
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof QuestionResponse
+    property: keyof QuestionResponse,
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -306,7 +306,7 @@ export default function QuestionMarker(props: {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
+        selected.slice(selectedIndex + 1),
       );
     }
     setSelected(newSelected);
@@ -317,7 +317,7 @@ export default function QuestionMarker(props: {
   };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);

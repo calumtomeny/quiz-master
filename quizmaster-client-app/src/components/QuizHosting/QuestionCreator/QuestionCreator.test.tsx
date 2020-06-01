@@ -72,10 +72,10 @@ describe("Reducer", () => {
       },
     });
     expect(state.data.find((x) => x.number === 2)?.question).toEqual(
-      "UpdatedQuestion"
+      "UpdatedQuestion",
     );
     expect(state.data.find((x) => x.number === 2)?.answer).toEqual(
-      "UpdatedAnswer"
+      "UpdatedAnswer",
     );
   });
 

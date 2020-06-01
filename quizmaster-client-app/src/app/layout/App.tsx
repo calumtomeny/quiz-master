@@ -8,17 +8,37 @@ import QuestionResponder from "../../components/QuizParticipating/QuestionRespon
 import QuizHoster from "../../components/QuizHosting/QuizHoster";
 
 function App() {
-const quizSetup: any = () => <Layout><QuizWizard/></Layout>;
-const contestantJoin: any = () => <Layout><QuizJoiner/></Layout>;
-const questionResponder: any = () => <Layout><QuestionResponder/></Layout>;
-const quizHoster: any = () => <Layout><QuizHoster/></Layout>;
+  const quizSetup: any = () => (
+    <Layout>
+      <QuizWizard />
+    </Layout>
+  );
+  const contestantJoin: any = () => (
+    <Layout>
+      <QuizJoiner />
+    </Layout>
+  );
+  const questionResponder: any = () => (
+    <Layout>
+      <QuestionResponder />
+    </Layout>
+  );
+  const quizHoster: any = () => (
+    <Layout>
+      <QuizHoster />
+    </Layout>
+  );
   return (
     <>
       <Route exact path="/" component={HomePage} />
       <Route exact path="/quiz/:id/setup" component={quizSetup} />
       <Route exact path="/quiz/:id" component={contestantJoin} />
       <Route exact path="/quiz/:id/host" component={quizHoster} />
-      <Route exact path="/quiz/:quizId/participants/:participantId" component={questionResponder} />
+      <Route
+        exact
+        path="/quiz/:quizId/participants/:participantId"
+        component={questionResponder}
+      />
     </>
   );
 }

@@ -11,7 +11,7 @@ function Reducer(state: any, action: any) {
       };
     case "update":
       data = state.data.map((x: any) =>
-        x.number === action.payload.number ? action.payload : x
+        x.number === action.payload.number ? action.payload : x,
       );
       return { ...state, data };
     case "delete":
