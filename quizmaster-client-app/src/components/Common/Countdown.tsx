@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
       marginTop: theme.spacing(2),
     },
-  })
+  }),
 );
 
 export default function Countdown(props: any) {

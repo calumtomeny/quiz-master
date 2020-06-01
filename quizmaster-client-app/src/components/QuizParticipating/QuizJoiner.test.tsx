@@ -1,8 +1,8 @@
-import React from 'react';
-import { cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import QuizJoiner from './QuizJoiner';
-import ReactDOM from 'react-dom';
+import React from "react";
+import { cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
+import QuizJoiner from "./QuizJoiner";
+import ReactDOM from "react-dom";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"), // use actual for all non-hook parts

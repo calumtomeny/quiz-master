@@ -11,8 +11,8 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("md")]: { marginTop: theme.spacing(8) },
     display: "flex",
     flexDirection: "column",
-    paddingTop: theme.spacing(2)
-  }
+    paddingTop: theme.spacing(2),
+  },
 }));
 
 export default function Layout(props: any) {

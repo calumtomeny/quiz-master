@@ -4,7 +4,6 @@ import QuizQuestion from "../../Common/QuizQuestion";
 import MaterialTable from "material-table";
 import reducer from "./QuestionReducer";
 
-
 export default function QuestionCreator(props: any) {
   const [state, dispatch] = useReducer(reducer, {
     columns: [
@@ -29,8 +28,8 @@ export default function QuestionCreator(props: any) {
       Axios.post(
         `/api/quizzes/${props.quizId}/questions`,
         state.data.map(
-          (x: any) => new QuizQuestion(x.question, x.answer, x.number)
-        )
+          (x: any) => new QuizQuestion(x.question, x.answer, x.number),
+        ),
       );
     }
     isFirstRun.current = false;
