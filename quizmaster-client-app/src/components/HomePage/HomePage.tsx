@@ -107,7 +107,11 @@ function HomePage() {
           <Avatar className={classes.avatar}>
             <PostAddIcon />
           </Avatar>
-          <form className={classes.form} onSubmit={onHostQuizSubmit}>
+          <form
+            className={classes.form}
+            onSubmit={onHostQuizSubmit}
+            data-testid="host-quiz"
+          >
             <Typography component="h2" variant="h5">
               Host quiz
             </Typography>
@@ -136,7 +140,11 @@ function HomePage() {
           <Avatar className={classes.avatar}>
             <PeopleIcon />
           </Avatar>
-          <form className={classes.form} onSubmit={onJoinQuizSubmit}>
+          <form
+            className={classes.form}
+            onSubmit={onJoinQuizSubmit}
+            data-testid="join-quiz"
+          >
             <Typography component="h2" variant="h5">
               Join quiz
             </Typography>
