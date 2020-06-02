@@ -95,11 +95,13 @@ steps:
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/API_SmokeTest'
 
-- task: CopyFiles@2
+- task: ArchiveFiles@2
   inputs:
-    SourceFolder: '$(Build.SourcesDirectory)/quizmaster-client-app/cypress'
-    Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/Cypress_E2ETests'
+    rootFolderOrFile: '$(Build.BinariesDirectory)/quizmaster-client-app/cypress'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/Cypress_E2ETests'
+    replaceExistingArchive: true
 
 - task: ArchiveFiles@2
   inputs:
