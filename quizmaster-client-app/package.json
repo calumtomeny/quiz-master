@@ -41,7 +41,11 @@
     "ci-test": "react-scripts test --coverage --coverageReporters=cobertura --watchAll=false --testResultsProcessor ./node_modules/jest-junit-reporter",
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "lint": "eslint \"./src/**/*.{js,ts,tsx}\" --quiet --fix",
-    "ci-lint": "eslint \"./src/**/*.{js,ts,tsx}\" --fix"
+    "ci-lint": "eslint \"./src/**/*.{js,ts,tsx}\" --fix",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress-open:local": "npm-run-all --parallel start-api start-web-app cypress:open",
+    "cypress-run:local": "npm-run-all --parallel start-api start-web-app cypress:run"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -60,6 +64,7 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.1.5",
+    "cypress": "^4.7.0",
     "husky": "^4.2.5",
     "jest-junit": "^10.0.0",
     "lint-staged": "^10.2.7",
