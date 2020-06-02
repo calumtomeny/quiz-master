@@ -97,10 +97,10 @@ steps:
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.BinariesDirectory)/quizmaster-client-app/cypress'
+    rootFolderOrFile: '$(Build.SourcesDirectory)/quizmaster-client-app/cypress'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/Cypress_E2ETests'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/Cypress_E2ETests.zip'
     replaceExistingArchive: true
 
 - task: ArchiveFiles@2
