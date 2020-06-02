@@ -53,6 +53,12 @@ steps:
   inputs:
     command: 'custom'
     workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
+    customCommand: 'run cypress-run:local'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
     customCommand: 'run build'
 
 - task: DeleteFiles@1
