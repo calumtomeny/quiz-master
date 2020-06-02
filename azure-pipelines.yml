@@ -55,6 +55,21 @@ steps:
     workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
     customCommand: 'run build'
 
+- task: DeleteFiles@1
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/quizmaster-client-app'
+    Contents: '**/cypress.json'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Rename-Item -Path "$(Build.SourcesDirectory)/quizmaster-client-app/ci-cypress.json" -NewName "$(Build.SourcesDirectory)/quizmaster-client-app/cypress.json"'
+
+- task: FileTransform@2
+  inputs:
+    folderPath: '$(Build.SourcesDirectory)/quizmaster-client-app'
+    xmlTransformationRules: 'cypress.json'
+
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
