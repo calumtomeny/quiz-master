@@ -53,28 +53,7 @@ steps:
   inputs:
     command: 'custom'
     workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
-    customCommand: 'run cypress-run:local'
-
-- task: Npm@1
-  inputs:
-    command: 'custom'
-    workingDir: '$(Build.SourcesDirectory)/quizmaster-client-app'
     customCommand: 'run build'
-
-- task: DeleteFiles@1
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)/quizmaster-client-app'
-    Contents: '**/cypress.json'
-
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: 'Rename-Item -Path "$(Build.SourcesDirectory)/quizmaster-client-app/ci-cypress.json" -NewName "$(Build.SourcesDirectory)/quizmaster-client-app/cypress.json"'
-
-- task: FileTransform@2
-  inputs:
-    folderPath: '$(Build.SourcesDirectory)/quizmaster-client-app'
-    xmlTransformationRules: 'cypress.json'
 
 - task: PowerShell@2
   inputs:
@@ -115,6 +94,12 @@ steps:
     SourceFolder: '$(Build.SourcesDirectory)/QuizMaster.Api/Postman Tests'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/API_SmokeTest'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/quizmaster-client-app/cypress'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Cypress_E2ETests'
 
 - task: ArchiveFiles@2
   inputs:
