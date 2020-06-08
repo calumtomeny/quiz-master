@@ -82,6 +82,9 @@ export default function QuizHoster() {
     return question;
   };
 
+  const roundIsComplete = () =>
+    timeLeftAsAPercentage === 0 || answers.length === contestants.length;
+
   const isFinalQuestion = () => currentQuestionNumber == quizQuestions.length;
 
   const onGoToNextQuestion = () => {
@@ -244,6 +247,7 @@ export default function QuizHoster() {
                       rows={answers}
                       answer={getCurrentQuizQuestion()?.Answer ?? ""}
                       onAcceptAnswers={onAcceptAnswers}
+                      showContinueAction={roundIsComplete()}
                     />
                   ) : (
                     <Button
