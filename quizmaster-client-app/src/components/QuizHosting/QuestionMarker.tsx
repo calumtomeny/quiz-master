@@ -247,8 +247,6 @@ export default function QuestionMarker(props: {
   const [order, setOrder] = useState<Order>("desc");
   const [orderBy, setOrderBy] = useState<keyof QuestionResponse>("name");
   const [selected, setSelected] = useState<string[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
     console.log("doing stuff...");
@@ -302,14 +300,9 @@ export default function QuestionMarker(props: {
     return selected.indexOf(name) !== -1;
   };
 
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, props.rows.length - page * rowsPerPage);
-
   return (
     <>
-      <EnhancedTableToolbar
-        numSelected={selected.length}
-      />
+      <EnhancedTableToolbar numSelected={selected.length} />
       <TableContainer>
         <Table
           className={classes.table}
@@ -328,7 +321,7 @@ export default function QuestionMarker(props: {
           />
           <TableBody>
             {stableSort(props.rows, getComparator(order, orderBy)).map(
-              (row, index) => {
+              (row) => {
                 const isItemSelected = isSelected(row.id);
 
                 return (
@@ -358,11 +351,6 @@ export default function QuestionMarker(props: {
                   </TableRow>
                 );
               },
-            )}
-            {emptyRows > 0 && (
-              <TableRow style={{ height: 33 * emptyRows }}>
-                <TableCell colSpan={6} />
-              </TableRow>
             )}
           </TableBody>
         </Table>
