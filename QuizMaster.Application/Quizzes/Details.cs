@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -12,12 +13,12 @@ namespace QuizMaster.Application.Quizzes
     {
         public class Query : IRequest<Quiz>
         {
-            public Query(Guid id)
+            public Query(string quizCode)
             {
-                Id = id;
+                QuizCode = quizCode;
             }
 
-            public Guid Id { get; private set; }
+            public string QuizCode { get; private set; }
         }
 
         public class Handler : IRequestHandler<Query, Quiz>
@@ -31,7 +32,7 @@ namespace QuizMaster.Application.Quizzes
 
             public async Task<Quiz> Handle(Query request, CancellationToken cancellationToken)
             {
-                var quiz = await context.Quiz.FindAsync(request.Id);
+                var quiz = context.Quiz.SingleOrDefault(x => x.Code == request.QuizCode);
 
                 return quiz;
             }

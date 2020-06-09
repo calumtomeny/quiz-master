@@ -31,7 +31,7 @@ namespace QuizMaster.Application.Questions
             public List<CommandItem> QuizItems { get; set; }
 
             [Required]
-            public Guid QuizId { get; set; }
+            public string QuizCode { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, List<QuizQuestion>>
@@ -45,9 +45,9 @@ namespace QuizMaster.Application.Questions
 
             public async Task<List<QuizQuestion>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var questions = request.QuizItems.Select((x, i) => new QuizQuestion(x.Question, x.Answer, request.QuizId, i + 1));
+                var quiz = await context.Quiz.Include(x => x.QuizQuestions).SingleOrDefaultAsync(x => x.Code == request.QuizCode, cancellationToken);
 
-                var quiz = await context.Quiz.Include(x => x.QuizQuestions).SingleOrDefaultAsync(x => x.Id == request.QuizId, cancellationToken);
+                var questions = request.QuizItems.Select((x, i) => new QuizQuestion(x.Question, x.Answer, quiz.Id, i + 1));
 
                 quiz.QuizQuestions = questions.ToList();
 

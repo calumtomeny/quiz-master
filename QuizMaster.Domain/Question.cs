@@ -16,7 +16,6 @@ namespace QuizMaster.Domain
         public Guid QuizId { get; private set; }
         public String Question { get; private set; }
         public String Answer { get; private set; }
-        public Quiz Quiz { get; private set; }
         public int Number { get; set; }
     }
 }
