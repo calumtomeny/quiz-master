@@ -16,7 +16,7 @@ import Axios from "axios";
 import Copyright from "../Common/Copyright";
 import { Snackbar, SnackbarCloseReason } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
-import '../../stringUtilities';
+import "../../stringUtilities";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,7 +66,6 @@ function HomePage() {
   const onHostQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    let string = "dfsdf";
     Axios.post("/api/quizzes", {
       name: `${quizName}`,
     }).then((res) => {
