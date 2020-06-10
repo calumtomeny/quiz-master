@@ -72,9 +72,15 @@ export default function QuizWizard() {
     return skipped.has(step);
   };
 
+  const getQuizUrl = () => {
+    let url = window.location.href;
+    var arr = url.split("/");
+    return arr[0] + "//" + arr[2] + "/quiz/" + quizCode + "/" + quizName;
+  };
+
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
-      history.push(`/quiz/${id}/host`);
+      history.push(`/quiz/${id}/${quizName}/host`);
     }
 
     let newSkipped = skipped;
@@ -101,7 +107,7 @@ export default function QuizWizard() {
       </Box>
       <Box pt={3} pb={3}>
         <Typography variant="body2" gutterBottom>
-          Give your friends the quiz code to let them join: <b>{quizCode}</b>
+          Give your friends the link to let them join: <a href={getQuizUrl()}>{getQuizUrl()}</a>
         </Typography>
       </Box>
       <Stepper activeStep={activeStep}>

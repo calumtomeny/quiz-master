@@ -14,7 +14,7 @@ namespace QuizMaster.Application.Questions
     {
         public class Query : IRequest<List<QuizQuestion>>
         {
-            public Guid QuizId { get; set; }
+            public string QuizCode { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, List<QuizQuestion>>
@@ -28,11 +28,7 @@ namespace QuizMaster.Application.Questions
 
             public async Task<List<QuizQuestion>> Handle(Query request, CancellationToken cancellationToken)
             {
-                List<QuizQuestion> quizzes = null;
-
-                quizzes = await context.QuizQuestions.Where(x => x.QuizId == request.QuizId).ToListAsync();
-
-                return quizzes;
+                return context.Quiz.Include(x => x.QuizQuestions).Single(x => x.Code == request.QuizCode).QuizQuestions;
             }
         }
     }

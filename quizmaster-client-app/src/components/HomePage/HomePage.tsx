@@ -16,6 +16,7 @@ import Axios from "axios";
 import Copyright from "../Common/Copyright";
 import { Snackbar, SnackbarCloseReason } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
+import "../../stringUtilities";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,17 +69,19 @@ function HomePage() {
     Axios.post("/api/quizzes", {
       name: `${quizName}`,
     }).then((res) => {
-      history.push(`/quiz/${res.data.id}/setup`);
+      history.push(
+        `/quiz/${res.data.code}/${res.data.name.toUrlFormat()}/setup`,
+      );
     });
   };
 
   const onJoinQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    Axios.get(`/api/quizzes?quizCode=${quizCode}`).then((res) => {
-      if (!res.data.length) {
+    Axios.get(`/api/quizzes/${quizCode}`).then((res) => {
+      if (!res.data) {
         setOpen(true);
       } else {
-        history.push(`/quiz/${res.data[0].id}`);
+        history.push(`/quiz/${res.data.code}/${res.data.name.toUrlFormat()}`);
       }
     });
   };

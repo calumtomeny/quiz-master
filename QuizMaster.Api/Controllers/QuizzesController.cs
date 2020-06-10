@@ -27,21 +27,14 @@ namespace TodoApi.Controllers
 
         // GET api/values
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Quiz>>> Get(string quizCode)
-        {
-            return Ok(await mediator.Send(new List.Query() { QuizCode = quizCode }));
-        }
-
-        // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Quiz>> Get(Guid id)
+        public async Task<ActionResult<Quiz>> Get(string id)
         {
-            var quiz = await mediator.Send(new Details.Query(id));
-            return Ok(quiz);
+            return Ok(await mediator.Send(new Details.Query(id)));
         }
 
         [HttpGet("{id}/Contestants")]
-        public async Task<ActionResult<Contestant>> GetContestants(Guid id)
+        public async Task<ActionResult<Contestant>> GetContestants(string id)
         {
             var quiz = await mediator.Send(new QuizMaster.Application.Contestants.List.Query(id));
             return Ok(quiz);
@@ -53,19 +46,18 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<Quiz>> Post(Create.Command command)
         {
             var item = await mediator.Send(command);
-
-            return CreatedAtAction("Get", new { id = item.Id }, item);
+            return CreatedAtAction("Get", new { id = item.Code }, item);
         }
 
         [HttpPost("{id}/command/quizmastermessage")]
-        public async Task<ActionResult> Start(QuizMasterMessage message, Guid id)
+        public async Task<ActionResult> Start(QuizMasterMessage message, string id)
         {
             await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
             return Ok();
         }
 
         [HttpPost("{id}/command/participantmessage")]
-        public async Task<ActionResult> Start(ParticipantMessage message, Guid id)
+        public async Task<ActionResult> Start(ParticipantMessage message, string id)
         {
             await hubContext.Clients.Group(id.ToString()).SendAsync("QuizMasterUpdate", message);
             return Ok();
@@ -73,18 +65,17 @@ namespace TodoApi.Controllers
 
         // POST api/quizzes/{id}/questions
         [HttpPost("{id}/questions")]
-        public async Task<ActionResult<List<QuizQuestion>>> QuizQuestions(List<QuizMaster.Application.Questions.Create.CommandItem> command, Guid id)
+        public async Task<ActionResult<List<QuizQuestion>>> QuizQuestions(List<QuizMaster.Application.Questions.Create.CommandItem> command, string id)
         {
-            return Ok(await mediator.Send(new QuizMaster.Application.Questions.Create.Command() { QuizItems = command, QuizId = id }));
+            return Ok(await mediator.Send(new QuizMaster.Application.Questions.Create.Command() { QuizItems = command, QuizCode = id }));
         }
 
         // GET api/quizzes/{id}/questions
         [HttpGet("{id}/questions")]
-        public async Task<ActionResult<List<QuizQuestion>>> Questions(Guid id)
+        public async Task<ActionResult<List<QuizQuestion>>> Questions(string id)
         {
-            return Ok(await mediator.Send(new QuizMaster.Application.Questions.List.Query() { QuizId = id }));
+            return Ok(await mediator.Send(new QuizMaster.Application.Questions.List.Query() { QuizCode = id }));
         }
-
 
         // PUT api/values/5
         [HttpPut("{id}")]

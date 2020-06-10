@@ -15,13 +15,13 @@ namespace QuizMaster.Application.Contestants
     {
         public class Query : IRequest<List<Contestant>>
         {
-            public Query(Guid quizId)
+            public Query(string quizCode)
             {
-                QuizId = quizId;
+                QuizCode = quizCode;
             }
 
             [Required]
-            public Guid QuizId { get; set; }
+            public String QuizCode { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, List<Contestant>>
@@ -35,7 +35,8 @@ namespace QuizMaster.Application.Contestants
 
             public async Task<List<Contestant>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await context.Contestants.Where(x => x.QuizId == request.QuizId).ToListAsync();
+                Quiz quiz = context.Quiz.SingleOrDefault(x => x.Code == request.QuizCode);
+                return await context.Contestants.Where(x => x.QuizId == quiz.Id).ToListAsync();
             }
         }
     }

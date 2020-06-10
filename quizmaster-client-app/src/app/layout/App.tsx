@@ -31,9 +31,9 @@ function App() {
   return (
     <>
       <Route exact path="/" component={HomePage} />
-      <Route exact path="/quiz/:id/setup" component={quizSetup} />
-      <Route exact path="/quiz/:id" component={contestantJoin} />
-      <Route exact path="/quiz/:id/host" component={quizHoster} />
+      <Route exact path="/quiz/:id/:name/setup" component={quizSetup} />
+      <Route exact path="/quiz/:id/:name" component={contestantJoin} />
+      <Route exact path="/quiz/:id/:name/host" component={quizHoster} />
       <Route
         exact
         path="/quiz/:quizId/participants/:participantId"
