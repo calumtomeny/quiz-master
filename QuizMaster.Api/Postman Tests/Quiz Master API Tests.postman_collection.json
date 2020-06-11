@@ -83,6 +83,17 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get quiz that does not exist",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}

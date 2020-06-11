@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -13,7 +14,7 @@ namespace QuizMaster.Application.Contestants
         public class Command : IRequest<Contestant>
         {
             [Required]
-            public Guid QuizId { get; set; }
+            public string QuizCode { get; set; }
 
             [Required]
             public string ContestantName { get; set; }
@@ -29,7 +30,8 @@ namespace QuizMaster.Application.Contestants
 
             public async Task<Contestant> Handle(Command request, CancellationToken cancellationToken)
             {
-                var contestant = new Contestant(request.ContestantName, request.QuizId);
+                var quiz = context.Quiz.Single(x => x.Code == request.QuizCode);
+                var contestant = new Contestant(request.ContestantName, quiz.Id);
 
                 context.Contestants.Add(contestant);
 

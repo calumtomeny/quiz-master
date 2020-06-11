@@ -2,10 +2,11 @@ import Layout from "./Layout";
 import React from "react";
 import QuizWizard from "../../components/QuizHosting/QuizWizard";
 import QuizJoiner from "../../components/QuizParticipating/QuizJoiner";
-import { Route } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import HomePage from "../../components/HomePage/HomePage";
 import QuestionResponder from "../../components/QuizParticipating/QuestionResponder";
 import QuizHoster from "../../components/QuizHosting/QuizHoster";
+import NotFound from "../../components/Common/NotFound";
 
 function App() {
   const quizSetup: any = () => (
@@ -28,17 +29,25 @@ function App() {
       <QuizHoster />
     </Layout>
   );
+  const notFound: any = () => (
+    <Layout>
+      <NotFound />
+    </Layout>
+  );
   return (
     <>
-      <Route exact path="/" component={HomePage} />
-      <Route exact path="/quiz/:id/:name/setup" component={quizSetup} />
-      <Route exact path="/quiz/:id/:name" component={contestantJoin} />
-      <Route exact path="/quiz/:id/:name/host" component={quizHoster} />
-      <Route
-        exact
-        path="/quiz/:quizId/participants/:participantId"
-        component={questionResponder}
-      />
+      <Switch>
+        <Route exact path="/" component={HomePage} />
+        <Route exact path="/quiz/:id/:name/setup" component={quizSetup} />
+        <Route exact path="/quiz/:id/:name" component={contestantJoin} />
+        <Route exact path="/quiz/:id/:name/host" component={quizHoster} />
+        <Route
+          exact
+          path="/quiz/:quizId/participants/:participantId"
+          component={questionResponder}
+        />
+        <Route component={notFound} />
+      </Switch>
     </>
   );
 }

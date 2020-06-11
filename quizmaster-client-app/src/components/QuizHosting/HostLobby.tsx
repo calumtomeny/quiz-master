@@ -40,6 +40,7 @@ export default function HostLobby() {
               });
 
             hubConnect.on("ContestantJoined", (contestant: Contestant) => {
+              console.log("Contestant joined: ", contestant.name);
               setContestants((c) => [...c, contestant.name]);
             });
           } catch (err) {

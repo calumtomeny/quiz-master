@@ -30,6 +30,13 @@ namespace TodoApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Quiz>> Get(string id)
         {
+            var quiz = await mediator.Send(new Details.Query(id));
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
             return Ok(await mediator.Send(new Details.Query(id)));
         }
 
