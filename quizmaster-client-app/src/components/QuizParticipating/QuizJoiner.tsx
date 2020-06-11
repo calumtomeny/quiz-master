@@ -33,8 +33,9 @@ export default function QuizJoiner() {
   const history = useHistory();
 
   const [quizName, setQuizName] = useState("");
-  const [quizId, setQuizId] = useState("");
+  const [quizCode, setQuizCode] = useState("");
   const [name, setName] = useState("");
+  const [quizNotFound, setQuizNotFound] = useState(false);
 
   const onNameChange = (e: ChangeEvent<HTMLInputElement>) =>
     setName(e.currentTarget.value);
@@ -43,7 +44,7 @@ export default function QuizJoiner() {
     e.preventDefault();
     axios
       .post("/api/contestants", {
-        quizId: `${quizId}`,
+        quizCode: `${quizCode}`,
         contestantName: name,
       })
       .then((res) => {
@@ -53,40 +54,56 @@ export default function QuizJoiner() {
   };
 
   useEffect(() => {
-    axios.get(`/api/quizzes/${id}`).then((res) => {
-      setQuizName(res.data.name);
-      setQuizId(res.data.id);
-    });
+    async function loadQuiz() {
+      try {
+        const res = await axios.get(`/api/quizzes/${id}`);
+        setQuizName(res.data.name);
+        setQuizCode(res.data.code);
+      } catch (err) {
+        if (err.response.status === 404) {
+          setQuizNotFound(true);
+        }
+      }
+    }
+    loadQuiz();
   }, []);
 
   return (
     <>
-      <Typography component="h2" variant="h5">
-        Joining &apos;{quizName}&apos;...
-      </Typography>
-      <form className={classes.form} onSubmit={onHostQuizSubmit}>
-        <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          id="your-name"
-          label="Your Name"
-          name="your-name"
-          autoFocus
-          onChange={onNameChange}
-          value={name}
-        />
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          color="primary"
-          className={classes.submit}
-        >
-          Let&apos;s go!
-        </Button>
-      </form>
+      {quizNotFound ? (
+        <Typography component="h2" variant="h5">
+          Oops! The quiz was not found.
+        </Typography>
+      ) : (
+        <Typography component="h2" variant="h5">
+          Joining &apos;{quizName}&apos;...
+        </Typography>
+      )}
+      {quizNotFound ? null : (
+        <form className={classes.form} onSubmit={onHostQuizSubmit}>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="your-name"
+            label="Your Name"
+            name="your-name"
+            autoFocus
+            onChange={onNameChange}
+            value={name}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Let&apos;s go!
+          </Button>
+        </form>
+      )}
     </>
   );
 }
