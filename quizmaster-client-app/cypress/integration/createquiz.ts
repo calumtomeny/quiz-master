@@ -1,13 +1,24 @@
 /// <reference types="cypress" />
-describe('Loading homepage', () => {
+describe("Creating quiz with no name", () => {
   beforeEach(() => {
-    cy.visit('/')
-  })
+    cy.visit("/");
+  });
+  it("does not let the user progress.", () => {
+    cy.get('[data-testid="create-quiz-button"]').click();
 
-  it('renders the host quiz form.', () => {
-    cy.get('[data-testid="join-quiz"]').should('exist');
-  })
-  it('renders the host join form.', () => {
-    cy.get('[data-testid="join-quiz"]').should('exist');
-  })
-})
+    cy.url().should("not.contain", "quiz/");
+  });
+
+  describe("Creating quiz with valid name", () => {
+    beforeEach(() => {
+      cy.visit("/");
+    });
+    it("lets the user progress.", () => {
+      cy.get('[data-testid="quiz-name-input"]').type("Test Quiz");
+
+      cy.get('[data-testid="create-quiz-button"]').click();
+
+      cy.url().should("contain", "quiz/");
+    });
+  });
+});

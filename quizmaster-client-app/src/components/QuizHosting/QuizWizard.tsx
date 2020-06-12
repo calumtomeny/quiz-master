@@ -73,8 +73,8 @@ export default function QuizWizard() {
   };
 
   const getQuizUrl = () => {
-    let url = window.location.href;
-    var arr = url.split("/");
+    const url = window.location.href;
+    const arr = url.split("/");
     return arr[0] + "//" + arr[2] + "/quiz/" + quizCode + "/" + quizName;
   };
 
@@ -107,7 +107,12 @@ export default function QuizWizard() {
       </Box>
       <Box pt={3} pb={3}>
         <Typography variant="body2" gutterBottom>
-          Give your friends the link to let them join: <a href={getQuizUrl()}>{getQuizUrl()}</a>
+          Give your friends the link to let them join:{" "}
+          {quizName ? (
+            <a data-testid="quiz-url" href={getQuizUrl()}>
+              {getQuizUrl()}
+            </a>
+          ) : null}
         </Typography>
       </Box>
       <Stepper activeStep={activeStep}>

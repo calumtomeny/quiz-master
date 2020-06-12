@@ -86,11 +86,33 @@
 		},
 		{
 			"name": "Get quiz that does not exist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a4b5301f-f000-4095-a71b-0d845f155b75",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": ""
+					"raw": "{{BaseUrl}}/api/quizzes/thisdoesnotexist",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"thisdoesnotexist"
+					]
 				}
 			},
 			"response": []
