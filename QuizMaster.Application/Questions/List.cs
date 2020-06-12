@@ -25,10 +25,11 @@ namespace QuizMaster.Application.Questions
             {
                 this.context = context;
             }
-
+                
             public async Task<List<QuizQuestion>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return context.Quiz.Include(x => x.QuizQuestions).Single(x => x.Code == request.QuizCode).QuizQuestions;
+                var quiz = await context.Quiz.Include(x => x.QuizQuestions).SingleAsync(x => x.Code == request.QuizCode);
+                return quiz != null ? quiz.QuizQuestions : null;
             }
         }
     }
