@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using QuizMaster.Domain;
 using QuizMaster.Persistence;
 
@@ -32,8 +33,7 @@ namespace QuizMaster.Application.Quizzes
 
             public async Task<Quiz> Handle(Query request, CancellationToken cancellationToken)
             {
-                var quiz = context.Quiz.SingleOrDefault(x => x.Code == request.QuizCode);
-
+                var quiz = await context.Quiz.SingleOrDefaultAsync(x => x.Code == request.QuizCode);
                 return quiz;
             }
         }
