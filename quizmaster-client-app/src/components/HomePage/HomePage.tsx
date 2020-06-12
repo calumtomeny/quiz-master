@@ -129,6 +129,7 @@ function HomePage() {
               autoFocus
               onChange={onQuizNameChange}
               value={quizName}
+              data-testid="quiz-name-input"
             />
             <Button
               type="submit"
@@ -136,6 +137,7 @@ function HomePage() {
               variant="contained"
               color="primary"
               className={classes.submit}
+              data-testid="create-quiz-button"
             >
               Host
             </Button>
@@ -161,6 +163,7 @@ function HomePage() {
               id="quiz-code"
               onChange={onQuizCodeChange}
               value={quizCode}
+              data-testid="quiz-code-input"
             />
             <Button
               type="submit"
@@ -168,6 +171,7 @@ function HomePage() {
               variant="contained"
               color="primary"
               className={classes.submit}
+              data-testid="join-quiz-button"
             >
               Join
             </Button>

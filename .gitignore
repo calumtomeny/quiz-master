@@ -434,3 +434,6 @@ $RECYCLE.BIN/
 
 ## Sqlite database created by the API on application startup
 quizmaster.db
+
+## Test artifacts
+videos/
