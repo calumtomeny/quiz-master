@@ -5,7 +5,13 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./QuestionResponder.css";
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import { LinearProgress, TextField, Button, Paper } from "@material-ui/core";
+import {
+  LinearProgress,
+  TextField,
+  Button,
+  Paper,
+  Box,
+} from "@material-ui/core";
 import QuizMasterMessage from "../Common/QuizMasterMessage";
 import QuizQuestion from "../Common/QuizQuestion";
 import QuizQuestionDisplay from "../QuizHosting/QuizQuestionDisplay";
@@ -157,10 +163,10 @@ export default function QuestionResponder() {
           </div>
         </>
       ) : quizInitialized && !quizQuestion ? (
-        <>
+        <Box mb={2}>
           <p>The quiz is about to start, get ready!</p>
           <LinearProgress />
-        </>
+        </Box>
       ) : quizQuestion ? (
         <>
           <QuizQuestionDisplay
