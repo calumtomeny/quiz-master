@@ -92,6 +92,7 @@ export default function QuizJoiner() {
             autoFocus
             onChange={onNameChange}
             value={name}
+            data-testid="participant-name-input"
           />
           <Button
             type="submit"
