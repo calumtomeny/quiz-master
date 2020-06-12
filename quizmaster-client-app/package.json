@@ -41,7 +41,7 @@
     "ci-test": "react-scripts test --coverage --coverageReporters=cobertura --watchAll=false --testResultsProcessor ./node_modules/jest-junit-reporter",
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "lint": "eslint \"./{src,cypress}/**/*.{js,ts,tsx}\" --quiet --fix",
-    "ci-lint": "eslint \"./src,cypress/**/*.{js,ts,tsx}\" --fix",
+    "ci-lint": "eslint \"./{src,cypress}/**/*.{js,ts,tsx}\" --fix",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "cypress-open:local": "npm-run-all --parallel start-api start-web-app cypress:open",
