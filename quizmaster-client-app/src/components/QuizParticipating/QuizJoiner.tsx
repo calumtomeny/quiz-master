@@ -49,7 +49,8 @@ export default function QuizJoiner() {
       })
       .then((res) => {
         console.log(res.data);
-        history.push(`/quiz/${id}/participants/${res.data.id}`);
+        localStorage.setItem("participantId", res.data.id);
+        history.push(`/quiz/${id}`);
       });
   };
 

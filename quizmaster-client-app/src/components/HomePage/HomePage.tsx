@@ -65,7 +65,6 @@ function HomePage() {
 
   const onHostQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     Axios.post("/api/quizzes", {
       name: `${quizName}`,
     }).then((res) => {

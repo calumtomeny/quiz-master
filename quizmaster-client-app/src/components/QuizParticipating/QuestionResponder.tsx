@@ -44,7 +44,7 @@ export default function QuestionResponder() {
   const [quizIsComplete, setQuizIsComplete] = useState(false);
   const [submitText, setSubmitText] = useState("Submit");
   const { quizId } = useParams();
-  const { participantId } = useParams();
+  const [participantId, setParticipantId] = useState("");
 
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
     setAnswer(e.currentTarget.value);
@@ -69,6 +69,11 @@ export default function QuestionResponder() {
       onAnswerSubmit();
     }
   }
+
+  useEffect(() => {
+    const participantID = localStorage.getItem("participantId") || "";
+    setParticipantId(participantID);
+  }, [participantId]);
 
   useEffect(() => {
     function progress() {
