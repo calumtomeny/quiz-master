@@ -13,10 +13,10 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import quiz from "./quiz.jpeg";
 import { useHistory } from "react-router-dom";
 import Axios from "axios";
-import Copyright from "../Common/Copyright";
 import { Snackbar, SnackbarCloseReason } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import "../../stringUtilities";
+import Footer from "../Common/Footer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -175,7 +175,7 @@ function HomePage() {
               Join
             </Button>
             <Box mt={5}>
-              <Copyright />
+              <Footer />
             </Box>
 
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>

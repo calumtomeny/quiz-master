@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
   buttons: {
     marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   instructions: {
     marginTop: theme.spacing(1),
@@ -127,28 +128,26 @@ export default function QuizWizard() {
         })}
       </Stepper>
       <div>
-        {
-          <div>
-            {getStepContent()}
-            <div className={classes.buttons}>
-              <Button
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                className={classes.button}
-              >
-                Back
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleNext}
-                className={classes.button}
-              >
-                {activeStep === steps.length - 1 ? "Let's play!" : "Next"}
-              </Button>
-            </div>
+        <div>
+          {getStepContent()}
+          <div className={classes.buttons}>
+            <Button
+              disabled={activeStep === 0}
+              onClick={handleBack}
+              className={classes.button}
+            >
+              Back
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleNext}
+              className={classes.button}
+            >
+              {activeStep === steps.length - 1 ? "Let's play!" : "Next"}
+            </Button>
           </div>
-        }
+        </div>
       </div>
     </div>
   );
