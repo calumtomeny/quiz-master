@@ -58,7 +58,6 @@ export default function QuizJoiner() {
       try {
         const res = await axios.get(`/api/quizzes/${id}`);
         setQuizName(res.data.name);
-        setQuizCode(res.data.code);
       } catch (err) {
         if (err.response.status === 404) {
           setQuizNotFound(true);
