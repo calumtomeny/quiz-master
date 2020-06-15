@@ -18,6 +18,7 @@ using QuizMaster.Application.Quizzes;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using System.IO;
 using System.Reflection;
+using QuizMaster.Api.Filters;
 
 namespace QuizMaster.Api
 {
@@ -37,6 +38,9 @@ namespace QuizMaster.Api
             {
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            services.AddScoped<ApiKeyAuthAttribute>();
+
             services.AddControllers();
             services.AddSignalR();
             services.AddCors(opt =>
@@ -79,7 +83,7 @@ namespace QuizMaster.Api
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-            
+
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp/build";

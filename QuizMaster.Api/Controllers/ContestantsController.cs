@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +22,31 @@ namespace TodoApi.Controllers
             this.mediator = mediator;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Contestant>> Get(Guid id)
+        {
+            var contestant = await mediator.Send(new QuizMaster.Application.Contestants.Details.Query(id));
+
+            if (contestant == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(contestant);
+        }
+
         // POST api/values
         [HttpPost]
         public async Task<ActionResult<Contestant>> Post(Create.Command command)
         {
             var contestant = await mediator.Send(command);
+
+            if(contestant == null){
+                return NotFound();
+            }
+
             await hubContext.Clients.Group(command.QuizCode.ToString()).SendAsync("ContestantJoined", contestant);
-            return Ok(contestant);
+            return CreatedAtAction("Get", new { id = contestant.Id }, contestant);
         }
 
         // PUT api/values/5

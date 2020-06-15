@@ -30,7 +30,12 @@ namespace QuizMaster.Application.Contestants
 
             public async Task<Contestant> Handle(Command request, CancellationToken cancellationToken)
             {
-                var quiz = context.Quiz.Single(x => x.Code == request.QuizCode);
+                var quiz = context.Quiz.SingleOrDefault(x => x.Code == request.QuizCode);
+
+                if(quiz == null){
+                    return null;
+                }
+
                 var contestant = new Contestant(request.ContestantName, quiz.Id);
 
                 context.Contestants.Add(contestant);

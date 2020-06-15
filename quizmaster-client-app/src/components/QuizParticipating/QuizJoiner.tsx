@@ -33,7 +33,6 @@ export default function QuizJoiner() {
   const history = useHistory();
 
   const [quizName, setQuizName] = useState("");
-  const [quizCode, setQuizCode] = useState("");
   const [name, setName] = useState("");
   const [quizNotFound, setQuizNotFound] = useState(false);
 
@@ -44,7 +43,7 @@ export default function QuizJoiner() {
     e.preventDefault();
     axios
       .post("/api/contestants", {
-        quizCode: `${quizCode}`,
+        quizCode: `${id}`,
         contestantName: name,
       })
       .then((res) => {

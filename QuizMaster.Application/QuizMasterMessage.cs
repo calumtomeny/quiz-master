@@ -8,4 +8,4 @@ namespace QuizMaster.Application
         public string Answer { get; set; }
         public int QuestionNumber { get; set; }
     }
-}
+}   
