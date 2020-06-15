@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using QuizMaster.Api.Filters;
 using QuizMaster.Api.SignalR;
 using QuizMaster.Application;
 using QuizMaster.Application.Quizzes;
@@ -26,7 +27,7 @@ namespace TodoApi.Controllers
         }
 
         // GET api/values
-        [HttpGet]
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
         [HttpGet("{id}")]
         public async Task<ActionResult<Quiz>> Get(string id)
         {
@@ -40,7 +41,8 @@ namespace TodoApi.Controllers
             return Ok(await mediator.Send(new Details.Query(id)));
         }
 
-        [HttpGet("{id}/Contestants")]
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
+        [HttpGet("{id}/contestants")]
         public async Task<ActionResult<Contestant>> GetContestants(string id)
         {
             var quiz = await mediator.Send(new QuizMaster.Application.Contestants.List.Query(id));
@@ -56,9 +58,17 @@ namespace TodoApi.Controllers
             return CreatedAtAction("Get", new { id = item.Code }, item);
         }
 
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
         [HttpPost("{id}/command/quizmastermessage")]
         public async Task<ActionResult> Start(QuizMasterMessage message, string id)
         {
+            var quiz = await mediator.Send(new Details.Query(id));
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
             await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
             return Ok();
         }
@@ -66,11 +76,19 @@ namespace TodoApi.Controllers
         [HttpPost("{id}/command/participantmessage")]
         public async Task<ActionResult> Start(ParticipantMessage message, string id)
         {
+            var quiz = await mediator.Send(new Details.Query(id));
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
             await hubContext.Clients.Group(id.ToString()).SendAsync("QuizMasterUpdate", message);
             return Ok();
         }
 
         // POST api/quizzes/{id}/questions
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
         [HttpPost("{id}/questions")]
         public async Task<ActionResult<List<QuizQuestion>>> QuizQuestions(List<QuizMaster.Application.Questions.Create.CommandItem> command, string id)
         {
@@ -78,6 +96,7 @@ namespace TodoApi.Controllers
         }
 
         // GET api/quizzes/{id}/questions
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
         [HttpGet("{id}/questions")]
         public async Task<ActionResult<List<QuizQuestion>>> Questions(string id)
         {

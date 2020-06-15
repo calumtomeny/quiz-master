@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace QuizMaster.Domain
 {
@@ -7,14 +8,22 @@ namespace QuizMaster.Domain
     {
         public Quiz(string name)
         {
-            Id = Guid.NewGuid();
-            Code = GenerateCode();
-            Name = name;
+            this.Id = Guid.NewGuid();
+            this.Name = name;
+            this.Code = GenerateCode();
+            this.Key = GenerateKey();
         }
 
+        public Quiz(Guid id, String name, String code)
+        {
+            this.Id = id;
+            this.Name = name;
+            this.Code = code;
+        }
         public Guid Id { get; private set; }
         public String Name { get; private set; }
         public String Code { get; private set; }
+        public String Key { get; private set; }
         public List<Contestant> Contestants { get; set; }
         public List<QuizQuestion> QuizQuestions { get; set; }
 
@@ -25,6 +34,16 @@ namespace QuizMaster.Domain
             var ans = DateTime.Now.Ticks - ticks;
             var uniqueId = ans.ToString("x");
             return uniqueId;
+        }
+
+        static string GenerateKey()
+        {
+            // Taken from: https://stackoverflow.com/a/18730859/193717 
+            var key = new byte[32];
+            using (var generator = RandomNumberGenerator.Create())
+                generator.GetBytes(key);
+            string apiKey = Convert.ToBase64String(key);
+            return apiKey;
         }
     }
 }

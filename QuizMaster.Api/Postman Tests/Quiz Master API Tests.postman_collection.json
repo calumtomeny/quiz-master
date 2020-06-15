@@ -22,8 +22,15 @@
 							"    pm.response.to.have.header(\"Location\");\r",
 							"});\r",
 							"\r",
-							"let headerValue = pm.response.headers.get(\"Location\")\r",
-							"pm.environment.set(\"NewQuizLocation\", headerValue);\r",
+							"let location = pm.response.headers.get(\"Location\")\r",
+							"\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"let responseData = jsonData;\r",
+							"debugger;\r",
+							"pm.environment.set(\"ApiKey\", responseData.key);\r",
+							"pm.environment.set(\"QuizId\", responseData.code);\r",
+							"pm.environment.set(\"NewQuizLocation\", location);\r",
 							""
 						],
 						"type": "text/javascript"
@@ -74,11 +81,97 @@
 			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "ApiKey",
+						"value": "{{ApiKey}}",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{NewQuizLocation}}",
 					"host": [
 						"{{NewQuizLocation}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get contestants",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "203d4cd9-8b33-4378-950b-c6b999346ad5",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "ApiKey",
+						"type": "text",
+						"value": "{{ApiKey}}"
+					}
+				],
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/{{QuizId}}/contestants",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"{{QuizId}}",
+						"contestants"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get contestants without API key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "352c418b-9c09-4161-bdbd-cf213bafe7d9",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "ApiKey",
+						"type": "text",
+						"value": "{{ApiKey}}"
+					}
+				],
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/{{QuizId}}/Contestants",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"{{QuizId}}",
+						"Contestants"
 					]
 				}
 			},
@@ -92,8 +185,8 @@
 					"script": {
 						"id": "a4b5301f-f000-4095-a71b-0d845f155b75",
 						"exec": [
-							"pm.test(\"Status code is 404\", function () {\r",
-							"    pm.response.to.have.status(404);\r",
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -112,6 +205,504 @@
 						"api",
 						"quizzes",
 						"thisdoesnotexist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send quiz master message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1ebf60c6-c05c-4a9d-8e46-4c13e3f18b4b",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "ApiKey",
+						"type": "text",
+						"value": "{{ApiKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Start\": false,\r\n    \"Complete\": true,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/{{QuizId}}/command/quizmastermessage",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"{{QuizId}}",
+						"command",
+						"quizmastermessage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send quiz master message with incorrect ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3c9fb6ae-4468-43d8-8b48-c5d84d6cac48",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "ApiKey",
+						"type": "text",
+						"value": "{{ApiKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Start\": false,\r\n    \"Complete\": true,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/IncorrectId/command/quizmastermessage",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"IncorrectId",
+						"command",
+						"quizmastermessage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send quiz master message without API key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ec60bb5d-6d44-4627-bf1f-aa1a7ed95cb2",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"type": "text",
+						"value": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Start\": false,\r\n    \"Complete\": true,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/{{QuizId}}/command/quizmastermessage",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"{{QuizId}}",
+						"command",
+						"quizmastermessage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send quiz master message with invalid API key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fc5d6079-c697-4b3f-a23f-da3f7d5466c6",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "ApiKey",
+						"type": "text",
+						"value": "Invalid"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Start\": false,\r\n    \"Complete\": true,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/{{QuizId}}/command/quizmastermessage",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"{{QuizId}}",
+						"command",
+						"quizmastermessage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ceation Questions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "69695c0e-8226-4adc-ba62-a9e3989c6d32",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "ApiKey",
+						"type": "text",
+						"value": "{{ApiKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\"Question\":\"Test question 2\",\"Answer\":\"Test answer 2\",\"QuestionNumber\":2},{\"Question\":\"Test question 1\",\"Answer\":\"Test answer 1\",\"QuestionNumber\":1}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/{{QuizId}}/questions",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"{{QuizId}}",
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ceation Questions wihout API key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "be723d93-f044-4195-abd3-0d73fe0aebe6",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"type": "text",
+						"value": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\"Question\":\"Test question 2\",\"Answer\":\"Test answer 2\",\"QuestionNumber\":2},{\"Question\":\"Test question 1\",\"Answer\":\"Test answer 1\",\"QuestionNumber\":1}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/{{QuizId}}/questions",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"{{QuizId}}",
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register for quiz",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3dc8655e-a937-4e18-8e06-7b801c7c1da9",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([201,202]);\r",
+							"});\r",
+							"\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"let responseData = jsonData;\r",
+							"\r",
+							"pm.environment.set(\"ContestantId\", responseData.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "ApiKey",
+						"type": "text",
+						"value": "{{ApiKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"QuizCode\": \"{{QuizId}}\",\r\n    \"ContestantName\": \"Test User\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/contestants",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"contestants"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register for quiz that does not exist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d26baca7-b5a3-432d-8eae-4e05dbf3349b",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "ApiKey",
+						"type": "text",
+						"value": "{{ApiKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"QuizCode\": \"IncorrectId\",\r\n    \"ContestantName\": \"Test User\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/contestants",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"contestants"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send participant message without API key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b0e4bd19-a679-4e74-af88-205f08443af6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"type": "text",
+						"value": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ParticipantId\": \"{{ContestantId}}\",\r\n    \"Answer\": \"Test answer\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/{{QuizId}}/command/participantmessage",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"{{QuizId}}",
+						"command",
+						"participantmessage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send participant message with incorrect id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5e155fe9-b62d-4275-89f2-9b716432e2c4",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"type": "text",
+						"value": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ParticipantId\": \"084d8550-cc6e-4c32-ae58-d564dd1aee27\",\r\n    \"Answer\": \"Test answer\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/IncorrectId/command/participantmessage",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"IncorrectId",
+						"command",
+						"participantmessage"
 					]
 				}
 			},
