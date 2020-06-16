@@ -5,6 +5,7 @@ function Reducer(state: any, action: any) {
   switch (action.type) {
     case "add":
       data.push(action.payload);
+      data = data.map((x, i) => ((x.number = i + 1), { ...x }));
       return {
         ...state,
         data,
@@ -19,6 +20,7 @@ function Reducer(state: any, action: any) {
       return { ...state, data };
     case "set":
       data = action.payload;
+      data.sort((n1: Row, n2: Row) => n1.number - n2.number);
       return {
         ...state,
         data,

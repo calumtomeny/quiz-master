@@ -49,7 +49,6 @@ namespace TodoApi.Controllers
             return Ok(quiz);
         }
 
-
         // POST api/values
         [HttpPost]
         public async Task<ActionResult<Quiz>> Post(Create.Command command)
