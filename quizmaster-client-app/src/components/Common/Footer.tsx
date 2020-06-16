@@ -4,7 +4,7 @@ import React from "react";
 export default function Footer() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      <a href="#">Privacy Policy</a>
+      Privacy Policy
     </Typography>
   );
 }

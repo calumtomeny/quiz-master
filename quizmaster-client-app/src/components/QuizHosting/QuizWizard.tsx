@@ -53,7 +53,7 @@ export default function QuizWizard() {
       setQuizCode(res.data.code);
       setQuizName(res.data.name);
     });
-  }, []);
+  }, [id]);
 
   const getStepContent = () => {
     return activeStep === 0 ? (
