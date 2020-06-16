@@ -5,7 +5,10 @@ function Reducer(state: any, action: any) {
   switch (action.type) {
     case "add":
       data.push(action.payload);
-      data = data.map((x, i) => ((x.number = i + 1), { ...x }));
+      data = data.map((x, i) => {
+        x.number = i + 1;
+        return { ...x };
+      });
       return {
         ...state,
         data,

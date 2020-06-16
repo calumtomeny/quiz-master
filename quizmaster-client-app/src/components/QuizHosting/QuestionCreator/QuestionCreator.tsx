@@ -21,7 +21,7 @@ export default function QuestionCreator(props: any) {
       dispatch({ type: "set", payload: results.data });
       doneInitialGet.current = true;
     });
-  }, []);
+  }, [props.quizId]);
 
   useEffect(() => {
     if (!isFirstRun.current && doneInitialGet.current) {
@@ -33,7 +33,7 @@ export default function QuestionCreator(props: any) {
       );
     }
     isFirstRun.current = false;
-  }, [state]);
+  }, [state, props.quizId]);
 
   return (
     <MaterialTable

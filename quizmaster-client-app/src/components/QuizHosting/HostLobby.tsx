@@ -52,14 +52,14 @@ export default function HostLobby() {
     return () => {
       hubConnect.stop();
     };
-  }, []);
+  }, [id]);
 
   return (
     <>
       <Typography component="h1" variant="h6">
         Lobby
       </Typography>
-      {contestants.length == 0 ? (
+      {contestants.length === 0 ? (
         <p>Your friends will appear here when they have joined.</p>
       ) : (
         <ContestantList contestants={contestants} />

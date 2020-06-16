@@ -48,7 +48,7 @@ export default function QuizHoster() {
 
   const getQuizQuestion = (questionNumber: number) => {
     const question = quizQuestions.find(
-      (x) => x.QuestionNumber == questionNumber,
+      (x) => x.QuestionNumber === questionNumber,
     );
     return question;
   };
@@ -77,7 +77,7 @@ export default function QuizHoster() {
 
   const getCurrentQuizQuestion = () => {
     const question = quizQuestions.find(
-      (x) => x.QuestionNumber == currentQuestionNumber,
+      (x) => x.QuestionNumber === currentQuestionNumber,
     );
     return question;
   };
@@ -85,7 +85,7 @@ export default function QuizHoster() {
   const roundIsComplete = () =>
     timeLeftAsAPercentage === 0 || answers.length === contestants.length;
 
-  const isFinalQuestion = () => currentQuestionNumber == quizQuestions.length;
+  const isFinalQuestion = () => currentQuestionNumber === quizQuestions.length;
 
   const onGoToNextQuestion = () => {
     if (isFinalQuestion()) {
@@ -214,7 +214,7 @@ export default function QuizHoster() {
       }
     };
     createHubConnection();
-  }, []);
+  }, [id]);
 
   return (
     <div className={classes.root}>
@@ -224,7 +224,7 @@ export default function QuizHoster() {
         </Typography>
       </Box>
       <Box pt={3} pb={3}>
-        {currentQuestionNumber == 0 ? (
+        {currentQuestionNumber === 0 ? (
           <QuizInitiator quizName={quizName} clickHandler={onQuizInitiate} />
         ) : (
           <>

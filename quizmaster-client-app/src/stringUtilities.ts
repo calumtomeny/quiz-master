@@ -3,7 +3,7 @@ declare global {
     toUrlFormat(): string;
   }
 }
-
+// eslint-disable-next-line no-extend-native
 String.prototype.toUrlFormat = function () {
   return this.toLowerCase().replace(new RegExp(" ", "g"), "-");
 };

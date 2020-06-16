@@ -144,7 +144,7 @@ export default function QuestionResponder() {
       }
     };
     createHubConnection();
-  }, []);
+  }, [quizId]);
 
   return (
     <>
