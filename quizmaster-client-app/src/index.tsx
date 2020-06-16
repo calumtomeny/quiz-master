@@ -9,6 +9,14 @@ import axios from "axios";
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_API_URL;
 
+axios.interceptors.request.use(function (config) {
+  const token = localStorage.getItem("apiKey");
+  if (token) {
+    config.headers.ApiKey = token;
+  }
+  return config;
+});
+
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
