@@ -77,6 +77,12 @@ describe("Reducer", () => {
     expect(state.data.find((x) => x.number === 2)?.answer).toEqual(
       "UpdatedAnswer",
     );
+    expect(state.data.find((x) => x.number === 1)?.question).not.toEqual(
+      "UpdatedQuestion",
+    );
+    expect(state.data.find((x) => x.number === 1)?.answer).not.toEqual(
+      "UpdatedAnswer",
+    );
   });
 
   test("Deletes rows", () => {
