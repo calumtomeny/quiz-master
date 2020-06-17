@@ -1,8 +1,9 @@
-import React, { useReducer, useRef, useEffect } from "react";
+import React, { useReducer, useRef, useEffect, useState } from "react";
 import Axios from "axios";
 import QuizQuestion from "../../Common/QuizQuestion";
 import MaterialTable from "material-table";
 import reducer from "./QuestionReducer";
+import QuestionInitialiser from "./QuestionInitialiser";
 
 export default function QuestionCreator(props: any) {
   const [state, dispatch] = useReducer(reducer, {
@@ -13,18 +14,22 @@ export default function QuestionCreator(props: any) {
     data: [],
   });
 
+  const [doneInitialGet, setDoneInitialGet] = useState(false);
   const isFirstRun = useRef(true);
-  const doneInitialGet = useRef(false);
+
+  const setInitialQuestion = (question: string, answer: string) => {
+    dispatch({ type: "add", payload: { question: question, answer: answer } });
+  };
 
   useEffect(() => {
     Axios.get(`/api/quizzes/${props.quizId}/questions`).then((results) => {
       dispatch({ type: "set", payload: results.data });
-      doneInitialGet.current = true;
+      setDoneInitialGet(true);
     });
   }, [props.quizId]);
 
   useEffect(() => {
-    if (!isFirstRun.current && doneInitialGet.current) {
+    if (!isFirstRun.current && doneInitialGet && state.data.length) {
       Axios.post(
         `/api/quizzes/${props.quizId}/questions`,
         state.data.map(
@@ -33,9 +38,9 @@ export default function QuestionCreator(props: any) {
       );
     }
     isFirstRun.current = false;
-  }, [state, props.quizId]);
+  }, [state, doneInitialGet, props.quizId]);
 
-  return (
+  return state.data.length || !doneInitialGet ? (
     <MaterialTable
       title="Questions"
       columns={state.columns}
@@ -66,5 +71,7 @@ export default function QuestionCreator(props: any) {
           }),
       }}
     />
+  ) : (
+    <QuestionInitialiser onInitialQuestionSubmitted={setInitialQuestion} />
   );
 }
