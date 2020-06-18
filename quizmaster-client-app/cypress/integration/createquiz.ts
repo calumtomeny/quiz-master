@@ -105,4 +105,15 @@ describe("The second question that is created", () => {
     cy.get("table").contains("td", "What is 1 + 1?");
     cy.get("table").contains("td", "2.");
   });
+  it.only("can be found using the search compenent", () => {
+    cy.get("table").contains("td", "New question");
+    cy.get("table").contains("td", "New answer");
+    cy.get(".MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input")
+      .first()
+      .type("1 + 1");
+    cy.get("table").contains("td", "What is 1 + 1?");
+    cy.get("table").contains("td", "2.");
+    cy.get("table").contains("td", "New question").should("not.exist");
+    cy.get("table").contains("td", "New answer").should("not.exist");
+  });
 });
