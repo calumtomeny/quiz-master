@@ -57,9 +57,9 @@ describe("The first question that is created", () => {
     cy.get('[data-testid="add-question-button"]').should("exist");
   });
   it("can be added to", () => {
-    cy.get(
-      ".MTableToolbar-actions-358 > :nth-child(1) > div > :nth-child(1) > .MuiButtonBase-root",
-    ).click();
+    cy.get(".MuiButtonBase-root.MuiIconButton-root.MuiIconButton-colorInherit")
+      .first()
+      .click();
     cy.get('[placeholder="Question"]').clear().type("New question");
     cy.get('[placeholder="Answer"]').clear().type("New answer");
     cy.get('[title="Save"]').click();
@@ -78,9 +78,9 @@ describe("The second question that is created", () => {
     cy.get('[data-testid="question-input"]').type("What is 1 + 1?");
     cy.get('[data-testid="answer-input"]').type("2.");
     cy.get('[data-testid="add-question-button"]').click();
-    cy.get(
-      ".MTableToolbar-actions-358 > :nth-child(1) > div > :nth-child(1) > .MuiButtonBase-root",
-    ).click();
+    cy.get(".MuiButtonBase-root.MuiIconButton-root.MuiIconButton-colorInherit")
+      .first()
+      .click();
     cy.get('[placeholder="Question"]').clear().type("New question");
     cy.get('[placeholder="Answer"]').clear().type("New answer");
     cy.get('[title="Save"]').click();
