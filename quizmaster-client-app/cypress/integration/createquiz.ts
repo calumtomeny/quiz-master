@@ -105,7 +105,7 @@ describe("The second question that is created", () => {
     cy.get("table").contains("td", "What is 1 + 1?");
     cy.get("table").contains("td", "2.");
   });
-  it.only("can be found using the search compenent", () => {
+  it("can be found using the search compenent", () => {
     cy.get("table").contains("td", "New question");
     cy.get("table").contains("td", "New answer");
     cy.get(".MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input")
