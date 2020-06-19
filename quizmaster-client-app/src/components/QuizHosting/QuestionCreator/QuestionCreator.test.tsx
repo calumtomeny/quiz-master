@@ -1,17 +1,23 @@
 import React from "react";
-import { cleanup } from "@testing-library/react";
+import { cleanup, act } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import QuestionCreator from "./QuestionCreator";
 import ReactDOM from "react-dom";
 import TableState from "./TableState";
 import reducer from "./QuestionReducer";
 import Row from "./Row";
+import Axios from "axios";
+import MockAdapter from "axios-mock-adapter";
 
 describe("When testing directly", () => {
   afterEach(cleanup);
   test("renders without crashing", () => {
+    const mock = new MockAdapter(Axios);
+    mock.onGet("/api/quizzes/123/questions").reply(200, []);
     const div = document.createElement("div");
-    ReactDOM.render(<QuestionCreator />, div);
+    act(() => {
+      ReactDOM.render(<QuestionCreator quizId={123} />, div);
+    });
   });
 });
 
