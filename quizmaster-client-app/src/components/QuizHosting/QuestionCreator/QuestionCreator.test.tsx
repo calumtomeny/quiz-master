@@ -11,12 +11,20 @@ import MockAdapter from "axios-mock-adapter";
 
 describe("When testing directly", () => {
   afterEach(cleanup);
-  test("renders without crashing", () => {
+  test("renders without crashing", async () => {
     const mock = new MockAdapter(Axios);
     mock.onGet("/api/quizzes/123/questions").reply(200, []);
     const div = document.createElement("div");
-    act(() => {
-      ReactDOM.render(<QuestionCreator quizId={123} />, div);
+    await act(async () => {
+      ReactDOM.render(
+        <QuestionCreator
+          quizId={123}
+          onQuestionsUpdated={() => {
+            return "stub";
+          }}
+        />,
+        div,
+      );
     });
   });
 });
