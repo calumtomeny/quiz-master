@@ -4,12 +4,21 @@ import QuizQuestion from "../../Common/QuizQuestion";
 import MaterialTable from "material-table";
 import reducer from "./QuestionReducer";
 import QuestionInitialiser from "./QuestionInitialiser";
+import TableFieldEditor from "./TableFieldEditor";
 
 export default function QuestionCreator(props: any) {
   const [state, dispatch] = useReducer(reducer, {
     columns: [
-      { title: "Question", field: "question" },
-      { title: "Answer", field: "answer" },
+      {
+        title: "Question",
+        field: "question",
+        editComponent: TableFieldEditor,
+      },
+      {
+        title: "Answer",
+        field: "answer",
+        editComponent: TableFieldEditor,
+      },
     ],
     data: [],
   });
@@ -20,6 +29,10 @@ export default function QuestionCreator(props: any) {
   const setInitialQuestion = (question: string, answer: string) => {
     dispatch({ type: "add", payload: { question: question, answer: answer } });
   };
+
+  useEffect(() => {
+    props.onQuestionsUpdated(state.data.length);
+  }, [state]);
 
   useEffect(() => {
     Axios.get(`/api/quizzes/${props.quizId}/questions`).then((results) => {
@@ -42,6 +55,9 @@ export default function QuestionCreator(props: any) {
 
   return state.data.length || !doneInitialGet ? (
     <MaterialTable
+      options={{
+        actionsColumnIndex: -1,
+      }}
       title="Questions"
       columns={state.columns}
       data={state.data}

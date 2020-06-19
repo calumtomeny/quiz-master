@@ -47,6 +47,7 @@ export default function QuizWizard() {
 
   const [quizCode, setQuizCode] = useState("");
   const [quizName, setQuizName] = useState("");
+  const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 
   useEffect(() => {
     axios.get(`/api/quizzes/${id}`).then((res) => {
@@ -55,10 +56,21 @@ export default function QuizWizard() {
     });
   }, [id]);
 
+  const updateNextButtonBasedOnQuestionCount = (questionCount: number) => {
+    if (questionCount > 0) {
+      setNextButtonEnabled(true);
+    } else {
+      setNextButtonEnabled(false);
+    }
+  };
+
   const getStepContent = () => {
     return activeStep === 0 ? (
       <div className={classes.stepContainer}>
-        <QuestionCreator quizId={id} />
+        <QuestionCreator
+          quizId={id}
+          onQuestionsUpdated={updateNextButtonBasedOnQuestionCount}
+        />
       </div>
     ) : activeStep === 1 ? (
       <div className={classes.stepContainer}>No options yet.</div>
@@ -142,6 +154,7 @@ export default function QuizWizard() {
               variant="contained"
               color="primary"
               onClick={handleNext}
+              disabled={!nextButtonEnabled}
               className={classes.button}
             >
               {activeStep === steps.length - 1 ? "Let's play!" : "Next"}
