@@ -30,6 +30,12 @@ describe("Creating quiz with valid name", () => {
   it("contains quiz/ in the URL", () => {
     cy.url().should("contain", "quiz/");
   });
+  it.only("does not allow the quiz master to progress before adding a question", () => {
+    cy.get(".MuiButton-contained").eq(1).click();
+    cy.get('[data-testid="question-input"]').should("exist");
+    cy.get('[data-testid="answer-input"]').should("exist");
+    cy.get('[data-testid="add-question-button"]').should("exist");
+  });
 });
 
 describe("The first question that is created", () => {
@@ -68,6 +74,10 @@ describe("The first question that is created", () => {
     cy.get("table").contains("td", "What is 1 + 1?");
     cy.get("table").contains("td", "2.");
   });
+  it("allows the quiz master to progress", () => {
+    cy.get(".MuiButton-contained").click();
+    cy.get(".makeStyles-stepContainer-311").contains("No options yet.");
+  });
 });
 
 describe("The second question that is created", () => {
@@ -105,7 +115,9 @@ describe("The second question that is created", () => {
     cy.get("table").contains("td", "What is 1 + 1?");
     cy.get("table").contains("td", "2.");
   });
-  it("can be found using the search compenent", () => {
+  it("can be found using the search component", () => {
+    cy.get("table").contains("td", "What is 1 + 1?");
+    cy.get("table").contains("td", "2.");
     cy.get("table").contains("td", "New question");
     cy.get("table").contains("td", "New answer");
     cy.get(".MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input")
