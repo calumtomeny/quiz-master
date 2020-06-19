@@ -22,6 +22,10 @@ export default function QuestionCreator(props: any) {
   };
 
   useEffect(() => {
+    props.onQuestionsUpdated(state.data.length);
+  }, [state]);
+
+  useEffect(() => {
     Axios.get(`/api/quizzes/${props.quizId}/questions`).then((results) => {
       dispatch({ type: "set", payload: results.data });
       setDoneInitialGet(true);
