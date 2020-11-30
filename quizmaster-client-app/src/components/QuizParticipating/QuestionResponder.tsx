@@ -51,16 +51,20 @@ export default function QuestionResponder() {
   const [submitText, setSubmitText] = useState("Submit");
   const { quizId } = useParams();
   const [participantId, setParticipantId] = useState("");
+  const [startTime, setStartTime] = useState(0);
+  const [totalTimeInSeconds, setTotalTimeInSeconds] = useState(0);
+  const [answerSubmitted, setAnswerSubmitted] = useState(false);
 
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
     setAnswer(e.currentTarget.value);
 
   const onAnswerSubmit = () => {
+    setAnswerSubmitted(true);
     const message: ParticipantMessage = {
       participantId: participantId,
       answer: answer,
+      answerTime: timeLeftAsAPercentage
     };
-
     setSubmitText("Submitted. Please Wait.");
     axios.post(`/api/quizzes/${quizId}/command/participantmessage`, message);
 
@@ -76,18 +80,26 @@ export default function QuestionResponder() {
     }
   }
 
+
   useEffect(() => {
     const participantID = localStorage.getItem("participantId") || "";
     setParticipantId(participantID);
   }, [participantId]);
 
+  
   useEffect(() => {
+    const interval = 100;
+ 
     function progress() {
-      setTimeLeftAsAPercentage((oldCompleted) => {
-        return Math.max(oldCompleted - 10, 0);
-      });
+      if(!answerSubmitted){
+        setTimeLeftAsAPercentage((oldCompleted) => {
+          let increment = 100*(Date.now() - startTime)/(totalTimeInSeconds*1000)
+          return Math.max(100 - increment, 0);
+          //return Math.max(oldCompleted - 1, 0);
+        });
+      }
     }
-    const timer = setInterval(progress, 1000);
+    const timer = setInterval(progress, interval);
 
     return () => {
       clearInterval(timer);
@@ -133,6 +145,9 @@ export default function QuestionResponder() {
                 message.questionNumber,
               ),
             );
+            setTotalTimeInSeconds(120);
+            setStartTime(Date.now());
+            setAnswerSubmitted(false);
             setTimeLeftAsAPercentage(100);
             setAnswer("");
             setButtonDisabled(false);
@@ -172,6 +187,7 @@ export default function QuestionResponder() {
           <QuizQuestionDisplay
             quizQuestion={quizQuestion}
             timeLeftAsAPercentage={timeLeftAsAPercentage}
+            totalTimeInSeconds={totalTimeInSeconds}
           />
           <Paper elevation={1} className={classes.answer}>
             <TextField
