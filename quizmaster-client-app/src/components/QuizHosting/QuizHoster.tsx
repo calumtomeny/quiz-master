@@ -16,6 +16,8 @@ import QuestionMarker from "./QuestionMarker";
 import Data from "./QuestionResponse";
 import ParticipantMessage from "../Common/ParticipantMessage";
 import QuizStandings from "./QuizStandings";
+import QuestionResponse from "./QuestionResponse";
+import ContestantScore from "./ContestantScore";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,6 +45,9 @@ export default function QuizHoster() {
   const [quizIsComplete, setQuizIsComplete] = useState(false);
   const [answers, setAnswers] = useState<Data[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
+  const [totalTimeInSeconds, setTotalTimeInSeconds]  = useState(0);
+  const [questionStartTime, setQuestionStartTime]  = useState(0);
+  const [answersSubmitted, setAnswersSubmitted] = useState(false);
 
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(0);
 
@@ -68,6 +73,9 @@ export default function QuizHoster() {
       .then(() => {
         setCurrentQuestionNumber((currentNumber) => currentNumber + 1);
       });
+    setTotalTimeInSeconds(120);
+    setQuestionStartTime(Date.now());
+    setAnswersSubmitted(false);
     setTimeLeftAsAPercentage(100);
   };
 
@@ -109,18 +117,46 @@ export default function QuizHoster() {
     }
   };
 
+  function getContestantScoreForRound(scores: ContestantScore[],contestantId: String): number {
+    return scores.find(x => x.ContestantId == contestantId)?.Score ?? 0;
+  }
+  
   const onAcceptAnswers = (
-    contestantsWithCorrectAnswerToCurrentQuestion: string[],
+    correctResponses: QuestionResponse[],
   ) => {
+
+    setAnswersSubmitted(true);
+
+    //Loop through responses to determine fastest answer
+    let fastestContestant:String = "";
+    let fastestContestantTimeLeft:number = 0;
+    correctResponses.forEach(response => {
+      if(response.answerTimeLeftAsAPercentage > fastestContestantTimeLeft){
+        fastestContestantTimeLeft = response.answerTimeLeftAsAPercentage;
+        fastestContestant = response.id;
+      }     
+    });
+    
+    //Loop through responses to build scores
+    let roundScores:ContestantScore[] = [];
+    correctResponses.forEach(response => {
+      let score = 1;
+      if(response.id == fastestContestant){
+        score = 2;
+      }     
+      const contestantScore: ContestantScore = {
+        ContestantId: response.id,
+        ContestantName: response.name,
+        Score: score
+      }
+      roundScores.push(contestantScore);
+    });
+    
     setContestants((contestants) =>
       contestants.map((contestant) => {
         return {
           ...contestant,
-          score: contestantsWithCorrectAnswerToCurrentQuestion.includes(
-            contestant.id,
-          )
-            ? contestant.score + 1
-            : contestant.score,
+          score: contestant.score + getContestantScoreForRound(roundScores,contestant.id)
         };
       }),
     );
@@ -128,12 +164,18 @@ export default function QuizHoster() {
   };
 
   useEffect(() => {
+    const interval = 100;
+ 
     function progress() {
-      setTimeLeftAsAPercentage((oldCompleted) => {
-        return Math.max(oldCompleted - 10, 0);
-      });
+      if(!answersSubmitted){
+        setTimeLeftAsAPercentage(() => {
+          let increment = 100*(Date.now() - questionStartTime)/(totalTimeInSeconds*1000)
+          return Math.max(100 - increment, 0);
+        });
+      }
     }
-    const timer = setInterval(progress, 1000);
+    
+    const timer = setInterval(progress, interval);
 
     return () => {
       clearInterval(timer);
@@ -206,6 +248,7 @@ export default function QuizHoster() {
               name: contestantsList.filter(
                 (x) => x.id === message.participantId,
               )[0].name,
+              answerTimeLeftAsAPercentage: message.answerTimeLeftAsAPercentage,
             },
           ]);
         });
@@ -232,6 +275,7 @@ export default function QuizHoster() {
               <QuizQuestionDisplay
                 quizQuestion={getCurrentQuizQuestion()}
                 timeLeftAsAPercentage={timeLeftAsAPercentage}
+                totalTimeInSeconds={totalTimeInSeconds}
               />
             ) : (
               <></>
