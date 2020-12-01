@@ -118,7 +118,7 @@ interface HeadCell {
 const headCells: HeadCell[] = [
   { id: "answer", numeric: false, disablePadding: false, label: "Answer" },
   { id: "name", numeric: false, disablePadding: false, label: "Name" },
-  { id: "answerTime", numeric: true, disablePadding: false, label: "Time Remaining" },
+  { id: "answerTimeLeftAsAPercentage", numeric: true, disablePadding: false, label: "Time Remaining" },
 ];
 
 interface EnhancedTableProps {
@@ -350,7 +350,7 @@ export default function QuestionMarker(props: {
                     </TableCell>
                     <TableCell align="center">{row.answer}</TableCell>
                     <TableCell align="center">{row.name}</TableCell>
-                    <TableCell align="center">{row.answerTime}</TableCell>
+                    <TableCell align="center">{row.answerTimeLeftAsAPercentage}</TableCell>
                   </TableRow>
                 );
               },

@@ -63,7 +63,7 @@ export default function QuestionResponder() {
     const message: ParticipantMessage = {
       participantId: participantId,
       answer: answer,
-      answerTime: timeLeftAsAPercentage
+      answerTimeLeftAsAPercentage: timeLeftAsAPercentage
     };
     setSubmitText("Submitted. Please Wait.");
     axios.post(`/api/quizzes/${quizId}/command/participantmessage`, message);
@@ -95,7 +95,6 @@ export default function QuestionResponder() {
         setTimeLeftAsAPercentage((oldCompleted) => {
           let increment = 100*(Date.now() - startTime)/(totalTimeInSeconds*1000)
           return Math.max(100 - increment, 0);
-          //return Math.max(oldCompleted - 1, 0);
         });
       }
     }

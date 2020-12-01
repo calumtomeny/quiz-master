@@ -1,7 +1,7 @@
 interface ParticipantMessage {
   participantId: string;
   answer: string;
-  answerTime: number;
+  answerTimeLeftAsAPercentage: number;
 }
 
 export default ParticipantMessage;

@@ -2,7 +2,7 @@ interface QuestionResponse {
   answer: string;
   name: string;
   id: string;
-  answerTime: number;
+  answerTimeLeftAsAPercentage: number;
 }
 
 export default QuestionResponse;

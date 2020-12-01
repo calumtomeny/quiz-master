@@ -118,13 +118,7 @@ export default function QuizHoster() {
   };
 
   function getContestantScoreForRound(scores: ContestantScore[],contestantId: String): number {
-    let score = 0;
-    scores.forEach(contestant => {
-      if(contestantId == contestant.ContestantId){
-        score = contestant.Score;
-      }
-    })
-    return score;
+    return scores.find(x => x.ContestantId == contestantId)?.Score ?? 0;
   }
   
   const onAcceptAnswers = (
@@ -135,10 +129,10 @@ export default function QuizHoster() {
 
     //Loop through responses to determine fastest answer
     let fastestContestant:String = "";
-    let fastestContestantTime:number = 0;
+    let fastestContestantTimeLeft:number = 0;
     correctResponses.forEach(response => {
-      if(response.answerTime > fastestContestantTime){
-        fastestContestantTime = response.answerTime;
+      if(response.answerTimeLeftAsAPercentage > fastestContestantTimeLeft){
+        fastestContestantTimeLeft = response.answerTimeLeftAsAPercentage;
         fastestContestant = response.id;
       }     
     });
@@ -177,7 +171,6 @@ export default function QuizHoster() {
         setTimeLeftAsAPercentage((oldCompleted) => {
           let increment = 100*(Date.now() - questionStartTime)/(totalTimeInSeconds*1000)
           return Math.max(100 - increment, 0);
-          //return Math.max(oldCompleted - 1, 0);
         });
       }
     }
@@ -255,7 +248,7 @@ export default function QuizHoster() {
               name: contestantsList.filter(
                 (x) => x.id === message.participantId,
               )[0].name,
-              answerTime: message.answerTime,
+              answerTimeLeftAsAPercentage: message.answerTimeLeftAsAPercentage,
             },
           ]);
         });
