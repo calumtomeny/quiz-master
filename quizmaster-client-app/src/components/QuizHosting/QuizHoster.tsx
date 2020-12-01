@@ -168,7 +168,7 @@ export default function QuizHoster() {
  
     function progress() {
       if(!answersSubmitted){
-        setTimeLeftAsAPercentage((oldCompleted) => {
+        setTimeLeftAsAPercentage(() => {
           let increment = 100*(Date.now() - questionStartTime)/(totalTimeInSeconds*1000)
           return Math.max(100 - increment, 0);
         });

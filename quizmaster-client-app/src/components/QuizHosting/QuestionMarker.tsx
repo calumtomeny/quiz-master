@@ -118,7 +118,7 @@ interface HeadCell {
 const headCells: HeadCell[] = [
   { id: "answer", numeric: false, disablePadding: false, label: "Answer" },
   { id: "name", numeric: false, disablePadding: false, label: "Name" },
-  { id: "answerTimeLeftAsAPercentage", numeric: true, disablePadding: false, label: "Time Remaining" },
+  { id: "answerTimeLeftAsAPercentage", numeric: true, disablePadding: false, label: "Time Remaining (%)" },
 ];
 
 interface EnhancedTableProps {

@@ -92,7 +92,7 @@ export default function QuestionResponder() {
  
     function progress() {
       if(!answerSubmitted){
-        setTimeLeftAsAPercentage((oldCompleted) => {
+        setTimeLeftAsAPercentage(() => {
           let increment = 100*(Date.now() - startTime)/(totalTimeInSeconds*1000)
           return Math.max(100 - increment, 0);
         });
