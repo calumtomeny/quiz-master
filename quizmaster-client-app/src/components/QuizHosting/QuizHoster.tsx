@@ -43,7 +43,6 @@ export default function QuizHoster() {
   const [quizIsComplete, setQuizIsComplete] = useState(false);
   const [answers, setAnswers] = useState<Data[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
-
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(0);
 
   const getQuizQuestion = (questionNumber: number) => {
