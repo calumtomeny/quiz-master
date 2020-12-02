@@ -181,7 +181,7 @@ function HomePage() {
               Host
             </Button>
           </form>
-          <Box mt={5}>
+          <Box mt={2}>
             <Footer />
           </Box>
 

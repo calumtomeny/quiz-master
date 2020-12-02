@@ -45,10 +45,9 @@ export default function QuizHoster() {
   const [quizIsComplete, setQuizIsComplete] = useState(false);
   const [answers, setAnswers] = useState<Data[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
-  const [totalTimeInSeconds, setTotalTimeInSeconds]  = useState(0);
-  const [questionStartTime, setQuestionStartTime]  = useState(0);
+  const [totalTimeInSeconds, setTotalTimeInSeconds] = useState(0);
+  const [questionStartTime, setQuestionStartTime] = useState(0);
   const [answersSubmitted, setAnswersSubmitted] = useState(false);
-
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(0);
 
   const getQuizQuestion = (questionNumber: number) => {
@@ -117,46 +116,48 @@ export default function QuizHoster() {
     }
   };
 
-  function getContestantScoreForRound(scores: ContestantScore[],contestantId: String): number {
-    return scores.find(x => x.ContestantId == contestantId)?.Score ?? 0;
+  function getContestantScoreForRound(
+    scores: ContestantScore[],
+    contestantId: string,
+  ): number {
+    return scores.find((x) => x.ContestantId == contestantId)?.Score ?? 0;
   }
-  
-  const onAcceptAnswers = (
-    correctResponses: QuestionResponse[],
-  ) => {
 
+  const onAcceptAnswers = (correctResponses: QuestionResponse[]) => {
     setAnswersSubmitted(true);
 
     //Loop through responses to determine fastest answer
-    let fastestContestant:String = "";
-    let fastestContestantTimeLeft:number = 0;
-    correctResponses.forEach(response => {
-      if(response.answerTimeLeftAsAPercentage > fastestContestantTimeLeft){
+    let fastestContestant = "";
+    let fastestContestantTimeLeft = 0;
+    correctResponses.forEach((response) => {
+      if (response.answerTimeLeftAsAPercentage > fastestContestantTimeLeft) {
         fastestContestantTimeLeft = response.answerTimeLeftAsAPercentage;
         fastestContestant = response.id;
-      }     
+      }
     });
-    
+
     //Loop through responses to build scores
-    let roundScores:ContestantScore[] = [];
-    correctResponses.forEach(response => {
+    const roundScores: ContestantScore[] = [];
+    correctResponses.forEach((response) => {
       let score = 1;
-      if(response.id == fastestContestant){
+      if (response.id == fastestContestant) {
         score = 2;
-      }     
+      }
       const contestantScore: ContestantScore = {
         ContestantId: response.id,
         ContestantName: response.name,
-        Score: score
-      }
+        Score: score,
+      };
       roundScores.push(contestantScore);
     });
-    
+
     setContestants((contestants) =>
       contestants.map((contestant) => {
         return {
           ...contestant,
-          score: contestant.score + getContestantScoreForRound(roundScores,contestant.id)
+          score:
+            contestant.score +
+            getContestantScoreForRound(roundScores, contestant.id),
         };
       }),
     );
@@ -165,16 +166,18 @@ export default function QuizHoster() {
 
   useEffect(() => {
     const interval = 100;
- 
+
     function progress() {
-      if(!answersSubmitted){
+      if (!answersSubmitted) {
         setTimeLeftAsAPercentage(() => {
-          let increment = 100*(Date.now() - questionStartTime)/(totalTimeInSeconds*1000)
+          const increment =
+            (100 * (Date.now() - questionStartTime)) /
+            (totalTimeInSeconds * 1000);
           return Math.max(100 - increment, 0);
         });
       }
     }
-    
+
     const timer = setInterval(progress, interval);
 
     return () => {

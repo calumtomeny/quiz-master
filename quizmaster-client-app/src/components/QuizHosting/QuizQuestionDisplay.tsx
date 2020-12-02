@@ -33,7 +33,13 @@ export default function QuizQuestionDisplay(props: any) {
           variant="determinate"
           value={props.timeLeftAsAPercentage}
         />
-        <Typography component="h1" variant="h5">{((props.timeLeftAsAPercentage/100.0) * props.totalTimeInSeconds).toFixed(2)} seconds remaining</Typography>
+        <Typography component="h1" variant="h5">
+          {(
+            (props.timeLeftAsAPercentage / 100.0) *
+            props.totalTimeInSeconds
+          ).toFixed(2)}{" "}
+          seconds remaining
+        </Typography>
       </div>
     </div>
   );

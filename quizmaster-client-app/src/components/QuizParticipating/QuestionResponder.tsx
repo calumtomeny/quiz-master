@@ -63,7 +63,7 @@ export default function QuestionResponder() {
     const message: ParticipantMessage = {
       participantId: participantId,
       answer: answer,
-      answerTimeLeftAsAPercentage: timeLeftAsAPercentage
+      answerTimeLeftAsAPercentage: timeLeftAsAPercentage,
     };
     setSubmitText("Submitted. Please Wait.");
     axios.post(`/api/quizzes/${quizId}/command/participantmessage`, message);
@@ -80,20 +80,19 @@ export default function QuestionResponder() {
     }
   }
 
-
   useEffect(() => {
     const participantID = localStorage.getItem("participantId") || "";
     setParticipantId(participantID);
   }, [participantId]);
 
-  
   useEffect(() => {
     const interval = 100;
- 
+
     function progress() {
-      if(!answerSubmitted){
+      if (!answerSubmitted) {
         setTimeLeftAsAPercentage(() => {
-          let increment = 100*(Date.now() - startTime)/(totalTimeInSeconds*1000)
+          const increment =
+            (100 * (Date.now() - startTime)) / (totalTimeInSeconds * 1000);
           return Math.max(100 - increment, 0);
         });
       }
