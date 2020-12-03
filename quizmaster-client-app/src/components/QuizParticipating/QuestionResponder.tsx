@@ -72,10 +72,7 @@ export default function QuestionResponder() {
   };
 
   function handleEnter(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.charCode === 13) {
-      onAnswerSubmit();
-    }
-    if (e.keyCode === 13) {
+    if ((e.charCode === 13 || e.keyCode === 13) && !answerSubmitted) {
       onAnswerSubmit();
     }
   }
