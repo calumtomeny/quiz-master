@@ -56,8 +56,8 @@ export default function QuizJoiner() {
   useEffect(() => {
     async function loadQuiz() {
       try {
-        const res = await axios.get(`/api/quizzes/${id}`);
-        setQuizName(res.data.name);
+        const res = await axios.get(`/api/quizzes/${id}/name`);
+        setQuizName(res.data);
       } catch (err) {
         if (err.response.status === 404) {
           setQuizNotFound(true);
