@@ -82,11 +82,11 @@ function HomePage() {
 
   const onJoinQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    Axios.get(`/api/quizzes/${quizCode}`).then((res) => {
+    Axios.get(`/api/quizzes/${quizCode}/name`).then((res) => {
       if (!res.data) {
         setOpen(true);
       } else {
-        history.push(`/quiz/${res.data.code}/${res.data.name.toUrlFormat()}`);
+        history.push(`/quiz/${quizCode}/${res.data.toUrlFormat()}`);
       }
     });
   };
