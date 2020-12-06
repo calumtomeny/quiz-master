@@ -117,10 +117,13 @@ export default function QuizWizard() {
         <Typography component="h1" variant="h4">
           {quizName}
         </Typography>
+        <Typography component="h1" variant="h5">
+          Quiz Joining Code: {id}
+        </Typography>
       </Box>
       <Box pt={3} pb={3}>
         <Typography variant="body2" gutterBottom>
-          Give your friends the link to let them join:{" "}
+          Or simply give your friends the link to let them join:{" "}
           {quizName ? (
             <a data-testid="quiz-url" href={getQuizUrl()}>
               {getQuizUrl()}
