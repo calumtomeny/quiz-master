@@ -254,6 +254,9 @@ export default function QuizHoster() {
               answerTimeLeftAsAPercentage: message.answerTimeLeftAsAPercentage,
             },
           ]);
+          if (roundIsComplete()) {
+            setAnswersSubmitted(true);
+          }
         });
       } catch (err) {
         alert(err);
