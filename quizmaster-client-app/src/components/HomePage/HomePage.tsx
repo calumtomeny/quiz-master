@@ -68,6 +68,7 @@ function HomePage() {
     Axios.post("/api/quizzes", {
       name: `${quizName}`,
     }).then((res) => {
+      //encode URL
       history.push(
         `/quiz/${
           res.data.code
