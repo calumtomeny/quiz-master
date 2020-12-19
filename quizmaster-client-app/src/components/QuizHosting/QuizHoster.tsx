@@ -78,7 +78,7 @@ export default function QuizHoster() {
 
   const onQuizInitiate = () => {
     messageContestants();
-  }; //////
+  };
 
   const getCurrentQuizQuestion = () => {
     const question = quizQuestions.find(
