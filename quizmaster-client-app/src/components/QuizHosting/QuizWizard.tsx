@@ -45,6 +45,17 @@ export default function QuizWizard() {
   const { id } = useParams();
   const history = useHistory();
 
+  const search = window.location.search;
+  const params = new URLSearchParams(search);
+  const key = params.get("key");
+
+  localStorage.setItem("apiKey", key ?? "");
+  axios.interceptors.request.use(function (config) {
+    const token = localStorage.getItem("apiKey");
+    config.headers.ApiKey = token;
+    return config;
+  });
+
   const [quizCode, setQuizCode] = useState("");
   const [quizName, setQuizName] = useState("");
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
