@@ -69,9 +69,11 @@ function HomePage() {
       name: `${quizName}`,
     }).then((res) => {
       history.push(
-        `/quiz/${res.data.code}/${res.data.name.toUrlFormat()}/setup?key=${
-          res.data.key
-        }`,
+        `/quiz/${
+          res.data.code
+        }/${res.data.name.toUrlFormat()}/setup?key=${encodeURIComponent(
+          res.data.key,
+        )}`,
       );
     });
   };
