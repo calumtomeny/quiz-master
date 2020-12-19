@@ -47,7 +47,6 @@ export default function QuizHoster() {
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState(0);
   const [questionStartTime, setQuestionStartTime] = useState(0);
-  const [answersSubmitted, setAnswersSubmitted] = useState(false);
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(0);
 
   const getQuizQuestion = (questionNumber: number) => {
@@ -74,13 +73,12 @@ export default function QuizHoster() {
       });
     setTotalTimeInSeconds(120);
     setQuestionStartTime(Date.now());
-    setAnswersSubmitted(false);
     setTimeLeftAsAPercentage(100);
   };
 
   const onQuizInitiate = () => {
     messageContestants();
-  };
+  }; //////
 
   const getCurrentQuizQuestion = () => {
     const question = quizQuestions.find(
@@ -124,8 +122,6 @@ export default function QuizHoster() {
   }
 
   const onAcceptAnswers = (correctResponses: QuestionResponse[]) => {
-    setAnswersSubmitted(true);
-
     //Loop through responses to determine fastest answer
     let fastestContestant = "";
     let fastestContestantTimeLeft = 0;
@@ -168,7 +164,7 @@ export default function QuizHoster() {
     const interval = 100;
 
     function progress() {
-      if (!answersSubmitted) {
+      if (!roundIsComplete()) {
         setTimeLeftAsAPercentage(() => {
           const increment =
             (100 * (Date.now() - questionStartTime)) /
@@ -254,9 +250,6 @@ export default function QuizHoster() {
               answerTimeLeftAsAPercentage: message.answerTimeLeftAsAPercentage,
             },
           ]);
-          if (roundIsComplete()) {
-            setAnswersSubmitted(true);
-          }
         });
       } catch (err) {
         alert(err);
