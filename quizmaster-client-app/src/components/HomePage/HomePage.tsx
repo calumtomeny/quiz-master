@@ -68,14 +68,10 @@ function HomePage() {
     Axios.post("/api/quizzes", {
       name: `${quizName}`,
     }).then((res) => {
-      localStorage.setItem("apiKey", res.data.key);
-      Axios.interceptors.request.use(function (config) {
-        const token = localStorage.getItem("apiKey");
-        config.headers.ApiKey = token;
-        return config;
-      });
       history.push(
-        `/quiz/${res.data.code}/${res.data.name.toUrlFormat()}/setup`,
+        `/quiz/${res.data.code}/${res.data.name.toUrlFormat()}/setup?key=${
+          res.data.key
+        }`,
       );
     });
   };
