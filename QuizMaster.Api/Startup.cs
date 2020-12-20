@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using System.IO;
 using System.Reflection;
 using QuizMaster.Api.Filters;
+using Microsoft.AspNetCore.Http.Connections;
 
 namespace QuizMaster.Api
 {
@@ -78,7 +79,10 @@ namespace QuizMaster.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<QuizHub>("/quiz");
+                endpoints.MapHub<QuizHub>("/quiz", options =>
+                {
+                    options.Transports = HttpTransportType.LongPolling;
+                });
             });
 
             app.UseStaticFiles();
