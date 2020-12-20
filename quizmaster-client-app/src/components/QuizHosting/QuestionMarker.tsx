@@ -253,11 +253,23 @@ export default function QuestionMarker(props: {
   const [order, setOrder] = useState<Order>("desc");
   const [orderBy, setOrderBy] = useState<keyof QuestionResponse>("name");
   const [selected, setSelected] = useState<string[]>([]);
+  const [manuallySelected, setManuallySelected] = useState<Set<string>>(
+    new Set([]),
+  );
+  const [manuallyDeselected, setManuallyDeselected] = useState<Set<string>>(
+    new Set([]),
+  );
 
   useEffect(() => {
     console.log("doing stuff...");
     setSelected(
-      props.rows.filter((x) => x.answer === props.answer).map((x) => x.id),
+      props.rows
+        .filter(
+          (x) =>
+            (x.answer === props.answer && !manuallyDeselected.has(x.id)) ||
+            manuallySelected.has(x.id),
+        )
+        .map((x) => x.id),
     );
   }, [props.answer, props.rows]);
 
@@ -285,22 +297,24 @@ export default function QuestionMarker(props: {
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected: string[] = [];
+    const newManuallySelected = new Set(manuallySelected);
+    const newManuallyDeselected = new Set(manuallyDeselected);
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
+    if (newManuallySelected.has(name)) {
+      newManuallySelected.delete(name);
+      newManuallyDeselected.add(name);
+    } else if (newManuallyDeselected.has(name)) {
+      newManuallyDeselected.delete(name);
+      newManuallySelected.add(name);
+    } else if (selected.includes(name)) {
+      newManuallyDeselected.add(name);
+    } else {
+      newManuallySelected.add(name);
     }
-    setSelected(newSelected);
+    const newSelected = new Set(...selected, newManuallySelected.values());
+    setSelected(Array.from(newSelected));
+    setManuallySelected(newManuallySelected);
+    setManuallyDeselected(newManuallyDeselected);
   };
 
   const isSelected = (name: string) => {
