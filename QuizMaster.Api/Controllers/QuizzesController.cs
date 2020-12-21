@@ -62,6 +62,19 @@ namespace TodoApi.Controllers
             return Ok(quiz);
         }
 
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
+        [HttpPost("{id}/resetcontestants")]
+        public async Task<ActionResult<Contestant>> ResetContestants(Reset.EmptyCommand command, string id)
+        {
+            var quiz = await mediator.Send(new Reset.Command(id));
+
+            var message = new QuizMasterMessage();
+            message.Kick = true;
+
+            await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
+            return Ok();
+        }
+
         // POST api/values
         [HttpPost]
         public async Task<ActionResult<Quiz>> Post(Create.Command command)

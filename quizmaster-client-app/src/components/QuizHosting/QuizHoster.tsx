@@ -57,13 +57,14 @@ export default function QuizHoster() {
   };
 
   const messageContestants = () => {
+    const nextQuestionNumber = currentQuestionNumber + 1;
     const message: QuizMasterMessage = {
       start: false,
-      question: getQuizQuestion(currentQuestionNumber + 1)?.Question ?? "",
-      answer: getQuizQuestion(currentQuestionNumber + 1)?.Answer ?? "",
+      question: getQuizQuestion(nextQuestionNumber)?.Question ?? "",
+      answer: getQuizQuestion(nextQuestionNumber)?.Answer ?? "",
       complete: false,
-      questionNumber:
-        getQuizQuestion(currentQuestionNumber + 1)?.QuestionNumber ?? 1,
+      questionNumber: getQuizQuestion(nextQuestionNumber)?.QuestionNumber ?? 1,
+      kick: false,
     };
 
     axios
@@ -100,6 +101,7 @@ export default function QuizHoster() {
         answer: "",
         complete: true,
         questionNumber: 0,
+        kick: false,
       };
 
       axios
@@ -193,6 +195,7 @@ export default function QuizHoster() {
           answer: "",
           complete: false,
           questionNumber: 1,
+          kick: false,
         };
 
         axios

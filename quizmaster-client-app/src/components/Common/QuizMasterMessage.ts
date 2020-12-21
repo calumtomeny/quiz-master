@@ -4,6 +4,7 @@ interface QuizMasterMessage {
   question: string;
   answer: string;
   questionNumber: number;
+  kick: boolean;
 }
 
 export default QuizMasterMessage;

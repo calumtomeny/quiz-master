@@ -7,7 +7,7 @@ import "./HostLobby.css";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import Contestant from "./Contestant";
 
-export default function HostLobby() {
+export default function HostLobby(props: { refreshContestants: boolean }) {
   const { id } = useParams();
   const [contestants, setContestants] = useState<string[]>([]);
 
@@ -52,7 +52,7 @@ export default function HostLobby() {
     return () => {
       hubConnect.stop();
     };
-  }, [id]);
+  }, [id, props.refreshContestants]);
 
   return (
     <>
