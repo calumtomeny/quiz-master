@@ -54,6 +54,7 @@ export default function QuestionResponder() {
   const [startTime, setStartTime] = useState(0);
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState(0);
   const [answerSubmitted, setAnswerSubmitted] = useState(false);
+  const [kicked, setKicked] = useState(false);
 
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
     setAnswer(e.currentTarget.value);
@@ -102,8 +103,8 @@ export default function QuestionResponder() {
   }, [timeLeftAsAPercentage]);
 
   useEffect(() => {
-    axios.get(`/api/quizzes/${quizId}`).then((res) => {
-      setQuizName(res.data.name);
+    axios.get(`/api/quizzes/${quizId}/name`).then((res) => {
+      setQuizName(res.data);
     });
 
     // Set the initial SignalR Hub Connection.
@@ -132,6 +133,11 @@ export default function QuestionResponder() {
             setQuizInitialized(true);
           } else if (message.complete) {
             setQuizIsComplete(true);
+          } else if (message.kick) {
+            console.log("Leaving group...");
+            hubConnect.invoke("RemoveFromGroup", quizId);
+            console.log("Connection removed");
+            setKicked(true);
           } else {
             setQuizQuestion(
               new QuizQuestion(
@@ -166,7 +172,13 @@ export default function QuestionResponder() {
           : ""}
       </Typography>
 
-      {quizIsComplete ? (
+      {kicked ? (
+        <>
+          <div className={classes.thankYou}>
+            <h1>You have been removed from the quiz. No hard feelings!</h1>
+          </div>
+        </>
+      ) : quizIsComplete ? (
         <>
           <div className={classes.thankYou}>
             <h1>The quiz is over, thank you for playing!</h1>

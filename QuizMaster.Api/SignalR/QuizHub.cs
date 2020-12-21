@@ -14,5 +14,10 @@ namespace QuizMaster.Api.SignalR
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
+
+        public async Task RemoveFromGroup(string groupName)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+        }        
     }
 }

@@ -6,6 +6,11 @@ import {
   Step,
   StepLabel,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
@@ -19,6 +24,10 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginRight: theme.spacing(1),
+  },
+  resetButton: {
+    alignSelf: "flex-end",
+    float: "right",
   },
   buttons: {
     marginTop: theme.spacing(1),
@@ -59,6 +68,8 @@ export default function QuizWizard() {
   const [quizCode, setQuizCode] = useState("");
   const [quizName, setQuizName] = useState("");
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
+  const [resetAlertOpen, setResetAlertOpen] = useState(false);
+  const [refreshContestants, setRefreshContestants] = useState(false);
 
   useEffect(() => {
     axios.get(`/api/quizzes/${id}`).then((res) => {
@@ -87,7 +98,7 @@ export default function QuizWizard() {
       <div className={classes.stepContainer}>No options yet.</div>
     ) : (
       <div className={classes.stepContainer}>
-        <HostLobby />
+        <HostLobby refreshContestants={refreshContestants} />
       </div>
     );
   };
@@ -120,6 +131,26 @@ export default function QuizWizard() {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleReset = () => {
+    setResetAlertOpen(true);
+  };
+
+  const handleResetAlertClose = () => {
+    setResetAlertOpen(false);
+  };
+
+  const handleCancelReset = () => {
+    setResetAlertOpen(false);
+  };
+
+  const handleConfirmReset = () => {
+    setResetAlertOpen(false);
+    axios.post(`/api/quizzes/${id}/resetcontestants`, {}).then(() => {
+      setRefreshContestants(!refreshContestants);
+      alert("Quiz Participants Reset");
+    });
   };
 
   return (
@@ -173,6 +204,41 @@ export default function QuizWizard() {
             >
               {activeStep === steps.length - 1 ? "Let's play!" : "Next"}
             </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleReset}
+              className={classes.resetButton}
+            >
+              Reset Quiz
+            </Button>
+            <Dialog
+              open={resetAlertOpen}
+              onClose={handleResetAlertClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Reset Quiz Participants?"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  This will remove all participants from the quiz
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCancelReset} color="primary" autoFocus>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleConfirmReset}
+                  color="secondary"
+                  variant="contained"
+                >
+                  Reset
+                </Button>
+              </DialogActions>
+            </Dialog>
           </div>
         </div>
       </div>
