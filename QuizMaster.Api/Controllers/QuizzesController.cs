@@ -72,9 +72,8 @@ namespace TodoApi.Controllers
             message.Kick = true;
 
             await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
-            return Ok(quiz);
+            return Ok();
         }
-
 
         // POST api/values
         [HttpPost]
