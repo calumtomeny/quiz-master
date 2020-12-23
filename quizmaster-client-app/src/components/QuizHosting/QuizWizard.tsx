@@ -116,6 +116,22 @@ export default function QuizWizard() {
     return arr[0] + "//" + arr[2] + "/quiz/" + quizCode + "/" + quizName;
   };
 
+  const getQuizMasterUrl = () => {
+    const url = window.location.href;
+    const arr = url.split("/");
+    return (
+      arr[0] +
+      "//" +
+      arr[2] +
+      "/quiz/" +
+      quizCode +
+      "/" +
+      quizName +
+      "/setup?key=" +
+      encodeURIComponent(String(key))
+    );
+  };
+
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
       history.push(`/quiz/${id}/${quizName}/host`);
@@ -194,6 +210,19 @@ export default function QuizWizard() {
       <div>
         <div>
           {getStepContent()}
+          <Box pt={3} pb={3}>
+            <Typography variant="body2" gutterBottom>
+              To come back to this quiz later as a Quiz Master, save the
+              following link:
+              <div>
+                {quizName ? (
+                  <a data-testid="quiz-url" href={getQuizMasterUrl()}>
+                    {getQuizMasterUrl()}
+                  </a>
+                ) : null}
+              </div>
+            </Typography>
+          </Box>
           <div className={classes.buttons}>
             <Button
               disabled={activeStep === 0}
