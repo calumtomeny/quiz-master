@@ -6,11 +6,11 @@ import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
-import PeopleIcon from "@material-ui/icons/People";
+import CoffeeIcon from "@material-ui/icons/LocalCafeOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import PostAddIcon from "@material-ui/icons/PostAdd";
-import quiz from "./quiz.jpeg";
+import girlWithCoffee from "./girl_with_coffee.jpeg";
 import { useHistory } from "react-router-dom";
 import Axios from "axios";
 import { Snackbar, SnackbarCloseReason } from "@material-ui/core";
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100vh",
   },
   image: {
-    backgroundImage: `url(${quiz})`,
+    backgroundImage: `url(${girlWithCoffee})`,
     backgroundRepeat: "no-repeat",
     backgroundColor:
       theme.palette.type === "light"
@@ -39,9 +39,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
   },
-  avatar: {
+  avatarHost: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
+  },
+  avatarJoin: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.primary.main,
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -113,8 +117,8 @@ function HomePage() {
         <Grid item xs={false} sm={4} md={7} className={classes.image} />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <div className={classes.paper}>
-            <Avatar className={classes.avatar}>
-              <PeopleIcon />
+            <Avatar className={classes.avatarJoin}>
+              <CoffeeIcon />
             </Avatar>
             <form
               className={classes.form}
@@ -147,7 +151,7 @@ function HomePage() {
                 Join
               </Button>
             </form>
-            <Avatar className={classes.avatar}>
+            <Avatar className={classes.avatarHost}>
               <PostAddIcon />
             </Avatar>
             <form
