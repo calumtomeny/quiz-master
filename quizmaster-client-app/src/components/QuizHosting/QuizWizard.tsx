@@ -11,12 +11,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Snackbar,
 } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import QuestionCreator from "./QuestionCreator/QuestionCreator";
 import HostLobby from "./HostLobby";
 import axios from "axios";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,6 +72,7 @@ export default function QuizWizard() {
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
   const [resetAlertOpen, setResetAlertOpen] = useState(false);
   const [refreshContestants, setRefreshContestants] = useState(false);
+  const [resetSuccessOpen, setResetSuccessOpen] = useState(false);
 
   useEffect(() => {
     axios.get(`/api/quizzes/${id}`).then((res) => {
@@ -149,8 +152,12 @@ export default function QuizWizard() {
     setResetAlertOpen(false);
     axios.post(`/api/quizzes/${id}/resetcontestants`, {}).then(() => {
       setRefreshContestants(!refreshContestants);
-      alert("Quiz Participants Reset");
+      setResetSuccessOpen(true);
     });
+  };
+
+  const handleResetSuccessClose = () => {
+    setResetSuccessOpen(false);
   };
 
   return (
@@ -239,6 +246,15 @@ export default function QuizWizard() {
                 </Button>
               </DialogActions>
             </Dialog>
+            <Snackbar
+              open={resetSuccessOpen}
+              autoHideDuration={6000}
+              onClose={handleResetSuccessClose}
+            >
+              <Alert onClose={handleResetSuccessClose} severity="success">
+                Quiz Participants Reset
+              </Alert>
+            </Snackbar>
           </div>
         </div>
       </div>

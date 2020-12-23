@@ -7,12 +7,10 @@ import HomePage from "../../components/HomePage/HomePage";
 import QuestionResponder from "../../components/QuizParticipating/QuestionResponder";
 import QuizHoster from "../../components/QuizHosting/QuizHoster";
 import NotFound from "../../components/Common/NotFound";
-import Header from "../../components/Common/Header";
 
 function App() {
   const quizSetup: any = () => (
     <Layout>
-      <Header />
       <QuizWizard />
     </Layout>
   );
@@ -23,13 +21,11 @@ function App() {
   );
   const questionResponder: any = () => (
     <Layout>
-      <Header />
       <QuestionResponder />
     </Layout>
   );
   const quizHoster: any = () => (
     <Layout>
-      <Header />
       <QuizHoster />
     </Layout>
   );
