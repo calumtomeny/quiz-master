@@ -11,12 +11,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Snackbar,
 } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import QuestionCreator from "./QuestionCreator/QuestionCreator";
 import HostLobby from "./HostLobby";
 import axios from "axios";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,6 +72,7 @@ export default function QuizWizard() {
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
   const [resetAlertOpen, setResetAlertOpen] = useState(false);
   const [refreshContestants, setRefreshContestants] = useState(false);
+  const [resetSuccessOpen, setResetSuccessOpen] = useState(false);
 
   useEffect(() => {
     axios.get(`/api/quizzes/${id}`).then((res) => {
@@ -113,6 +116,22 @@ export default function QuizWizard() {
     return arr[0] + "//" + arr[2] + "/quiz/" + quizCode + "/" + quizName;
   };
 
+  const getQuizMasterUrl = () => {
+    const url = window.location.href;
+    const arr = url.split("/");
+    return (
+      arr[0] +
+      "//" +
+      arr[2] +
+      "/quiz/" +
+      quizCode +
+      "/" +
+      quizName +
+      "/setup?key=" +
+      encodeURIComponent(String(key))
+    );
+  };
+
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
       history.push(`/quiz/${id}/${quizName}/host`);
@@ -149,8 +168,12 @@ export default function QuizWizard() {
     setResetAlertOpen(false);
     axios.post(`/api/quizzes/${id}/resetcontestants`, {}).then(() => {
       setRefreshContestants(!refreshContestants);
-      alert("Quiz Participants Reset");
+      setResetSuccessOpen(true);
     });
+  };
+
+  const handleResetSuccessClose = () => {
+    setResetSuccessOpen(false);
   };
 
   return (
@@ -187,6 +210,19 @@ export default function QuizWizard() {
       <div>
         <div>
           {getStepContent()}
+          <Box pt={3} pb={3}>
+            <Typography variant="body2" gutterBottom>
+              To come back to this quiz later as a Quiz Master, save the
+              following link:
+              <div>
+                {quizName ? (
+                  <a data-testid="quiz-url" href={getQuizMasterUrl()}>
+                    {getQuizMasterUrl()}
+                  </a>
+                ) : null}
+              </div>
+            </Typography>
+          </Box>
           <div className={classes.buttons}>
             <Button
               disabled={activeStep === 0}
@@ -239,6 +275,15 @@ export default function QuizWizard() {
                 </Button>
               </DialogActions>
             </Dialog>
+            <Snackbar
+              open={resetSuccessOpen}
+              autoHideDuration={6000}
+              onClose={handleResetSuccessClose}
+            >
+              <Alert onClose={handleResetSuccessClose} severity="success">
+                Quiz Participants Reset
+              </Alert>
+            </Snackbar>
           </div>
         </div>
       </div>

@@ -20,11 +20,13 @@ export default function AboutModal(props: any) {
       onClose={props.onClose}
       aria-labelledby="simple-dialog-title"
     >
-      <DialogTitle id="simple-dialog-title">Quiz.Coffee</DialogTitle>
+      <DialogTitle id="simple-dialog-title">Contact Us</DialogTitle>
       <div className={classes.aboutModalPaper}>
         <Typography variant="body2" color="textSecondary" align="center">
-          Created by Calum Tomeny, Richard Lewis and Tim Loudon
+          We&apos;d love to hear your feedback regarding bugs and suggestions.
+          Please send us an email to the address below
         </Typography>
+        <a href="mailto:quiz.coffee.app@gmail.com">quiz.coffee.app@gmail.com</a>
         {/*Commented until we create a privacy policy
           <br/>
           <Typography variant="body2" color="textSecondary" align="center">

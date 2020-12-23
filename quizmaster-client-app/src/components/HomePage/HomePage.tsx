@@ -17,6 +17,7 @@ import { Snackbar, SnackbarCloseReason } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import "../../stringUtilities";
 import Footer from "../Common/Footer";
+import Header from "../Common/Header";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -109,92 +110,95 @@ function HomePage() {
     setQuizCode(e.currentTarget.value);
 
   return (
-    <Grid container component="main" className={classes.root}>
-      <CssBaseline />
-      <Grid item xs={false} sm={4} md={7} className={classes.image} />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-        <div className={classes.paper}>
-          <Avatar className={classes.avatarJoin}>
-            <CoffeeIcon />
-          </Avatar>
-          <form
-            className={classes.form}
-            onSubmit={onJoinQuizSubmit}
-            data-testid="join-quiz"
-          >
-            <Typography component="h2" variant="h5" align="center">
-              Join quiz
-            </Typography>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="quiz-code"
-              label="Quiz Code"
-              id="quiz-code"
-              onChange={onQuizCodeChange}
-              value={quizCode}
-              data-testid="quiz-code-input"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              data-testid="join-quiz-button"
+    <div>
+      <Header />
+      <Grid container component="main" className={classes.root}>
+        <CssBaseline />
+        <Grid item xs={false} sm={4} md={7} className={classes.image} />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <div className={classes.paper}>
+            <Avatar className={classes.avatarJoin}>
+              <CoffeeIcon />
+            </Avatar>
+            <form
+              className={classes.form}
+              onSubmit={onJoinQuizSubmit}
+              data-testid="join-quiz"
             >
-              Join
-            </Button>
-          </form>
-          <Avatar className={classes.avatarHost}>
-            <PostAddIcon />
-          </Avatar>
-          <form
-            className={classes.form}
-            onSubmit={onHostQuizSubmit}
-            data-testid="host-quiz"
-          >
-            <Typography component="h2" variant="h5" align="center">
-              Host quiz
-            </Typography>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="quiz-name"
-              label="Quiz Name"
-              name="quiz-name"
-              autoFocus
-              onChange={onQuizNameChange}
-              value={quizName}
-              data-testid="quiz-name-input"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="secondary"
-              className={classes.submit}
-              data-testid="create-quiz-button"
+              <Typography component="h2" variant="h5" align="center">
+                Join quiz
+              </Typography>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="quiz-code"
+                label="Quiz Code"
+                id="quiz-code"
+                onChange={onQuizCodeChange}
+                value={quizCode}
+                data-testid="quiz-code-input"
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                data-testid="join-quiz-button"
+              >
+                Join
+              </Button>
+            </form>
+            <Avatar className={classes.avatarHost}>
+              <PostAddIcon />
+            </Avatar>
+            <form
+              className={classes.form}
+              onSubmit={onHostQuizSubmit}
+              data-testid="host-quiz"
             >
-              Host
-            </Button>
-          </form>
-          <Box mt={2}>
-            <Footer />
-          </Box>
+              <Typography component="h2" variant="h5" align="center">
+                Host quiz
+              </Typography>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="quiz-name"
+                label="Quiz Name"
+                name="quiz-name"
+                autoFocus
+                onChange={onQuizNameChange}
+                value={quizName}
+                data-testid="quiz-name-input"
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="secondary"
+                className={classes.submit}
+                data-testid="create-quiz-button"
+              >
+                Host
+              </Button>
+            </form>
+            <Box mt={2}>
+              <Footer />
+            </Box>
 
-          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity="error">
-              Could not find quiz with specified code.
-            </Alert>
-          </Snackbar>
-        </div>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity="error">
+                Could not find quiz with specified code.
+              </Alert>
+            </Snackbar>
+          </div>
+        </Grid>
       </Grid>
-    </Grid>
+    </div>
   );
 }
 
