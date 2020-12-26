@@ -32,6 +32,21 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = "asc" | "desc";
 
+function findSetDifference<T>(
+  setA: Set<T> | Array<T>,
+  setB: Set<T> | Array<T>,
+) {
+  const _difference = new Set(setA);
+  setB.forEach((elem: T) => _difference.delete(elem));
+  return _difference;
+}
+
+function findSetUnion<T>(setA: Set<T> | Array<T>, setB: Set<T> | Array<T>) {
+  const _union = new Set(setA);
+  setB.forEach((elem: T) => _union.add(elem));
+  return _union;
+}
+
 const useStyles = makeStyles(() =>
   createStyles({
     root: {
@@ -259,18 +274,22 @@ export default function QuestionMarker(props: {
   const [manuallyDeselected, setManuallyDeselected] = useState<Set<string>>(
     new Set([]),
   );
+  const [autoSelected, setAutoSelected] = useState<Set<string>>(new Set([]));
 
   useEffect(() => {
     console.log("doing stuff...");
-    setSelected(
+    const newAutoSelected = new Set(
       props.rows
         .filter(
           (x) =>
-            (x.answer === props.answer && !manuallyDeselected.has(x.id)) ||
+            (x.answer.toLowerCase() === props.answer.toLowerCase() &&
+              !manuallyDeselected.has(x.id)) ||
             manuallySelected.has(x.id),
         )
         .map((x) => x.id),
     );
+    setAutoSelected(newAutoSelected);
+    setSelected(Array.from(newAutoSelected));
   }, [props.answer, props.rows]);
 
   const onAcceptAnswers = () => {
@@ -297,8 +316,8 @@ export default function QuestionMarker(props: {
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-    const newManuallySelected = new Set(manuallySelected);
-    const newManuallyDeselected = new Set(manuallyDeselected);
+    const newManuallySelected = new Set<string>(manuallySelected);
+    const newManuallyDeselected = new Set<string>(manuallyDeselected);
 
     if (newManuallySelected.has(name)) {
       newManuallySelected.delete(name);
@@ -311,7 +330,8 @@ export default function QuestionMarker(props: {
     } else {
       newManuallySelected.add(name);
     }
-    const newSelected = new Set(...selected, newManuallySelected.values());
+    let newSelected = findSetDifference(autoSelected, newManuallyDeselected);
+    newSelected = findSetUnion(newSelected, newManuallySelected);
     setSelected(Array.from(newSelected));
     setManuallySelected(newManuallySelected);
     setManuallyDeselected(newManuallyDeselected);
