@@ -53,7 +53,7 @@ export default function Header() {
 
   return (
     <>
-      <AppBar position="sticky">
+      <AppBar position="fixed">
         <Toolbar variant="dense">
           <IconButton
             aria-label="contact"
