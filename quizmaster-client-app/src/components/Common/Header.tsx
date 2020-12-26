@@ -11,6 +11,7 @@ import AboutModal from "./AboutModal";
 import ContactUsModal from "./ContactUsModal";
 import EmailIcon from "@material-ui/icons/Email";
 import CoffeeIcon from "@material-ui/icons/LocalCafe";
+import { useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   aboutButton: {},
@@ -18,11 +19,14 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: "flex-end",
     display: "flex",
   },
-  mainIcon: {
-    marginRight: theme.spacing(2),
+  homePageIconButton: {
+    "&:disabled": {
+      color: "#ffffff",
+    },
   },
   title: {
     flexGrow: 1,
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -30,6 +34,7 @@ export default function Header() {
   const classes = useStyles();
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [contactUsModalOpen, setContactUsModalOpen] = React.useState(false);
+  const location = useLocation();
 
   const handleAboutModalOpen = () => {
     setAboutModalOpen(true);
@@ -51,17 +56,29 @@ export default function Header() {
     return arr[0] + "//" + arr[2];
   };
 
+  const iconButton = (
+    <IconButton aria-label="contact" color="inherit" href={getHomePageUrl()}>
+      <CoffeeIcon />
+    </IconButton>
+  );
+
+  const homePageIconButton = (
+    <IconButton
+      aria-label="contact"
+      color="inherit"
+      disabled
+      disableRipple
+      className={classes.homePageIconButton}
+    >
+      <CoffeeIcon />
+    </IconButton>
+  );
+
   return (
     <>
       <AppBar position="fixed">
         <Toolbar variant="dense">
-          <IconButton
-            aria-label="contact"
-            color="inherit"
-            href={getHomePageUrl()}
-          >
-            <CoffeeIcon className={classes.mainIcon} />
-          </IconButton>
+          {location.pathname == "/" ? homePageIconButton : iconButton}
           <Typography variant="h6" className={classes.title}>
             Quiz.Coffee
           </Typography>
