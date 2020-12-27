@@ -5,6 +5,13 @@ import ReactDOM from "react-dom";
 import QuestionInitialiser from "./QuestionInitialiser";
 import { shallow } from "enzyme";
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useLocation: () => ({
+    pathname: "localhost:3000",
+  }),
+}));
+
 describe("When testing question initialiser directly", () => {
   afterEach(cleanup);
   it("renders without crashing", () => {
