@@ -39,7 +39,6 @@ export default function QuestionInitialiser(props: any) {
         id="answer"
         label="Answer"
         name="answer"
-        autoFocus
         onChange={onAnswerChange}
         value={answer}
         data-testid="answer-input"
