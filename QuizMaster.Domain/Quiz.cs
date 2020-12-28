@@ -12,6 +12,8 @@ namespace QuizMaster.Domain
             this.Name = name;
             this.Code = GenerateCode();
             this.Key = GenerateKey();
+            this.State = QuizState.QuizNotStarted;
+            this.QuestionNo = 0;
         }
 
         public Quiz(Guid id, String name, String code)
@@ -24,6 +26,8 @@ namespace QuizMaster.Domain
         public String Name { get; private set; }
         public String Code { get; private set; }
         public String Key { get; private set; }
+        public QuizState State { get; set; }
+        public int QuestionNo { get; set; }
         public List<Contestant> Contestants { get; set; }
         public List<QuizQuestion> QuizQuestions { get; set; }
 
