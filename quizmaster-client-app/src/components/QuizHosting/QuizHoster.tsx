@@ -83,6 +83,7 @@ export default function QuizHoster() {
       complete: false,
       questionNumber: getQuizQuestion(nextQuestionNumber)?.QuestionNumber ?? 1,
       kick: false,
+      standings: [],
     };
 
     axios
@@ -127,8 +128,8 @@ export default function QuizHoster() {
         complete: true,
         questionNumber: 0,
         kick: false,
+        standings: contestants,
       };
-
       axios
         .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
         .then(() => {
@@ -228,6 +229,7 @@ export default function QuizHoster() {
           complete: false,
           questionNumber: 1,
           kick: false,
+          standings: [],
         };
 
         axios
