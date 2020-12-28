@@ -7,7 +7,7 @@ import Header from "../../components/Common/Header";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    [theme.breakpoints.up("md")]: { marginTop: theme.spacing(8) },
+    marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     paddingTop: theme.spacing(2),
