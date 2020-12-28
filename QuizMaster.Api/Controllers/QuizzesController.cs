@@ -41,7 +41,7 @@ namespace TodoApi.Controllers
             return Ok(await mediator.Send(new Details.Query(id)));
         }
 
-                [HttpGet("{id}/name")]
+        [HttpGet("{id}/name")]
         public async Task<ActionResult<String>> GetQuizName(string id)
         {
             var quiz = await mediator.Send(new Details.Query(id));
@@ -53,6 +53,20 @@ namespace TodoApi.Controllers
 
             return Ok(mediator.Send(new Details.Query(id)).Result.Name);
         }
+
+        [HttpGet("{id}/state")]
+        public async Task<ActionResult<String>> GetQuizState(string id)
+        {
+            var quiz = await mediator.Send(new Details.Query(id));
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new Details.QuizStateValues(){QuizState = quiz.State, QuestionNo = quiz.QuestionNo});
+            //mediator.Send(new Details.Query(id)).Result.Name);
+        }        
 
         [ServiceFilter(typeof(ApiKeyAuthAttribute))]
         [HttpGet("{id}/contestants")]
@@ -72,6 +86,15 @@ namespace TodoApi.Controllers
             message.Kick = true;
 
             await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
+            return Ok();
+        }
+
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
+        [HttpPost("{id}")]
+        public async Task<ActionResult<Contestant>> UpdateQuiz(Update.CommandBody commandBody, string id)
+        {
+            var quiz = await mediator.Send(new Update.Command() { QuizCode = id, CommandBody = commandBody });
+
             return Ok();
         }
 

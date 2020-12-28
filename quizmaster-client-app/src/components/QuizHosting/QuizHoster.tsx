@@ -18,6 +18,7 @@ import ParticipantMessage from "../Common/ParticipantMessage";
 import QuizStandings from "./QuizStandings";
 import QuestionResponse from "./QuestionResponse";
 import ContestantScore from "./ContestantScore";
+import QuizState from "../Common/QuizState";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,6 +57,23 @@ export default function QuizHoster() {
     return question;
   };
 
+  const updateQuizStateReady = () => {
+    axios.post(`/api/quizzes/${id}`, {
+      QuestionNo: currentQuestionNumber + 1,
+      QuizState: QuizState.QuestionReady,
+    });
+  };
+
+  const updateQuizStateInProgress = () => {
+    axios.post(`/api/quizzes/${id}`, {
+      QuizState: QuizState.QuestionInProgress,
+    });
+  };
+
+  const updateQuizStateFinished = () => {
+    axios.post(`/api/quizzes/${id}`, { QuizState: QuizState.QuizEnded });
+  };
+
   const messageContestants = () => {
     const nextQuestionNumber = currentQuestionNumber + 1;
     const message: QuizMasterMessage = {
@@ -78,7 +96,14 @@ export default function QuizHoster() {
   };
 
   const onQuizInitiate = () => {
-    messageContestants();
+    axios
+      .post(`/api/quizzes/${id}`, {
+        QuestionNo: 1,
+        QuizState: QuizState.QuestionInProgress,
+      })
+      .then(() => {
+        messageContestants();
+      });
   };
 
   const getCurrentQuizQuestion = () => {
@@ -108,11 +133,13 @@ export default function QuizHoster() {
         .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
         .then(() => {
           setQuizIsComplete(true);
+          //updateQuizStateFinished();
         });
     } else {
       setShowQuizMarker(true);
       setAnswers([]);
       messageContestants();
+      updateQuizStateInProgress();
     }
   };
 
@@ -160,6 +187,11 @@ export default function QuizHoster() {
       }),
     );
     setShowQuizMarker(false);
+    if (isFinalQuestion()) {
+      updateQuizStateFinished();
+    } else {
+      updateQuizStateReady();
+    }
   };
 
   useEffect(() => {
