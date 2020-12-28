@@ -85,13 +85,18 @@ function HomePage() {
 
   const onJoinQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    Axios.get(`/api/quizzes/${quizCode}/name`).then((res) => {
-      if (!res.data) {
+    Axios.get(`/api/quizzes/${quizCode}/name`)
+      .then((res) => {
+        if (!res.data) {
+          setOpen(true);
+        } else {
+          history.push(`/quiz/${quizCode}/${res.data.toUrlFormat()}`);
+        }
+      })
+      .catch((err) => {
+        console.log("error: ", err);
         setOpen(true);
-      } else {
-        history.push(`/quiz/${quizCode}/${res.data.toUrlFormat()}`);
-      }
-    });
+      });
   };
 
   const handleClose = (
