@@ -65,7 +65,6 @@ namespace TodoApi.Controllers
             }
 
             return Ok(new Details.QuizStateValues(){QuizState = quiz.State, QuestionNo = quiz.QuestionNo});
-            //mediator.Send(new Details.Query(id)).Result.Name);
         }        
 
         [ServiceFilter(typeof(ApiKeyAuthAttribute))]

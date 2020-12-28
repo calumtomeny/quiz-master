@@ -34,20 +34,16 @@ namespace QuizMaster.Application.Quizzes
             public Handler(QuizContext context)
             {
                 this.context = context;
-
             }
 
             public async Task<Quiz> Handle(Command request, CancellationToken cancellationToken)
             {
                 var quiz = await context.Quiz.SingleOrDefaultAsync(x => x.Code == request.QuizCode);
-                //var save = false;
                 if(request.CommandBody.QuestionNo.HasValue){
                     quiz.QuestionNo = request.CommandBody.QuestionNo.Value;
-                    //save = true;
                 }
                 if(request.CommandBody.QuizState.HasValue){
                     quiz.State = request.CommandBody.QuizState.Value;
-                    //save = true;
                 }
                 if(context.ChangeTracker.HasChanges())
                 {
@@ -59,11 +55,9 @@ namespace QuizMaster.Application.Quizzes
                 }
                 else
                 {
-
                     return quiz;
                 }
                 
-
                 throw new Exception("There was a problem saving changes.");
             }
         }
