@@ -16,6 +16,8 @@ import QuizMasterMessage from "../Common/QuizMasterMessage";
 import QuizQuestion from "../Common/QuizQuestion";
 import QuizQuestionDisplay from "../QuizHosting/QuizQuestionDisplay";
 import ParticipantMessage from "../Common/ParticipantMessage";
+import Contestant from "../QuizHosting/Contestant";
+import QuizStandings from "../QuizHosting/QuizStandings";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -37,6 +39,10 @@ const useStyles = makeStyles((theme) => ({
   thankYou: {
     textAlign: "center",
   },
+  finalStandings: {
+    marginBottom: theme.spacing(2),
+    textAlign: "center",
+  },
 }));
 
 export default function QuestionResponder() {
@@ -55,6 +61,9 @@ export default function QuestionResponder() {
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState(0);
   const [answerSubmitted, setAnswerSubmitted] = useState(false);
   const [kicked, setKicked] = useState(false);
+  const [contestantStandings, setContestantStandings] = useState<Contestant[]>(
+    [],
+  );
 
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
     setAnswer(e.currentTarget.value);
@@ -132,6 +141,7 @@ export default function QuestionResponder() {
           if (message.start) {
             setQuizInitialized(true);
           } else if (message.complete) {
+            setContestantStandings(message.standings);
             setQuizIsComplete(true);
           } else if (message.kick) {
             console.log("Leaving group...");
@@ -180,8 +190,10 @@ export default function QuestionResponder() {
         </>
       ) : quizIsComplete ? (
         <>
-          <div className={classes.thankYou}>
-            <h1>The quiz is over, thank you for playing!</h1>
+          <div className={classes.finalStandings}>
+            <h2>{quizName}</h2>
+            <h1>Final Standings</h1>
+            <QuizStandings contestantStandings={contestantStandings} />
           </div>
         </>
       ) : quizInitialized && !quizQuestion ? (
