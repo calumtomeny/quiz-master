@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using QuizMaster.Domain;
+
 namespace QuizMaster.Application
 {
     public class QuizMasterMessage
@@ -8,5 +11,6 @@ namespace QuizMaster.Application
         public string Answer { get; set; }
         public int QuestionNumber { get; set; }
         public bool Kick { get; set; }
+        public List<ContestantScore> Standings { get; set; }
     }
 }   

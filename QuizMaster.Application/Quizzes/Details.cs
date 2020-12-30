@@ -22,6 +22,12 @@ namespace QuizMaster.Application.Quizzes
             public string QuizCode { get; private set; }
         }
 
+        public class QuizStateValues
+        {
+            public QuizState? QuizState { get; set; }
+            public int? QuestionNo { get; set;}
+        }        
+
         public class Handler : IRequestHandler<Query, Quiz>
         {
             private readonly QuizContext context;

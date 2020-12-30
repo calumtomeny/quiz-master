@@ -19,6 +19,7 @@ import QuestionCreator from "./QuestionCreator/QuestionCreator";
 import HostLobby from "./HostLobby";
 import axios from "axios";
 import { Alert } from "@material-ui/lab";
+import QuizState from "../Common/QuizState";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -134,7 +135,14 @@ export default function QuizWizard() {
 
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
-      history.push(`/quiz/${id}/${quizName}/host`);
+      axios
+        .post(`/api/quizzes/${id}`, {
+          QuestionNo: 1,
+          QuizState: QuizState.QuestionReady,
+        })
+        .then(() => {
+          history.push(`/quiz/${id}/${quizName}/host`);
+        });
     }
 
     let newSkipped = skipped;
@@ -164,10 +172,18 @@ export default function QuizWizard() {
     setResetAlertOpen(false);
   };
 
+  const updateQuizStateInitial = () => {
+    axios.post(`/api/quizzes/${id}`, {
+      QuestionNo: 0,
+      QuizState: QuizState.QuizNotStarted,
+    });
+  };
+
   const handleConfirmReset = () => {
     setResetAlertOpen(false);
     axios.post(`/api/quizzes/${id}/resetcontestants`, {}).then(() => {
       setRefreshContestants(!refreshContestants);
+      updateQuizStateInitial();
       setResetSuccessOpen(true);
     });
   };

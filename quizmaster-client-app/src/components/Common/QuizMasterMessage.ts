@@ -1,3 +1,5 @@
+import Contestant from "../QuizHosting/Contestant";
+
 interface QuizMasterMessage {
   start: boolean;
   complete: boolean;
@@ -5,6 +7,7 @@ interface QuizMasterMessage {
   answer: string;
   questionNumber: number;
   kick: boolean;
+  standings: Contestant[];
 }
 
 export default QuizMasterMessage;
