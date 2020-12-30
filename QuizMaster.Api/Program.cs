@@ -12,36 +12,36 @@ using QuizMaster.Persistence;
 
 namespace QuizMaster.Api
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var host = CreateHostBuilder(args).Build();
+	public class Program
+	{
+		public static void Main(string[] args)
+		{
+			var host = CreateHostBuilder(args).Build();
 
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var context = services.GetRequiredService<QuizContext>();
-                    context.Database.Migrate();
-                    Seed.SeedData(context);
-                }
-                catch (Exception e)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(e, "An error occurred during migration");
-                }
-            }
+			using (var scope = host.Services.CreateScope())
+			{
+				var services = scope.ServiceProvider;
+				try
+				{
+					var context = services.GetRequiredService<QuizContext>();
+					context.Database.Migrate();
+					Seed.SeedData(context);
+				}
+				catch (Exception e)
+				{
+					var logger = services.GetRequiredService<ILogger<Program>>();
+					logger.LogError(e, "An error occurred during migration");
+				}
+			}
 
-            host.Run();
-        }
+			host.Run();
+		}
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+		public static IHostBuilder CreateHostBuilder(string[] args) =>
+				Host.CreateDefaultBuilder(args)
+						.ConfigureWebHostDefaults(webBuilder =>
+						{
+							webBuilder.UseStartup<Startup>();
+						});
+	}
 }

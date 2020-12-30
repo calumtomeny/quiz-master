@@ -12,154 +12,154 @@ using QuizMaster.Domain;
 
 namespace TodoApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class QuizzesController : ControllerBase
-    {
-        private readonly IMediator mediator;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class QuizzesController : ControllerBase
+	{
+		private readonly IMediator mediator;
 
-        private readonly IHubContext<QuizHub> hubContext;
+		private readonly IHubContext<QuizHub> hubContext;
 
-        public QuizzesController(IMediator mediator, IHubContext<QuizHub> hubContext)
-        {
-            this.mediator = mediator;
-            this.hubContext = hubContext;
-        }
+		public QuizzesController(IMediator mediator, IHubContext<QuizHub> hubContext)
+		{
+			this.mediator = mediator;
+			this.hubContext = hubContext;
+		}
 
-        // GET api/values
-        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Quiz>> Get(string id)
-        {
-            var quiz = await mediator.Send(new Details.Query(id));
+		// GET api/values
+		[ServiceFilter(typeof(ApiKeyAuthAttribute))]
+		[HttpGet("{id}")]
+		public async Task<ActionResult<Quiz>> Get(string id)
+		{
+			var quiz = await mediator.Send(new Details.Query(id));
 
-            if (quiz == null)
-            {
-                return NotFound();
-            }
+			if (quiz == null)
+			{
+				return NotFound();
+			}
 
-            return Ok(await mediator.Send(new Details.Query(id)));
-        }
+			return Ok(await mediator.Send(new Details.Query(id)));
+		}
 
-        [HttpGet("{id}/name")]
-        public async Task<ActionResult<String>> GetQuizName(string id)
-        {
-            var quiz = await mediator.Send(new Details.Query(id));
+		[HttpGet("{id}/name")]
+		public async Task<ActionResult<String>> GetQuizName(string id)
+		{
+			var quiz = await mediator.Send(new Details.Query(id));
 
-            if (quiz == null)
-            {
-                return NotFound();
-            }
+			if (quiz == null)
+			{
+				return NotFound();
+			}
 
-            return Ok(mediator.Send(new Details.Query(id)).Result.Name);
-        }
+			return Ok(mediator.Send(new Details.Query(id)).Result.Name);
+		}
 
-        [HttpGet("{id}/state")]
-        public async Task<ActionResult<String>> GetQuizState(string id)
-        {
-            var quiz = await mediator.Send(new Details.Query(id));
+		[HttpGet("{id}/state")]
+		public async Task<ActionResult<String>> GetQuizState(string id)
+		{
+			var quiz = await mediator.Send(new Details.Query(id));
 
-            if (quiz == null)
-            {
-                return NotFound();
-            }
+			if (quiz == null)
+			{
+				return NotFound();
+			}
 
-            return Ok(new Details.QuizStateValues(){QuizState = quiz.State, QuestionNo = quiz.QuestionNo});
-        }        
+			return Ok(new Details.QuizStateValues() { QuizState = quiz.State, QuestionNo = quiz.QuestionNo });
+		}
 
-        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
-        [HttpGet("{id}/contestants")]
-        public async Task<ActionResult<Contestant>> GetContestants(string id)
-        {
-            var quiz = await mediator.Send(new QuizMaster.Application.Contestants.List.Query(id));
-            return Ok(quiz);
-        }
+		[ServiceFilter(typeof(ApiKeyAuthAttribute))]
+		[HttpGet("{id}/contestants")]
+		public async Task<ActionResult<Contestant>> GetContestants(string id)
+		{
+			var quiz = await mediator.Send(new QuizMaster.Application.Contestants.List.Query(id));
+			return Ok(quiz);
+		}
 
-        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
-        [HttpPost("{id}/resetcontestants")]
-        public async Task<ActionResult<Contestant>> ResetContestants(Reset.EmptyCommand command, string id)
-        {
-            var quiz = await mediator.Send(new Reset.Command(id));
+		[ServiceFilter(typeof(ApiKeyAuthAttribute))]
+		[HttpPost("{id}/resetcontestants")]
+		public async Task<ActionResult<Contestant>> ResetContestants(Reset.EmptyCommand command, string id)
+		{
+			var quiz = await mediator.Send(new Reset.Command(id));
 
-            var message = new QuizMasterMessage();
-            message.Kick = true;
+			var message = new QuizMasterMessage();
+			message.Kick = true;
 
-            await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
-            return Ok();
-        }
+			await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
+			return Ok();
+		}
 
-        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
-        [HttpPost("{id}")]
-        public async Task<ActionResult<Contestant>> UpdateQuiz(Update.CommandBody commandBody, string id)
-        {
-            var quiz = await mediator.Send(new Update.Command() { QuizCode = id, CommandBody = commandBody });
+		[ServiceFilter(typeof(ApiKeyAuthAttribute))]
+		[HttpPost("{id}")]
+		public async Task<ActionResult<Contestant>> UpdateQuiz(Update.CommandBody commandBody, string id)
+		{
+			var quiz = await mediator.Send(new Update.Command() { QuizCode = id, CommandBody = commandBody });
 
-            return Ok();
-        }
+			return Ok();
+		}
 
-        // POST api/values
-        [HttpPost]
-        public async Task<ActionResult<Quiz>> Post(Create.Command command)
-        {
-            var item = await mediator.Send(command);
-            return CreatedAtAction("Get", new { id = item.Code }, item);
-        }
+		// POST api/values
+		[HttpPost]
+		public async Task<ActionResult<Quiz>> Post(Create.Command command)
+		{
+			var item = await mediator.Send(command);
+			return CreatedAtAction("Get", new { id = item.Code }, item);
+		}
 
-        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
-        [HttpPost("{id}/command/quizmastermessage")]
-        public async Task<ActionResult> Start(QuizMasterMessage message, string id)
-        {
-            var quiz = await mediator.Send(new Details.Query(id));
+		[ServiceFilter(typeof(ApiKeyAuthAttribute))]
+		[HttpPost("{id}/command/quizmastermessage")]
+		public async Task<ActionResult> Start(QuizMasterMessage message, string id)
+		{
+			var quiz = await mediator.Send(new Details.Query(id));
 
-            if (quiz == null)
-            {
-                return NotFound();
-            }
+			if (quiz == null)
+			{
+				return NotFound();
+			}
 
-            await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
-            return Ok();
-        }
+			await hubContext.Clients.Group(id.ToString()).SendAsync("ContestantUpdate", message);
+			return Ok();
+		}
 
-        [HttpPost("{id}/command/participantmessage")]
-        public async Task<ActionResult> Start(ParticipantMessage message, string id)
-        {
-            var quiz = await mediator.Send(new Details.Query(id));
+		[HttpPost("{id}/command/participantmessage")]
+		public async Task<ActionResult> Start(ParticipantMessage message, string id)
+		{
+			var quiz = await mediator.Send(new Details.Query(id));
 
-            if (quiz == null)
-            {
-                return NotFound();
-            }
+			if (quiz == null)
+			{
+				return NotFound();
+			}
 
-            await hubContext.Clients.Group(id.ToString()).SendAsync("QuizMasterUpdate", message);
-            return Ok();
-        }
+			await hubContext.Clients.Group(id.ToString()).SendAsync("QuizMasterUpdate", message);
+			return Ok();
+		}
 
-        // POST api/quizzes/{id}/questions
-        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
-        [HttpPost("{id}/questions")]
-        public async Task<ActionResult<List<QuizQuestion>>> QuizQuestions(List<QuizMaster.Application.Questions.Create.CommandItem> command, string id)
-        {
-            return Ok(await mediator.Send(new QuizMaster.Application.Questions.Create.Command() { QuizItems = command, QuizCode = id }));
-        }
+		// POST api/quizzes/{id}/questions
+		[ServiceFilter(typeof(ApiKeyAuthAttribute))]
+		[HttpPost("{id}/questions")]
+		public async Task<ActionResult<List<QuizQuestion>>> QuizQuestions(List<QuizMaster.Application.Questions.Create.CommandItem> command, string id)
+		{
+			return Ok(await mediator.Send(new QuizMaster.Application.Questions.Create.Command() { QuizItems = command, QuizCode = id }));
+		}
 
-        // GET api/quizzes/{id}/questions
-        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
-        [HttpGet("{id}/questions")]
-        public async Task<ActionResult<List<QuizQuestion>>> Questions(string id)
-        {
-            return Ok(await mediator.Send(new QuizMaster.Application.Questions.List.Query() { QuizCode = id }));
-        }
+		// GET api/quizzes/{id}/questions
+		[ServiceFilter(typeof(ApiKeyAuthAttribute))]
+		[HttpGet("{id}/questions")]
+		public async Task<ActionResult<List<QuizQuestion>>> Questions(string id)
+		{
+			return Ok(await mediator.Send(new QuizMaster.Application.Questions.List.Query() { QuizCode = id }));
+		}
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+		// PUT api/values/5
+		[HttpPut("{id}")]
+		public void Put(int id, [FromBody] string value)
+		{
+		}
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-    }
+		// DELETE api/values/5
+		[HttpDelete("{id}")]
+		public void Delete(int id)
+		{
+		}
+	}
 }

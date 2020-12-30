@@ -3,21 +3,21 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace QuizMaster.Api.SignalR
 {
-    public class QuizHub : Hub
-    {
-        public async Task SendMessage(string message)
-        {
-            await Clients.All.SendAsync("SendMessage", message);
-        }
+	public class QuizHub : Hub
+	{
+		public async Task SendMessage(string message)
+		{
+			await Clients.All.SendAsync("SendMessage", message);
+		}
 
-        public async Task AddToGroup(string groupName)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-        }
+		public async Task AddToGroup(string groupName)
+		{
+			await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+		}
 
-        public async Task RemoveFromGroup(string groupName)
-        {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-        }        
-    }
+		public async Task RemoveFromGroup(string groupName)
+		{
+			await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+		}
+	}
 }
