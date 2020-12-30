@@ -8,7 +8,7 @@ import { HubConnectionBuilder } from "@microsoft/signalr";
 import Contestant from "./Contestant";
 
 export default function HostLobby(props: { refreshContestants: boolean }) {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [contestants, setContestants] = useState<string[]>([]);
 
   useEffect(() => {

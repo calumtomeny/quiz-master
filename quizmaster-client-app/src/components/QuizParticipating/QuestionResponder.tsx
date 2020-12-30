@@ -55,7 +55,7 @@ export default function QuestionResponder() {
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState(0);
   const [quizIsComplete, setQuizIsComplete] = useState(false);
   const [submitText, setSubmitText] = useState("Submit");
-  const { quizId } = useParams();
+  const { quizId } = useParams<{ quizId: string }>();
   const [participantId, setParticipantId] = useState("");
   const [startTime, setStartTime] = useState(0);
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState(0);
