@@ -16,8 +16,14 @@ so I need all the relevant information within the relevant issue.
 
 ### Acceptance Criteria
 
-1. I have clear Acceptance criteria [what a beautiful recursion].
-1. I have to understand the logic of the mockups, more than the pixels used, so that we can optimize the code.
+Scenario 1: System user signs in with valid credentials
+**Given** I’m a logged-out system user
+and I’m on the Sign-In page
+**When** I fill in the “Username” and “Password” fields with my authentication credentials
+and I click the Sign-In button
+**Then** the system signs me in
+
+Scenario 2: ...
 
 Please also note:
 
