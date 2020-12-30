@@ -66,7 +66,7 @@ function HomePage() {
 
   const [quizName, setQuizName] = useState("");
   const [quizCode, setQuizCode] = useState("");
-  const [open, setOpen] = React.useState(false);
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
 
   const onHostQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -85,23 +85,29 @@ function HomePage() {
 
   const onJoinQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    Axios.get(`/api/quizzes/${quizCode}/name`).then((res) => {
-      if (!res.data) {
-        setOpen(true);
-      } else {
-        history.push(`/quiz/${quizCode}/${res.data.toUrlFormat()}`);
-      }
-    });
+    Axios.get(`/api/quizzes/${quizCode}/name`)
+      .then((res) => {
+        if (!res.data) {
+          setSnackbarOpen(true);
+        } else {
+          history.push(`/quiz/${quizCode}/${res.data.toUrlFormat()}`);
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 404) {
+          setSnackbarOpen(true);
+        }
+      });
   };
 
-  const handleClose = (
+  const handleSnackbarClose = (
     event: React.SyntheticEvent<any, Event>,
     reason: SnackbarCloseReason,
   ) => {
     if (reason === "clickaway") {
       return;
     }
-    setOpen(false);
+    setSnackbarOpen(false);
   };
 
   const onQuizNameChange = (e: ChangeEvent<HTMLInputElement>) =>
@@ -190,8 +196,12 @@ function HomePage() {
               <Footer />
             </Box>
 
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-              <Alert onClose={handleClose} severity="error">
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={6000}
+              onClose={handleSnackbarClose}
+            >
+              <Alert onClose={handleSnackbarClose} severity="error">
                 Could not find quiz with specified code.
               </Alert>
             </Snackbar>

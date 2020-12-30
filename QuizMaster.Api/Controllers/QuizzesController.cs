@@ -54,8 +54,20 @@ namespace TodoApi.Controllers
             return Ok(mediator.Send(new Details.Query(id)).Result.Name);
         }
 
+        [HttpGet("{id}/details/{participantId}")]
+        public async Task<ActionResult<Details.ParticipantQuizDetails>> GetParticipantQuizDetails(string id, Guid participantId)
+        {
+            var quizDetails = await mediator.Send(new Details.ParticipantQuery(id,participantId));
+
+            if (quizDetails == null)
+            {
+                return NotFound();
+            }
+            return Ok(quizDetails);
+        }        
+
         [HttpGet("{id}/state")]
-        public async Task<ActionResult<String>> GetQuizState(string id)
+        public async Task<ActionResult<Details.QuizStateValues>> GetQuizState(string id)
         {
             var quiz = await mediator.Send(new Details.Query(id));
 
@@ -64,7 +76,9 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
 
-            return Ok(new Details.QuizStateValues(){QuizState = quiz.State, QuestionNo = quiz.QuestionNo});
+            return Ok(new Details.QuizStateValues(){
+                QuizState = quiz.State, QuestionNo = quiz.QuestionNo, QuestionStartTime = quiz.QuestionStartTime
+                });
         }        
 
         [ServiceFilter(typeof(ApiKeyAuthAttribute))]

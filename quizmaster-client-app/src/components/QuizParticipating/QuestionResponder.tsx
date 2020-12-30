@@ -18,6 +18,7 @@ import QuizQuestionDisplay from "../QuizHosting/QuizQuestionDisplay";
 import ParticipantMessage from "../Common/ParticipantMessage";
 import Contestant from "../QuizHosting/Contestant";
 import QuizStandings from "../QuizHosting/QuizStandings";
+import QuizState from "../Common/QuizState";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -64,6 +65,9 @@ export default function QuestionResponder() {
   const [contestantStandings, setContestantStandings] = useState<Contestant[]>(
     [],
   );
+  const [pageError, setPageError] = useState(true);
+  const [questionNo, setQuestionNo] = useState(0);
+  const [awaitingFinalScores, setAwaitingFinalScores] = useState(false);
 
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
     setAnswer(e.currentTarget.value);
@@ -88,11 +92,6 @@ export default function QuestionResponder() {
   }
 
   useEffect(() => {
-    const participantID = localStorage.getItem("participantId") || "";
-    setParticipantId(participantID);
-  }, [participantId]);
-
-  useEffect(() => {
     const interval = 100;
 
     function progress() {
@@ -112,8 +111,39 @@ export default function QuestionResponder() {
   }, [timeLeftAsAPercentage]);
 
   useEffect(() => {
-    axios.get(`/api/quizzes/${quizId}/name`).then((res) => {
-      setQuizName(res.data);
+    //Set Participant ID
+    const participantID = localStorage.getItem("participantId") || "";
+    setParticipantId(participantID);
+
+    //Get Quiz Details if the participant is a member of the quiz
+    axios.get(`/api/quizzes/${quizId}/details/${participantID}`).then((res) => {
+      setPageError(false);
+      setQuizName(res.data.quizName);
+      setQuestionNo(res.data.questionNo);
+      if (
+        res.data.quizState == QuizState.QuestionReady &&
+        res.data.questionNo > 0
+      ) {
+        setQuizInitialized(true);
+      } else if (res.data.quizState == QuizState.QuestionInProgress) {
+        setQuizQuestion(
+          new QuizQuestion(res.data.question, "", res.data.questionNo),
+        );
+        setTotalTimeInSeconds(120);
+        setStartTime(res.data.questionStartTime);
+        setAnswerSubmitted(false);
+        setTimeLeftAsAPercentage(100);
+        setAnswer("");
+        setButtonDisabled(false);
+        setSubmitText("Submit");
+      } else if (
+        res.data.questionNo == 0 &&
+        res.data.quizState == QuizState.QuestionReady
+      ) {
+        setAwaitingFinalScores(true);
+      } else if (res.data.quizState == QuizState.QuizEnded) {
+        setQuizIsComplete(true);
+      }
     });
 
     // Set the initial SignalR Hub Connection.
@@ -140,6 +170,7 @@ export default function QuestionResponder() {
         hubConnect.on("ContestantUpdate", (message: QuizMasterMessage) => {
           if (message.start) {
             setQuizInitialized(true);
+            setQuestionNo(message.questionNumber);
           } else if (message.complete) {
             setContestantStandings(message.standings);
             setQuizIsComplete(true);
@@ -156,6 +187,7 @@ export default function QuestionResponder() {
                 message.questionNumber,
               ),
             );
+            setQuestionNo(message.questionNumber);
             setTotalTimeInSeconds(120);
             setStartTime(Date.now());
             setAnswerSubmitted(false);
@@ -188,6 +220,12 @@ export default function QuestionResponder() {
             <h1>You have been removed from the quiz. No hard feelings!</h1>
           </div>
         </>
+      ) : pageError ? (
+        <>
+          <div className={classes.thankYou}>
+            <h1>Oops! You&apos;re not supposed to be here</h1>
+          </div>
+        </>
       ) : quizIsComplete ? (
         <>
           <div className={classes.finalStandings}>
@@ -198,7 +236,12 @@ export default function QuestionResponder() {
         </>
       ) : quizInitialized && !quizQuestion ? (
         <Box mb={2}>
-          <p>The quiz is about to start, get ready!</p>
+          <p>Get ready for question {questionNo}</p>
+          <LinearProgress />
+        </Box>
+      ) : awaitingFinalScores ? (
+        <Box mb={2}>
+          <p>Get ready for the final scores</p>
           <LinearProgress />
         </Box>
       ) : quizQuestion ? (

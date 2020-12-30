@@ -26,6 +26,7 @@ namespace QuizMaster.Application.Quizzes
         {
             public QuizState? QuizState { get; set; }
             public int? QuestionNo { get; set; }
+            public long? QuestionStartTime { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Quiz>
