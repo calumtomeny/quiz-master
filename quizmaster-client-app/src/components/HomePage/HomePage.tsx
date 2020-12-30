@@ -94,8 +94,9 @@ function HomePage() {
         }
       })
       .catch((err) => {
-        console.log("error: ", err);
-        setSnackbarOpen(true);
+        if (err.response.status === 404) {
+          setSnackbarOpen(true);
+        }
       });
   };
 
