@@ -26,6 +26,7 @@ namespace QuizMaster.Application.Quizzes
         {
             public QuizState? QuizState { get; set; }
             public int? QuestionNo { get; set;}
+            public long? QuestionStartTime { get; set;}
         }        
 
         public class Handler : IRequestHandler<Command, Quiz>
@@ -45,6 +46,9 @@ namespace QuizMaster.Application.Quizzes
                 if(request.CommandBody.QuizState.HasValue){
                     quiz.State = request.CommandBody.QuizState.Value;
                 }
+                if(request.CommandBody.QuestionStartTime.HasValue){
+                    quiz.QuestionStartTime = request.CommandBody.QuestionStartTime.Value;
+                }                
                 if(context.ChangeTracker.HasChanges())
                 {
                     var success = await context.SaveChangesAsync() > 0;
