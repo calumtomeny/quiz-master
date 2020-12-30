@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function QuizHoster() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const classes = useStyles();
   const [quizName, setQuizName] = useState("");
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState(0);

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using MediatR;
 using QuizMaster.Domain;
 using QuizMaster.Persistence;
-using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 
 namespace QuizMaster.Application.Quizzes

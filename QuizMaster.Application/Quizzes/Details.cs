@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -32,7 +30,7 @@ namespace QuizMaster.Application.Quizzes
 
             public string QuizCode { get; private set; }
             public Guid ParticipantId { get; private set; }
-        } 
+        }
 
         public class ParticipantQuizDetails
         {
@@ -41,7 +39,7 @@ namespace QuizMaster.Application.Quizzes
             public int? QuestionNo { get; set; }
             public long? QuestionStartTime { get; set; }
             public string Question { get; set; }
-        }               
+        }
 
         public class QuizStateValues
         {
@@ -78,31 +76,31 @@ namespace QuizMaster.Application.Quizzes
             public async Task<ParticipantQuizDetails> Handle(ParticipantQuery request, CancellationToken cancellationToken)
             {
                 var quiz = await context.Quiz.Include(x => x.Contestants).Include(x => x.QuizQuestions).SingleOrDefaultAsync(x => x.Code == request.QuizCode);
-                if(quiz == null)
+                if (quiz == null)
                 {
                     return null;
                 }
-                if(quiz.Contestants.Find(x => x.Id == request.ParticipantId) == null)
+                if (quiz.Contestants.Find(x => x.Id == request.ParticipantId) == null)
                 {
                     return null;
                 }
                 else
                 {
                     var question = "";
-                    if(quiz.State==QuizMaster.Domain.QuizState.QuestionInProgress)
+                    if (quiz.State == QuizMaster.Domain.QuizState.QuestionInProgress)
                     {
                         question = quiz.QuizQuestions.Find(x => x.Number == quiz.QuestionNo).Question;
                     }
                     return new ParticipantQuizDetails()
-                        {
-                            QuizName = quiz.Name,
-                            QuizState = quiz.State,
-                            QuestionNo = quiz.QuestionNo,
-                            QuestionStartTime = quiz.QuestionStartTime,
-                            Question = question,
-                        };
+                    {
+                        QuizName = quiz.Name,
+                        QuizState = quiz.State,
+                        QuestionNo = quiz.QuestionNo,
+                        QuestionStartTime = quiz.QuestionStartTime,
+                        Question = question,
+                    };
                 }
             }
-        }        
+        }
     }
 }

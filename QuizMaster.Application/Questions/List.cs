@@ -25,7 +25,7 @@ namespace QuizMaster.Application.Questions
             {
                 this.context = context;
             }
-                
+
             public async Task<List<QuizQuestion>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var quiz = await context.Quiz.Include(x => x.QuizQuestions).SingleAsync(x => x.Code == request.QuizCode);

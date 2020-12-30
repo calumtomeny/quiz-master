@@ -54,7 +54,7 @@ export default function QuizWizard() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
   const steps = getSteps();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const history = useHistory();
 
   const search = window.location.search;
