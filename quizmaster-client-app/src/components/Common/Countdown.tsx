@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function Countdown(props: any) {
   const classes = useStyles();
-  const [completed, setCompleted] = useState(100);
+  const [completed, setCompleted] = useState<number>(100);
 
   React.useEffect(() => {
     function progress() {

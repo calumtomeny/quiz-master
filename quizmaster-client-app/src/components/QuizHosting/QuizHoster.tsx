@@ -39,16 +39,16 @@ const useStyles = makeStyles((theme) => ({
 export default function QuizHoster() {
   const { id } = useParams();
   const classes = useStyles();
-  const [quizName, setQuizName] = useState("");
-  const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState(0);
+  const [quizName, setQuizName] = useState<string>("");
+  const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(0);
   const [contestants, setContestants] = useState<Contestant[]>([]);
-  const [showQuizMarker, setShowQuizMarker] = useState(true);
-  const [quizIsComplete, setQuizIsComplete] = useState(false);
+  const [showQuizMarker, setShowQuizMarker] = useState<boolean>(true);
+  const [quizIsComplete, setQuizIsComplete] = useState<boolean>(false);
   const [answers, setAnswers] = useState<Data[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
-  const [totalTimeInSeconds, setTotalTimeInSeconds] = useState(0);
-  const [questionStartTime, setQuestionStartTime] = useState(0);
-  const [currentQuestionNumber, setCurrentQuestionNumber] = useState(0);
+  const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
+  const [questionStartTime, setQuestionStartTime] = useState<number>(0);
+  const [currentQuestionNumber, setCurrentQuestionNumber] = useState<number>(0);
 
   const getQuizQuestion = (questionNumber: number) => {
     const question = quizQuestions.find(

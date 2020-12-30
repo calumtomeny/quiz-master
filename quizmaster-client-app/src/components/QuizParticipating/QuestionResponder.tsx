@@ -47,20 +47,20 @@ const useStyles = makeStyles((theme) => ({
 
 export default function QuestionResponder() {
   const classes = useStyles();
-  const [quizName, setQuizName] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [quizName, setQuizName] = useState<string>("");
+  const [answer, setAnswer] = useState<string>("");
   const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>();
-  const [quizInitialized, setQuizInitialized] = useState(false);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState(0);
-  const [quizIsComplete, setQuizIsComplete] = useState(false);
-  const [submitText, setSubmitText] = useState("Submit");
+  const [quizInitialized, setQuizInitialized] = useState<boolean>(false);
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+  const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(0);
+  const [quizIsComplete, setQuizIsComplete] = useState<boolean>(false);
+  const [submitText, setSubmitText] = useState<string>("Submit");
   const { quizId } = useParams();
-  const [participantId, setParticipantId] = useState("");
-  const [startTime, setStartTime] = useState(0);
-  const [totalTimeInSeconds, setTotalTimeInSeconds] = useState(0);
-  const [answerSubmitted, setAnswerSubmitted] = useState(false);
-  const [kicked, setKicked] = useState(false);
+  const [participantId, setParticipantId] = useState<string>("");
+  const [startTime, setStartTime] = useState<number>(0);
+  const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
+  const [answerSubmitted, setAnswerSubmitted] = useState<boolean>(false);
+  const [kicked, setKicked] = useState<boolean>(false);
   const [contestantStandings, setContestantStandings] = useState<Contestant[]>(
     [],
   );

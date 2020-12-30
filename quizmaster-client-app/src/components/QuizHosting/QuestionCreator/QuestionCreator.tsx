@@ -23,7 +23,7 @@ export default function QuestionCreator(props: any) {
     data: [],
   });
 
-  const [doneInitialGet, setDoneInitialGet] = useState(false);
+  const [doneInitialGet, setDoneInitialGet] = useState<boolean>(false);
   const isFirstRun = useRef(true);
 
   const setInitialQuestion = (question: string, answer: string) => {
