@@ -1,3 +1,12 @@
+---
+name: User story
+about: Create a User story to help us improve
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 **As a** a member of [the development team](http://scrumguides.org/scrum-guide.html#team-dev),
 **I want** clear context and goals **so that** I can work efficiently.
 
