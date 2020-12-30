@@ -32,7 +32,8 @@ namespace QuizMaster.Application.Contestants
             {
                 var quiz = context.Quiz.SingleOrDefault(x => x.Code == request.QuizCode);
 
-                if(quiz == null){
+                if (quiz == null)
+                {
                     return null;
                 }
 

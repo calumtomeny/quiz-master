@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -25,8 +22,8 @@ namespace QuizMaster.Application.Quizzes
         public class QuizStateValues
         {
             public QuizState? QuizState { get; set; }
-            public int? QuestionNo { get; set;}
-        }        
+            public int? QuestionNo { get; set; }
+        }
 
         public class Handler : IRequestHandler<Query, Quiz>
         {

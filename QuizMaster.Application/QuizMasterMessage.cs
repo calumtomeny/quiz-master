@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using QuizMaster.Domain;
 
 namespace QuizMaster.Application
 {
@@ -13,4 +12,4 @@ namespace QuizMaster.Application
         public bool Kick { get; set; }
         public List<ContestantScore> Standings { get; set; }
     }
-}   
+}
