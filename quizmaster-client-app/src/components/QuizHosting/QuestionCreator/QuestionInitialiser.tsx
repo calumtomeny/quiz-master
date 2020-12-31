@@ -2,8 +2,8 @@ import React, { useState, ChangeEvent } from "react";
 import { Typography, TextField, Button } from "@material-ui/core";
 
 export default function QuestionInitialiser(props: any) {
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [question, setQuestion] = useState<string>("");
+  const [answer, setAnswer] = useState<string>("");
 
   const onQuestionChange = (e: ChangeEvent<HTMLInputElement>) =>
     setQuestion(e.currentTarget.value);

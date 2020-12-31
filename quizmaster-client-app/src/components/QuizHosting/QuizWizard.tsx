@@ -51,8 +51,8 @@ function getSteps() {
 
 export default function QuizWizard() {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [skipped, setSkipped] = React.useState(new Set());
+  const [activeStep, setActiveStep] = useState<number>(0);
+  const [skipped, setSkipped] = useState<Set<number>>(new Set());
   const steps = getSteps();
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
@@ -68,12 +68,12 @@ export default function QuizWizard() {
     return config;
   });
 
-  const [quizCode, setQuizCode] = useState("");
-  const [quizName, setQuizName] = useState("");
-  const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
-  const [resetAlertOpen, setResetAlertOpen] = useState(false);
-  const [refreshContestants, setRefreshContestants] = useState(false);
-  const [resetSuccessOpen, setResetSuccessOpen] = useState(false);
+  const [quizCode, setQuizCode] = useState<string>("");
+  const [quizName, setQuizName] = useState<string>("");
+  const [nextButtonEnabled, setNextButtonEnabled] = useState<boolean>(false);
+  const [resetAlertOpen, setResetAlertOpen] = useState<boolean>(false);
+  const [refreshContestants, setRefreshContestants] = useState<boolean>(false);
+  const [resetSuccessOpen, setResetSuccessOpen] = useState<boolean>(false);
 
   useEffect(() => {
     axios.get(`/api/quizzes/${id}`).then((res) => {

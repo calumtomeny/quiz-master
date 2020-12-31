@@ -64,9 +64,9 @@ function HomePage() {
   const history = useHistory();
   const classes = useStyles();
 
-  const [quizName, setQuizName] = useState("");
-  const [quizCode, setQuizCode] = useState("");
-  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [quizName, setQuizName] = useState<string>("");
+  const [quizCode, setQuizCode] = useState<string>("");
+  const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
 
   const onHostQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

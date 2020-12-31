@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   AppBar,
@@ -32,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Header() {
   const classes = useStyles();
-  const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
-  const [contactUsModalOpen, setContactUsModalOpen] = React.useState(false);
+  const [aboutModalOpen, setAboutModalOpen] = useState<boolean>(false);
+  const [contactUsModalOpen, setContactUsModalOpen] = useState<boolean>(false);
   const location = useLocation();
 
   const handleAboutModalOpen = () => {

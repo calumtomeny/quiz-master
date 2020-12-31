@@ -34,10 +34,10 @@ export default function QuizJoiner() {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
 
-  const [quizName, setQuizName] = useState("");
-  const [name, setName] = useState("");
-  const [quizNotFound, setQuizNotFound] = useState(false);
-  const [quizAlreadyStarted, setQuizAlreadyStarted] = useState(false);
+  const [quizName, setQuizName] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [quizNotFound, setQuizNotFound] = useState<boolean>(false);
+  const [quizAlreadyStarted, setQuizAlreadyStarted] = useState<boolean>(false);
 
   const onNameChange = (e: ChangeEvent<HTMLInputElement>) =>
     setName(e.currentTarget.value);
