@@ -39,6 +39,9 @@ namespace QuizMaster.Application.Quizzes
             public int? QuestionNo { get; set; }
             public long? QuestionStartTime { get; set; }
             public string Question { get; set; }
+            public string Answer { get; set; }
+            public long TimeRemainingMs { get; set; }
+            public float TimeRemainingPerc { get; set; }
         }
 
         public class QuizStateValues
@@ -86,10 +89,22 @@ namespace QuizMaster.Application.Quizzes
                 }
                 else
                 {
-                    var question = "";
+                    var questionText = "";
+                    var answerText = "";
+                    long timeRemainingMs = 0;
+                    float timeRemainingPerc = 0.0F;
                     if (quiz.State == QuizMaster.Domain.QuizState.QuestionInProgress)
                     {
-                        question = quiz.QuizQuestions.Find(x => x.Number == quiz.QuestionNo).Question;
+                        var question = quiz.QuizQuestions.Find(x => x.Number == quiz.QuestionNo);
+                        questionText = question.Question;
+
+                        var contestantAnswer = await context.ContestantAnswers.SingleOrDefaultAsync(x => (x.QuizQuestionId == question.Id) && (x.ContestantId == request.ParticipantId));
+                        if(contestantAnswer != null)
+                        {
+                            answerText = contestantAnswer.Answer;
+                            timeRemainingMs = contestantAnswer.TimeRemainingMs;
+                            timeRemainingPerc = contestantAnswer.PercentageTimeRemaining;
+                        }
                     }
                     return new ParticipantQuizDetails()
                     {
@@ -97,7 +112,10 @@ namespace QuizMaster.Application.Quizzes
                         QuizState = quiz.State,
                         QuestionNo = quiz.QuestionNo,
                         QuestionStartTime = quiz.QuestionStartTime,
-                        Question = question,
+                        Question = questionText,
+                        Answer = answerText,
+                        TimeRemainingMs = timeRemainingMs,
+                        TimeRemainingPerc = timeRemainingPerc,
                     };
                 }
             }

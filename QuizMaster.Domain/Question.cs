@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace QuizMaster.Domain
 {
@@ -17,5 +18,6 @@ namespace QuizMaster.Domain
         public String Question { get; private set; }
         public String Answer { get; private set; }
         public int Number { get; set; }
+        public List<ContestantAnswer> ContestantAnswers { get; set; }
     }
 }

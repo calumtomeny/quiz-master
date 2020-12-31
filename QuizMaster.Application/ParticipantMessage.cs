@@ -5,6 +5,8 @@ namespace QuizMaster.Application
     {
         public Guid ParticipantId { get; set; }
         public string Answer { get; set; }
+        public long AnswerTimeLeftInMs { get; set; }
         public float AnswerTimeLeftAsAPercentage { get; set; }
+        public int QuestionNo { get; set; }
     }
 }
