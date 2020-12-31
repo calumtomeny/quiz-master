@@ -2,7 +2,7 @@ import Layout from "./Layout";
 import React from "react";
 import QuizWizard from "../../components/QuizHosting/QuizWizard";
 import QuizJoiner from "../../components/QuizParticipating/QuizJoiner";
-import { Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import HomePage from "../../components/HomePage/HomePage";
 import QuestionResponder from "../../components/QuizParticipating/QuestionResponder";
 import QuizHoster from "../../components/QuizHosting/QuizHoster";
@@ -35,7 +35,7 @@ function App() {
     </Layout>
   );
   return (
-    <>
+    <BrowserRouter>
       <Switch>
         <Route exact path="/" component={HomePage} />
         <Route exact path="/quiz/:id/:name/setup" component={quizSetup} />
@@ -44,7 +44,7 @@ function App() {
         <Route exact path="/quiz/:quizId" component={questionResponder} />
         <Route component={notFound} />
       </Switch>
-    </>
+    </BrowserRouter>
   );
 }
 

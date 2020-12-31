@@ -18,15 +18,16 @@ namespace QuizMaster.Application.Quizzes
             public string QuizCode { get; set; }
 
             [Required]
-            public CommandBody CommandBody { get; set;}
+            public CommandBody CommandBody { get; set; }
         }
 
 
         public class CommandBody : IRequest<Quiz>
         {
             public QuizState? QuizState { get; set; }
-            public int? QuestionNo { get; set;}
-        }        
+            public int? QuestionNo { get; set; }
+            public long? QuestionStartTime { get; set; }
+        }
 
         public class Handler : IRequestHandler<Command, Quiz>
         {
@@ -39,13 +40,15 @@ namespace QuizMaster.Application.Quizzes
             public async Task<Quiz> Handle(Command request, CancellationToken cancellationToken)
             {
                 var quiz = await context.Quiz.SingleOrDefaultAsync(x => x.Code == request.QuizCode);
-                if(request.CommandBody.QuestionNo.HasValue){
+                if (request.CommandBody.QuestionNo.HasValue)
+                {
                     quiz.QuestionNo = request.CommandBody.QuestionNo.Value;
                 }
-                if(request.CommandBody.QuizState.HasValue){
+                if (request.CommandBody.QuizState.HasValue)
+                {
                     quiz.State = request.CommandBody.QuizState.Value;
                 }
-                if(context.ChangeTracker.HasChanges())
+                if (context.ChangeTracker.HasChanges())
                 {
                     var success = await context.SaveChangesAsync() > 0;
                     if (success)
@@ -57,7 +60,7 @@ namespace QuizMaster.Application.Quizzes
                 {
                     return quiz;
                 }
-                
+
                 throw new Exception("There was a problem saving changes.");
             }
         }

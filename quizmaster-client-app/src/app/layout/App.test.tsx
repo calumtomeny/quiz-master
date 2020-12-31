@@ -1,7 +1,7 @@
 import React from "react";
 import { cleanup } from "@testing-library/react";
-import App from "../../components/ChatDemo/Chat";
 import ReactDOM from "react-dom";
+import App from "./App";
 
 describe("When testing directly", () => {
   afterEach(cleanup);

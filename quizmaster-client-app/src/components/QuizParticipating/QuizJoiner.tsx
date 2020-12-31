@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function QuizJoiner() {
   const classes = useStyles();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const history = useHistory();
 
   const [quizName, setQuizName] = useState<string>("");
