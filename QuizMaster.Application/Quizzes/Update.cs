@@ -48,6 +48,9 @@ namespace QuizMaster.Application.Quizzes
                 {
                     quiz.State = request.CommandBody.QuizState.Value;
                 }
+                if(request.CommandBody.QuestionStartTime.HasValue){
+                    quiz.QuestionStartTime = request.CommandBody.QuestionStartTime.Value;
+                }                 
                 if (context.ChangeTracker.HasChanges())
                 {
                     var success = await context.SaveChangesAsync() > 0;

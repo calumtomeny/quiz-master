@@ -78,6 +78,10 @@ export default function QuestionResponder() {
       participantId: participantId,
       answer: answer,
       answerTimeLeftAsAPercentage: timeLeftAsAPercentage,
+      questionNo: questionNo,
+      answerTimeLeftInMs: Math.round(
+        (timeLeftAsAPercentage / 100.0) * totalTimeInSeconds * 1000,
+      ),
     };
     setSubmitText("Submitted. Please Wait.");
     axios.post(`/api/quizzes/${quizId}/command/participantmessage`, message);
@@ -131,11 +135,19 @@ export default function QuestionResponder() {
         );
         setTotalTimeInSeconds(120);
         setStartTime(res.data.questionStartTime);
-        setAnswerSubmitted(false);
-        setTimeLeftAsAPercentage(100);
-        setAnswer("");
-        setButtonDisabled(false);
-        setSubmitText("Submit");
+        if (res.data.answer != "") {
+          setAnswerSubmitted(true);
+          setTimeLeftAsAPercentage(res.data.timeRemainingPerc);
+          setAnswer(res.data.answer);
+          setButtonDisabled(true);
+          setSubmitText("Submitted. Please Wait.");
+        } else {
+          setAnswerSubmitted(false);
+          setTimeLeftAsAPercentage(100);
+          setAnswer("");
+          setButtonDisabled(false);
+          setSubmitText("Submit");
+        }
       } else if (
         res.data.questionNo == 0 &&
         res.data.quizState == QuizState.QuestionReady

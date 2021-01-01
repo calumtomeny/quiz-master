@@ -137,9 +137,17 @@ namespace TodoApi.Controllers
         [HttpPost("{id}/command/participantmessage")]
         public async Task<ActionResult> Start(ParticipantMessage message, string id)
         {
-            var quiz = await mediator.Send(new Details.Query(id));
-
-            if (quiz == null)
+            var contestantAnswer = await mediator.Send(
+                new QuizMaster.Application.ContestantAnswers.Create.Command(
+                    id,
+                    message.QuestionNo,
+                    message.ParticipantId,
+                    message.Answer,
+                    message.AnswerTimeLeftInMs,
+                    message.AnswerTimeLeftAsAPercentage
+                )
+            );
+            if (contestantAnswer == null)
             {
                 return NotFound();
             }
