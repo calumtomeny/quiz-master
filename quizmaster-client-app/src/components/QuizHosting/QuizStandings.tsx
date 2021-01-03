@@ -11,7 +11,7 @@ import Contestant from "./Contestant";
 
 const useStyles = makeStyles({
   table: {
-    minWidth: 650,
+    minWidth: 100,
   },
 });
 
