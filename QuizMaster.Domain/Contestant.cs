@@ -10,6 +10,7 @@ namespace QuizMaster.Domain
             Id = Guid.NewGuid();
             this.QuizId = quizId;
             Name = name;
+            Score = 0;
         }
 
         public Guid Id { get; private set; }
@@ -17,5 +18,6 @@ namespace QuizMaster.Domain
         public String Code { get; private set; }
         public Guid QuizId { get; set; }
         public List<ContestantAnswer> ContestantAnswers { get; set; }
+        public int Score { get; set; }
     }
 }

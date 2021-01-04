@@ -57,14 +57,27 @@ namespace TodoApi.Controllers
         [HttpGet("{id}/details/{participantId}")]
         public async Task<ActionResult<Details.ParticipantQuizDetails>> GetParticipantQuizDetails(string id, Guid participantId)
         {
-            var quizDetails = await mediator.Send(new Details.ParticipantQuery(id,participantId));
+            var quizDetails = await mediator.Send(new Details.ParticipantQuery(id, participantId));
 
             if (quizDetails == null)
             {
                 return NotFound();
             }
             return Ok(quizDetails);
-        }        
+        }
+
+        //[ServiceFilter(typeof(ApiKeyAuthAttribute))]
+        [HttpGet("{id}/details")]
+        public async Task<ActionResult<Details.QuizMasterQuizDetails>> GetQuizMasterQuizDetails(string id)
+        {
+            var quizDetails = await mediator.Send(new Details.QuizMasterQuery(id));
+
+            if (quizDetails == null)
+            {
+                return NotFound();
+            }
+            return Ok(quizDetails);
+        }
 
         [HttpGet("{id}/state")]
         public async Task<ActionResult<Details.QuizStateValues>> GetQuizState(string id)
@@ -76,10 +89,13 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
 
-            return Ok(new Details.QuizStateValues(){
-                QuizState = quiz.State, QuestionNo = quiz.QuestionNo, QuestionStartTime = quiz.QuestionStartTime
-                });
-        }        
+            return Ok(new Details.QuizStateValues()
+            {
+                QuizState = quiz.State,
+                QuestionNo = quiz.QuestionNo,
+                QuestionStartTime = quiz.QuestionStartTime
+            });
+        }
 
         [ServiceFilter(typeof(ApiKeyAuthAttribute))]
         [HttpGet("{id}/contestants")]

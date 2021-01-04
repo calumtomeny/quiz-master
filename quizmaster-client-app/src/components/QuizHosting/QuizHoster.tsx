@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import "./HostLobby.css";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import Contestant from "./Contestant";
@@ -34,11 +34,16 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: "middle",
     marginTop: theme.spacing(10),
   },
+  finalStandings: {
+    marginBottom: theme.spacing(2),
+    textAlign: "center",
+  },
 }));
 
 export default function QuizHoster() {
   const { id } = useParams<{ id: string }>();
   const classes = useStyles();
+  const history = useHistory();
   const [quizName, setQuizName] = useState<string>("");
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(0);
   const [contestants, setContestants] = useState<Contestant[]>([]);
@@ -48,7 +53,15 @@ export default function QuizHoster() {
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
   const [questionStartTime, setQuestionStartTime] = useState<number>(0);
-  const [currentQuestionNumber, setCurrentQuestionNumber] = useState<number>(0);
+  const [currentQuestionNumber, setCurrentQuestionNumber] = useState<number>(1);
+  const [currentQuizQuestion, setCurrentQuizQuestion] = useState<QuizQuestion>(
+    new QuizQuestion("", "", 0),
+  );
+  const [currentQuizState, setCurrentQuizState] = useState<QuizState>(
+    QuizState.QuizNotStarted,
+  );
+
+  const isFinalQuestion = () => currentQuestionNumber === quizQuestions.length;
 
   const getQuizQuestion = (questionNumber: number) => {
     const question = quizQuestions.find(
@@ -58,6 +71,10 @@ export default function QuizHoster() {
   };
 
   const updateQuizStateReady = () => {
+    if (isFinalQuestion()) {
+      setCurrentQuizQuestion(new QuizQuestion("", "", 0));
+    }
+    setCurrentQuestionNumber((currentNumber) => currentNumber + 1);
     axios.post(`/api/quizzes/${id}`, {
       QuestionNo: currentQuestionNumber + 1,
       QuizState: QuizState.QuestionReady,
@@ -83,22 +100,19 @@ export default function QuizHoster() {
   };
 
   const messageContestants = () => {
-    const nextQuestionNumber = currentQuestionNumber + 1;
+    //const nextQuestionNumber = currentQuestionNumber + 1;
+    const quizQuestion = getQuizQuestion(currentQuestionNumber);
     const message: QuizMasterMessage = {
       start: false,
-      question: getQuizQuestion(nextQuestionNumber)?.Question ?? "",
-      answer: getQuizQuestion(nextQuestionNumber)?.Answer ?? "",
+      question: quizQuestion?.Question ?? "",
+      answer: "",
       complete: false,
-      questionNumber: getQuizQuestion(nextQuestionNumber)?.QuestionNumber ?? 1,
+      questionNumber: quizQuestion?.QuestionNumber ?? 1,
       kick: false,
       standings: [],
     };
 
-    axios
-      .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
-      .then(() => {
-        setCurrentQuestionNumber((currentNumber) => currentNumber + 1);
-      });
+    axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
     setTotalTimeInSeconds(120);
     setQuestionStartTime(Date.now());
     setTimeLeftAsAPercentage(100);
@@ -114,19 +128,11 @@ export default function QuizHoster() {
       .then(() => {
         messageContestants();
       });
-  };
-
-  const getCurrentQuizQuestion = () => {
-    const question = quizQuestions.find(
-      (x) => x.QuestionNumber === currentQuestionNumber,
-    );
-    return question;
+    setCurrentQuizState(QuizState.QuestionInProgress);
   };
 
   const roundIsComplete = () =>
     timeLeftAsAPercentage === 0 || answers.length === contestants.length;
-
-  const isFinalQuestion = () => currentQuestionNumber === quizQuestions.length;
 
   const onGoToNextQuestion = () => {
     if (isFinalQuestion()) {
@@ -204,6 +210,22 @@ export default function QuizHoster() {
     }
   };
 
+  const returnToQuizSetup = () => {
+    axios
+      .post(`/api/quizzes/${id}`, {
+        QuestionNo: 0,
+        QuizState: QuizState.QuizNotStarted,
+      })
+      .then(() => {
+        const token = localStorage.getItem("apiKey");
+        history.push(
+          `/quiz/${id}/${quizName.toUrlFormat()}/setup?key=${encodeURIComponent(
+            String(token),
+          )}`,
+        );
+      });
+  };
+
   useEffect(() => {
     const interval = 100;
 
@@ -227,10 +249,48 @@ export default function QuizHoster() {
 
   useEffect(() => {
     let contestantsList: Contestant[] = [];
-    axios.get(`/api/quizzes/${id}`).then((res) => {
-      setQuizName(res.data.name);
+    axios.get(`/api/quizzes/${id}/details`).then((res) => {
+      setQuizName(res.data.quizName);
+      const totalTimeInSecs = 120;
+      setTotalTimeInSeconds(totalTimeInSecs);
 
-      axios.get(`/api/quizzes/${id}/questions`).then((results) => {
+      contestantsList = res.data.contestants.map((contestant: any) => {
+        return {
+          name: contestant.name,
+          id: contestant.id,
+          score: 0,
+        } as Contestant;
+      });
+      setContestants(contestantsList);
+
+      setQuizQuestions(() =>
+        res.data.questions.map(
+          (x: any) => new QuizQuestion(x.question, x.answer, x.number),
+        ),
+      );
+
+      if (res.data.quizState === QuizState.QuizEnded) {
+        setCurrentQuizQuestion(new QuizQuestion("", "", 0));
+      } else {
+        setCurrentQuizQuestion(() => {
+          const question = res.data.questions.find(
+            (x: any) => x.number === res.data.currentQuestionNo,
+          );
+          return new QuizQuestion(
+            question.question,
+            question.answer,
+            question.number,
+          );
+        });
+      }
+
+      setCurrentQuestionNumber(res.data.currentQuestionNo);
+      setCurrentQuizState(res.data.quizState);
+
+      if (
+        res.data.currentQuestionNo == 1 &&
+        res.data.quizState == QuizState.QuestionReady
+      ) {
         const message: QuizMasterMessage = {
           start: true,
           question: "",
@@ -240,28 +300,30 @@ export default function QuizHoster() {
           kick: false,
           standings: [],
         };
-
-        axios
-          .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
-          .then(() => {
-            axios.get(`/api/quizzes/${id}/contestants`).then((res) => {
-              contestantsList = res.data.map((contestant: any) => {
-                return {
-                  name: contestant.name,
-                  id: contestant.id,
-                  score: 0,
-                } as Contestant;
-              });
-              setContestants(contestantsList);
-            });
-          });
-
-        setQuizQuestions(() =>
-          results.data.map(
-            (x: any) => new QuizQuestion(x.question, x.answer, x.number),
-          ),
+        axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
+      } else if (res.data.quizState == QuizState.QuestionInProgress) {
+        setShowQuizMarker(true);
+        setAnswers(() =>
+          res.data.currentContestantAnswers.map((x: any) => {
+            return {
+              answer: x.answer,
+              id: x.contestantId,
+              name: contestantsList.filter((y) => y.id === x.contestantId)[0]
+                .name,
+              answerTimeLeftAsAPercentage: x.percentageTimeRemaining,
+            };
+          }),
         );
-      });
+        setQuestionStartTime(res.data.currentQuestionStartTime);
+        setTimeLeftAsAPercentage(() => {
+          const increment =
+            (100 * (Date.now() - res.data.currentQuestionStartTime)) /
+            (totalTimeInSecs * 1000);
+          return Math.max(100 - increment, 0);
+        });
+      } else if (res.data.quizState == QuizState.QuizEnded) {
+        setQuizIsComplete(true);
+      }
     });
 
     const createHubConnection = async () => {
@@ -312,29 +374,32 @@ export default function QuizHoster() {
         </Typography>
       </Box>
       <Box pt={3} pb={3}>
-        {currentQuestionNumber === 0 ? (
+        {currentQuestionNumber === 1 &&
+        currentQuizState === QuizState.QuestionReady ? (
           <QuizInitiator quizName={quizName} clickHandler={onQuizInitiate} />
         ) : (
           <>
             {!quizIsComplete ? (
-              <QuizQuestionDisplay
-                quizQuestion={getCurrentQuizQuestion()}
-                timeLeftAsAPercentage={timeLeftAsAPercentage}
-                totalTimeInSeconds={totalTimeInSeconds}
-              />
+              <>
+                <QuizQuestionDisplay
+                  quizQuestion={currentQuizQuestion}
+                  timeLeftAsAPercentage={timeLeftAsAPercentage}
+                  totalTimeInSeconds={totalTimeInSeconds}
+                />
+                <Typography component="h1" variant="h5">
+                  Answer: {currentQuizQuestion.Answer}
+                </Typography>
+              </>
             ) : (
               <></>
             )}
-            <Typography component="h1" variant="h5">
-              Answer: {getCurrentQuizQuestion()?.Answer}
-            </Typography>
             {!quizIsComplete ? (
               <>
                 <Paper className={classes.paper}>
                   {showQuizMarker ? (
                     <QuestionMarker
                       rows={answers}
-                      answer={getCurrentQuizQuestion()?.Answer ?? ""}
+                      answer={currentQuizQuestion.Answer ?? ""}
                       onAcceptAnswers={onAcceptAnswers}
                       showContinueAction={roundIsComplete()}
                     />
@@ -359,7 +424,19 @@ export default function QuizHoster() {
             ) : (
               <></>
             )}
-            <QuizStandings contestantStandings={contestants} />
+            <div className={classes.finalStandings}>
+              <h1>Final Standings</h1>
+              <QuizStandings contestantStandings={contestants} />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className={classes.nextQuestion}
+                onClick={returnToQuizSetup}
+              >
+                Return to Quiz Setup
+              </Button>
+            </div>
           </>
         )}
       </Box>
