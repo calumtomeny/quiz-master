@@ -11,6 +11,11 @@ import {
   Button,
   Paper,
   Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
 } from "@material-ui/core";
 import QuizMasterMessage from "../Common/QuizMasterMessage";
 import QuizQuestion from "../Common/QuizQuestion";
@@ -68,6 +73,9 @@ export default function QuestionResponder() {
   const [pageError, setPageError] = useState(true);
   const [questionNo, setQuestionNo] = useState(0);
   const [awaitingFinalScores, setAwaitingFinalScores] = useState(false);
+  const [disconnectedDialogOpen, setDisconnectedDialogOpen] = useState<boolean>(
+    false,
+  );
 
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
     setAnswer(e.currentTarget.value);
@@ -87,6 +95,14 @@ export default function QuestionResponder() {
     axios.post(`/api/quizzes/${quizId}/command/participantmessage`, message);
 
     setButtonDisabled(true);
+  };
+
+  const handleRefresh = () => {
+    window.location.reload(false);
+  };
+
+  const handleCloseDisconnectedDialog = () => {
+    setDisconnectedDialogOpen(false);
   };
 
   function handleEnter(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -162,23 +178,23 @@ export default function QuestionResponder() {
     const createHubConnection = async () => {
       // Build new Hub Connection, url is currently hard coded.
       const hubConnect = new HubConnectionBuilder()
-        .withAutomaticReconnect()
+        .withAutomaticReconnect([
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+        ])
         .withUrl(process.env.REACT_APP_BASE_API_URL + "/quiz")
+        .configureLogging("trace")
         .build();
 
       try {
-        await hubConnect
-          .start()
-          .then(() => console.log(hubConnect.state))
-          .then(() => {
-            console.log("Joining group...");
-            hubConnect.invoke("AddToGroup", quizId);
-            console.log("Connection successful!");
-          })
-          .catch(() => {
-            console.log("Error adding to quiz group.");
-          });
-
         hubConnect.on("ContestantUpdate", (message: QuizMasterMessage) => {
           if (message.start) {
             setQuizInitialized(true);
@@ -212,6 +228,27 @@ export default function QuestionResponder() {
       } catch (err) {
         alert(err);
       }
+
+      hubConnect.serverTimeoutInMilliseconds = 120000;
+
+      const startSignalRConnection = (connection: any) =>
+        connection
+          .start()
+          .then(() => console.log(hubConnect.state))
+          .then(() => {
+            console.log("Joining group...");
+            hubConnect.invoke("AddToGroup", quizId);
+            console.log("Connection successful!");
+          })
+          .catch(() => {
+            console.log("Error adding to quiz group.");
+          });
+
+      hubConnect.onclose(() => {
+        setDisconnectedDialogOpen(true);
+      });
+
+      startSignalRConnection(hubConnect);
     };
     createHubConnection();
   }, [quizId]);
@@ -290,6 +327,30 @@ export default function QuestionResponder() {
       ) : (
         <p>The quiz will start soon.</p>
       )}
+      <Dialog
+        open={disconnectedDialogOpen}
+        onClose={handleCloseDisconnectedDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"You've lost the connection to the server"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            The connection to the server was lost, refresh the page to attempty
+            to reconnnect.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDisconnectedDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleRefresh} color="primary" autoFocus>
+            Refresh
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
