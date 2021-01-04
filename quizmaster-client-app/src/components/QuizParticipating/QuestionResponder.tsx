@@ -338,7 +338,7 @@ export default function QuestionResponder() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            The connection to the server was lost, refresh the page to attempty
+            The connection to the server was lost, refresh the page to attempt
             to reconnnect.
           </DialogContentText>
         </DialogContent>
