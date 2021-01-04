@@ -100,7 +100,6 @@ export default function QuizHoster() {
   };
 
   const messageContestants = () => {
-    //const nextQuestionNumber = currentQuestionNumber + 1;
     const quizQuestion = getQuizQuestion(currentQuestionNumber);
     const message: QuizMasterMessage = {
       start: false,
@@ -248,6 +247,7 @@ export default function QuizHoster() {
   }, [timeLeftAsAPercentage]);
 
   useEffect(() => {
+    //useEffect on 'id' state variable. This code will run when the page is first loaded or refreshed
     let contestantsList: Contestant[] = [];
     axios.get(`/api/quizzes/${id}/details`).then((res) => {
       setQuizName(res.data.quizName);

@@ -53,41 +53,46 @@ export default function QuestionCreator(props: any) {
     isFirstRun.current = false;
   }, [state, doneInitialGet, props.quizId]);
 
-  return state.data.length || !doneInitialGet ? (
-    <MaterialTable
-      options={{
-        actionsColumnIndex: -1,
-      }}
-      title="Questions"
-      columns={state.columns}
-      data={state.data}
-      editable={{
-        onRowAdd: (newData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              dispatch({ type: "add", payload: newData });
-            }, 600);
-          }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              if (oldData) {
-                dispatch({ type: "update", payload: newData });
-              }
-            }, 600);
-          }),
-        onRowDelete: (oldData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              dispatch({ type: "delete", payload: oldData });
-            }, 600);
-          }),
-      }}
-    />
-  ) : (
-    <QuestionInitialiser onInitialQuestionSubmitted={setInitialQuestion} />
+  return (
+    <>
+      <QuestionInitialiser onInitialQuestionSubmitted={setInitialQuestion} />
+      {state.data.length || !doneInitialGet ? (
+        <MaterialTable
+          options={{
+            actionsColumnIndex: -1,
+          }}
+          title="Questions"
+          columns={state.columns}
+          data={state.data}
+          editable={{
+            onRowAdd: (newData) =>
+              new Promise<void>((resolve) => {
+                setTimeout(() => {
+                  resolve();
+                  dispatch({ type: "add", payload: newData });
+                }, 600);
+              }),
+            onRowUpdate: (newData, oldData) =>
+              new Promise<void>((resolve) => {
+                setTimeout(() => {
+                  resolve();
+                  if (oldData) {
+                    dispatch({ type: "update", payload: newData });
+                  }
+                }, 600);
+              }),
+            onRowDelete: (oldData) =>
+              new Promise<void>((resolve) => {
+                setTimeout(() => {
+                  resolve();
+                  dispatch({ type: "delete", payload: oldData });
+                }, 600);
+              }),
+          }}
+        />
+      ) : (
+        <></>
+      )}
+    </>
   );
 }
