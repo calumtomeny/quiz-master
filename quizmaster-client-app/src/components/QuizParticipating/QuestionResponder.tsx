@@ -205,7 +205,7 @@ export default function QuestionResponder() {
           } else if (message.kick) {
             console.log("Leaving group...");
             hubConnect.invoke("RemoveFromGroup", quizId);
-            console.log("Connection removed");
+            console.log("Connection removed.");
             setKicked(true);
           } else {
             setQuizQuestion(
