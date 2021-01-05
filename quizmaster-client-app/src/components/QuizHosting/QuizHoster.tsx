@@ -80,9 +80,6 @@ export default function QuizHoster() {
   };
 
   const updateQuizStateReady = () => {
-    //if (isFinalQuestion()) {
-    //  setCurrentQuizQuestion(new QuizQuestion("", "", 0));
-    //}
     const nextQuestionNumber = currentQuestionNumber + 1;
     setCurrentQuestionNumber(nextQuestionNumber);
     setCurrentQuizQuestion(

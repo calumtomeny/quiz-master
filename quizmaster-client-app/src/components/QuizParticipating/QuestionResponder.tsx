@@ -70,12 +70,14 @@ export default function QuestionResponder() {
   const [contestantStandings, setContestantStandings] = useState<Contestant[]>(
     [],
   );
-  const [pageError, setPageError] = useState(true);
+  const [pageError, setPageError] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [questionNo, setQuestionNo] = useState(0);
   const [awaitingFinalScores, setAwaitingFinalScores] = useState(false);
   const [disconnectedDialogOpen, setDisconnectedDialogOpen] = useState<boolean>(
     false,
   );
+  const apiBaseUrl = process.env.REACT_APP_BASE_API_URL;
 
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
     setAnswer(e.currentTarget.value);
@@ -136,43 +138,59 @@ export default function QuestionResponder() {
     setParticipantId(participantID);
 
     //Get Quiz Details if the participant is a member of the quiz
-    axios.get(`/api/quizzes/${quizId}/details/${participantID}`).then((res) => {
-      setPageError(false);
-      setQuizName(res.data.quizName);
-      setQuestionNo(res.data.questionNo);
-      if (
-        res.data.quizState == QuizState.QuestionReady &&
-        res.data.questionNo > 0
-      ) {
-        setQuizInitialized(true);
-      } else if (res.data.quizState == QuizState.QuestionInProgress) {
-        setQuizQuestion(
-          new QuizQuestion(res.data.question, "", res.data.questionNo),
-        );
-        setTotalTimeInSeconds(120);
-        setStartTime(res.data.questionStartTime);
-        if (res.data.answer != "") {
-          setAnswerSubmitted(true);
-          setTimeLeftAsAPercentage(res.data.timeRemainingPerc);
-          setAnswer(res.data.answer);
-          setButtonDisabled(true);
-          setSubmitText("Submitted. Please Wait.");
-        } else {
-          setAnswerSubmitted(false);
-          setTimeLeftAsAPercentage(100);
-          setAnswer("");
-          setButtonDisabled(false);
-          setSubmitText("Submit");
+    axios
+      .get(`/api/quizzes/${quizId}/details/${participantID}`)
+      .then((res) => {
+        setPageError(false);
+        setPageLoading(false);
+        setQuizName(res.data.quizName);
+        setQuestionNo(res.data.questionNo);
+        if (
+          res.data.quizState == QuizState.QuestionReady &&
+          res.data.questionNo > 0
+        ) {
+          setQuizInitialized(true);
+        } else if (res.data.quizState == QuizState.QuestionInProgress) {
+          setQuizQuestion(
+            new QuizQuestion(res.data.question, "", res.data.questionNo),
+          );
+          setTotalTimeInSeconds(120);
+          setStartTime(res.data.questionStartTime);
+          if (res.data.answer != "") {
+            setAnswerSubmitted(true);
+            setTimeLeftAsAPercentage(res.data.timeRemainingPerc);
+            setAnswer(res.data.answer);
+            setButtonDisabled(true);
+            setSubmitText("Submitted. Please Wait.");
+          } else {
+            setAnswerSubmitted(false);
+            setTimeLeftAsAPercentage(100);
+            setAnswer("");
+            setButtonDisabled(false);
+            setSubmitText("Submit");
+          }
+        } else if (
+          res.data.questionNo == 0 &&
+          res.data.quizState == QuizState.QuestionReady
+        ) {
+          setAwaitingFinalScores(true);
+        } else if (res.data.quizState == QuizState.QuizEnded) {
+          const newContestantStandings = res.data.contestantScores.map(
+            (contestant: any) => {
+              return {
+                id: contestant.id,
+                name: contestant.name,
+                score: contestant.score,
+              };
+            },
+          );
+          setContestantStandings(newContestantStandings);
+          setQuizIsComplete(true);
         }
-      } else if (
-        res.data.questionNo == 0 &&
-        res.data.quizState == QuizState.QuestionReady
-      ) {
-        setAwaitingFinalScores(true);
-      } else if (res.data.quizState == QuizState.QuizEnded) {
-        setQuizIsComplete(true);
-      }
-    });
+      })
+      .catch(() => {
+        setPageError(true);
+      });
 
     // Set the initial SignalR Hub Connection.
     const createHubConnection = async () => {
@@ -190,7 +208,7 @@ export default function QuestionResponder() {
           1000,
           1000,
         ])
-        .withUrl(process.env.REACT_APP_BASE_API_URL + "/quiz")
+        .withUrl(apiBaseUrl + "/quiz")
         .configureLogging("trace")
         .build();
 
@@ -273,6 +291,12 @@ export default function QuestionResponder() {
         <>
           <div className={classes.thankYou}>
             <h1>Oops! You&apos;re not supposed to be here</h1>
+          </div>
+        </>
+      ) : pageLoading ? (
+        <>
+          <div className={classes.thankYou}>
+            <h1>Joining Quiz!</h1>
           </div>
         </>
       ) : quizIsComplete ? (
