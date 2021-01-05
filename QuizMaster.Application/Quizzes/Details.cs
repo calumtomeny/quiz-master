@@ -54,6 +54,7 @@ namespace QuizMaster.Application.Quizzes
             public string Answer { get; set; }
             public long TimeRemainingMs { get; set; }
             public float TimeRemainingPerc { get; set; }
+            public List<Contestant> ContestantScores { get; set; }
         }
 
         public class QuizMasterQuizDetails
@@ -117,6 +118,7 @@ namespace QuizMaster.Application.Quizzes
                     var answerText = "";
                     long timeRemainingMs = 0;
                     float timeRemainingPerc = 0.0F;
+                    var allContestants = new List<Contestant>();
                     if (quiz.State == QuizMaster.Domain.QuizState.QuestionInProgress)
                     {
                         var question = quiz.QuizQuestions.Find(x => x.Number == quiz.QuestionNo);
@@ -130,6 +132,10 @@ namespace QuizMaster.Application.Quizzes
                             timeRemainingPerc = contestantAnswer.PercentageTimeRemaining;
                         }
                     }
+                    else if (quiz.State == QuizMaster.Domain.QuizState.QuizEnded)
+                    {
+                        allContestants = quiz.Contestants;
+                    }
                     return new ParticipantQuizDetails()
                     {
                         QuizName = quiz.Name,
@@ -140,6 +146,7 @@ namespace QuizMaster.Application.Quizzes
                         Answer = answerText,
                         TimeRemainingMs = timeRemainingMs,
                         TimeRemainingPerc = timeRemainingPerc,
+                        ContestantScores = allContestants,
                     };
                 }
             }

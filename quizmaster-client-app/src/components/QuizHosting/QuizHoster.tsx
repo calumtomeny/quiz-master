@@ -60,6 +60,15 @@ export default function QuizHoster() {
   const [currentQuizState, setCurrentQuizState] = useState<QuizState>(
     QuizState.QuizNotStarted,
   );
+  const [finalQuestionCompleted, setFinalQuestionCompleted] = useState<boolean>(
+    false,
+  );
+
+  axios.interceptors.request.use(function (config) {
+    const token = localStorage.getItem("apiKey");
+    config.headers.ApiKey = token;
+    return config;
+  });
 
   const isFinalQuestion = () => currentQuestionNumber === quizQuestions.length;
 
@@ -71,10 +80,14 @@ export default function QuizHoster() {
   };
 
   const updateQuizStateReady = () => {
-    if (isFinalQuestion()) {
-      setCurrentQuizQuestion(new QuizQuestion("", "", 0));
-    }
-    setCurrentQuestionNumber((currentNumber) => currentNumber + 1);
+    //if (isFinalQuestion()) {
+    //  setCurrentQuizQuestion(new QuizQuestion("", "", 0));
+    //}
+    const nextQuestionNumber = currentQuestionNumber + 1;
+    setCurrentQuestionNumber(nextQuestionNumber);
+    setCurrentQuizQuestion(
+      getQuizQuestion(nextQuestionNumber) ?? new QuizQuestion("", "", 0),
+    );
     axios.post(`/api/quizzes/${id}`, {
       QuestionNo: currentQuestionNumber + 1,
       QuizState: QuizState.QuestionReady,
@@ -89,6 +102,9 @@ export default function QuizHoster() {
   };
 
   const updateQuizStatePendingResults = () => {
+    setCurrentQuizQuestion(new QuizQuestion("", "", 0));
+    setCurrentQuestionNumber(0);
+    setFinalQuestionCompleted(true);
     axios.post(`/api/quizzes/${id}`, {
       QuestionNo: 0,
       QuizState: QuizState.QuestionReady,
@@ -134,7 +150,7 @@ export default function QuizHoster() {
     timeLeftAsAPercentage === 0 || answers.length === contestants.length;
 
   const onGoToNextQuestion = () => {
-    if (isFinalQuestion()) {
+    if (finalQuestionCompleted) {
       const message: QuizMasterMessage = {
         start: false,
         question: "",
@@ -191,17 +207,24 @@ export default function QuizHoster() {
       roundScores.push(contestantScore);
     });
 
-    setContestants((contestants) =>
-      contestants.map((contestant) => {
-        return {
-          ...contestant,
-          score:
-            contestant.score +
-            getContestantScoreForRound(roundScores, contestant.id),
-        };
-      }),
-    );
-    setShowQuizMarker(false);
+    const updatedContestants = contestants.map((contestant) => {
+      return {
+        ...contestant,
+        score:
+          contestant.score +
+          getContestantScoreForRound(roundScores, contestant.id),
+      };
+    });
+    setContestants(updatedContestants);
+    const updateCommands = updatedContestants.map((contestant) => {
+      return {
+        ContestantId: contestant.id,
+        Update: { Score: contestant.score },
+      };
+    });
+    axios.post(`/api/contestants/updates`, updateCommands).then(() => {
+      setShowQuizMarker(false);
+    });
     if (isFinalQuestion()) {
       updateQuizStatePendingResults();
     } else {
@@ -258,7 +281,7 @@ export default function QuizHoster() {
         return {
           name: contestant.name,
           id: contestant.id,
-          score: 0,
+          score: contestant.score,
         } as Contestant;
       });
       setContestants(contestantsList);
@@ -276,11 +299,15 @@ export default function QuizHoster() {
           const question = res.data.questions.find(
             (x: any) => x.number === res.data.currentQuestionNo,
           );
-          return new QuizQuestion(
-            question.question,
-            question.answer,
-            question.number,
-          );
+          if (question) {
+            return new QuizQuestion(
+              question.question,
+              question.answer,
+              question.number,
+            );
+          } else {
+            return new QuizQuestion("", "", 0);
+          }
         });
       }
 
@@ -321,7 +348,17 @@ export default function QuizHoster() {
             (totalTimeInSecs * 1000);
           return Math.max(100 - increment, 0);
         });
+      } else if (
+        res.data.quizState === QuizState.QuestionReady &&
+        res.data.currentQuestionNo == 0
+      ) {
+        setShowQuizMarker(false);
+        setFinalQuestionCompleted(true);
+      } else if (res.data.quizState === QuizState.QuestionReady) {
+        setShowQuizMarker(false);
       } else if (res.data.quizState == QuizState.QuizEnded) {
+        setShowQuizMarker(false);
+        setFinalQuestionCompleted(true);
         setQuizIsComplete(true);
       }
     });
@@ -379,7 +416,7 @@ export default function QuizHoster() {
           <QuizInitiator quizName={quizName} clickHandler={onQuizInitiate} />
         ) : (
           <>
-            {!quizIsComplete ? (
+            {!quizIsComplete && !finalQuestionCompleted ? (
               <>
                 <QuizQuestionDisplay
                   quizQuestion={currentQuizQuestion}
@@ -411,7 +448,7 @@ export default function QuizHoster() {
                       className={classes.nextQuestion}
                       onClick={onGoToNextQuestion}
                     >
-                      {isFinalQuestion()
+                      {finalQuestionCompleted
                         ? "Show final standings"
                         : "Go to next question"}
                     </Button>
@@ -420,23 +457,23 @@ export default function QuizHoster() {
                 <Typography component="h1" variant="h5">
                   {quizIsComplete ? "Final Standings" : "Quiz Standings"}
                 </Typography>
+                <QuizStandings contestantStandings={contestants} />
               </>
             ) : (
-              <></>
+              <div className={classes.finalStandings}>
+                <h1>Final Standings</h1>
+                <QuizStandings contestantStandings={contestants} />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className={classes.nextQuestion}
+                  onClick={returnToQuizSetup}
+                >
+                  Return to Quiz Setup
+                </Button>
+              </div>
             )}
-            <div className={classes.finalStandings}>
-              <h1>Final Standings</h1>
-              <QuizStandings contestantStandings={contestants} />
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={classes.nextQuestion}
-                onClick={returnToQuizSetup}
-              >
-                Return to Quiz Setup
-              </Button>
-            </div>
           </>
         )}
       </Box>

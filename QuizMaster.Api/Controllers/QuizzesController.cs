@@ -66,7 +66,7 @@ namespace TodoApi.Controllers
             return Ok(quizDetails);
         }
 
-        //[ServiceFilter(typeof(ApiKeyAuthAttribute))]
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
         [HttpGet("{id}/details")]
         public async Task<ActionResult<Details.QuizMasterQuizDetails>> GetQuizMasterQuizDetails(string id)
         {
