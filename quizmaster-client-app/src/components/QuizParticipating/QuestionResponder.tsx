@@ -196,7 +196,7 @@ export default function QuestionResponder() {
     const createHubConnection = async () => {
       // Build new Hub Connection, url is currently hard coded.
       const hubConnect = new HubConnectionBuilder()
-        .withUrl(process.env.REACT_APP_BASE_API_URL + "/quiz")
+        .withUrl(apiBaseUrl + "/quiz")
         .configureLogging("trace")
         .build();
 
