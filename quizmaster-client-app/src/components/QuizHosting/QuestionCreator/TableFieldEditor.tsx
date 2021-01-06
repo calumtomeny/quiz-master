@@ -6,7 +6,7 @@ export default function TableFieldEditor(props: any) {
     <TextareaAutosize
       value={props.value}
       onChange={(e) => props.onChange(e.target.value)}
-      autoFocus={true}
+      autoFocus={props.columnDef.tableData.columnOrder === 0 ? true : false}
     />
   );
 }
