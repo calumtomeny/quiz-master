@@ -125,7 +125,7 @@ export default function QuizHoster() {
     };
 
     axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
-    setTotalTimeInSeconds(120);
+    setTotalTimeInSeconds(45);
     setQuestionStartTime(Date.now());
     setTimeLeftAsAPercentage(100);
   };
@@ -271,7 +271,7 @@ export default function QuizHoster() {
     let contestantsList: Contestant[] = [];
     axios.get(`/api/quizzes/${id}/details`).then((res) => {
       setQuizName(res.data.quizName);
-      const totalTimeInSecs = 120;
+      const totalTimeInSecs = 45;
       setTotalTimeInSeconds(totalTimeInSecs);
 
       contestantsList = res.data.contestants.map((contestant: any) => {

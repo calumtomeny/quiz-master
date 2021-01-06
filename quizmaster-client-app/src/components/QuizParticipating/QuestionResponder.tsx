@@ -154,7 +154,7 @@ export default function QuestionResponder() {
           setQuizQuestion(
             new QuizQuestion(res.data.question, "", res.data.questionNo),
           );
-          setTotalTimeInSeconds(120);
+          setTotalTimeInSeconds(45);
           setStartTime(res.data.questionStartTime);
           if (res.data.answer != "") {
             setAnswerSubmitted(true);
@@ -222,7 +222,7 @@ export default function QuestionResponder() {
               ),
             );
             setQuestionNo(message.questionNumber);
-            setTotalTimeInSeconds(120);
+            setTotalTimeInSeconds(45);
             setStartTime(Date.now());
             setAnswerSubmitted(false);
             setTimeLeftAsAPercentage(100);
