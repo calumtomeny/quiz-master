@@ -25,6 +25,7 @@ export default function QuestionCreator(props: any) {
 
   const [doneInitialGet, setDoneInitialGet] = useState<boolean>(false);
   const isFirstRun = useRef(true);
+  const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
 
   const setInitialQuestion = (question: string, answer: string) => {
     dispatch({ type: "add", payload: { question: question, answer: answer } });
@@ -38,6 +39,7 @@ export default function QuestionCreator(props: any) {
     Axios.get(`/api/quizzes/${props.quizId}/questions`).then((results) => {
       dispatch({ type: "set", payload: results.data });
       setDoneInitialGet(true);
+      setIsInitialQuestion(results.data.length == 0);
     });
   }, [props.quizId]);
 
@@ -55,7 +57,10 @@ export default function QuestionCreator(props: any) {
 
   return (
     <>
-      <QuestionInitialiser onInitialQuestionSubmitted={setInitialQuestion} />
+      <QuestionInitialiser
+        onInitialQuestionSubmitted={setInitialQuestion}
+        isInitialQuestion={isInitialQuestion}
+      />
       {state.data.length || !doneInitialGet ? (
         <MaterialTable
           options={{

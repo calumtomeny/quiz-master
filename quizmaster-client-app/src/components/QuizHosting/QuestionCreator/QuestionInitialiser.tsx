@@ -27,6 +27,10 @@ export default function QuestionInitialiser(props: any) {
     }
   }, [question]);
 
+  useEffect(() => {
+    setIsInitialQuestion(props.isInitialQuestion);
+  }, [props.isInitialQuestion]);
+
   return (
     <form onSubmit={onInitialQuestionSubmit} data-testid="create-question">
       <Typography component="h2" variant="h5" align="center">

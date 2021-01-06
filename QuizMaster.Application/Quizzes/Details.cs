@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -32,6 +34,16 @@ namespace QuizMaster.Application.Quizzes
             public Guid ParticipantId { get; private set; }
         }
 
+        public class QuizMasterQuery : IRequest<QuizMasterQuizDetails>
+        {
+            public QuizMasterQuery(string quizCode)
+            {
+                this.QuizCode = quizCode;
+            }
+
+            public string QuizCode { get; private set; }
+        }
+
         public class ParticipantQuizDetails
         {
             public string QuizName { get; set; }
@@ -42,6 +54,19 @@ namespace QuizMaster.Application.Quizzes
             public string Answer { get; set; }
             public long TimeRemainingMs { get; set; }
             public float TimeRemainingPerc { get; set; }
+            public List<Contestant> ContestantScores { get; set; }
+        }
+
+        public class QuizMasterQuizDetails
+        {
+            public string QuizName { get; set; }
+            public QuizState? QuizState { get; set; }
+            public List<QuizQuestion> Questions { get; set; }
+            public List<Contestant> Contestants { get; set; }
+            public int? CurrentQuestionNo { get; set; }
+            public long? CurrentQuestionStartTime { get; set; }
+            public string CurrentQuestion { get; set; }
+            public List<ContestantAnswer> CurrentContestantAnswers { get; set; }
         }
 
         public class QuizStateValues
@@ -93,18 +118,23 @@ namespace QuizMaster.Application.Quizzes
                     var answerText = "";
                     long timeRemainingMs = 0;
                     float timeRemainingPerc = 0.0F;
+                    var allContestants = new List<Contestant>();
                     if (quiz.State == QuizMaster.Domain.QuizState.QuestionInProgress)
                     {
                         var question = quiz.QuizQuestions.Find(x => x.Number == quiz.QuestionNo);
                         questionText = question.Question;
 
                         var contestantAnswer = await context.ContestantAnswers.SingleOrDefaultAsync(x => (x.QuizQuestionId == question.Id) && (x.ContestantId == request.ParticipantId));
-                        if(contestantAnswer != null)
+                        if (contestantAnswer != null)
                         {
                             answerText = contestantAnswer.Answer;
                             timeRemainingMs = contestantAnswer.TimeRemainingMs;
                             timeRemainingPerc = contestantAnswer.PercentageTimeRemaining;
                         }
+                    }
+                    else if (quiz.State == QuizMaster.Domain.QuizState.QuizEnded)
+                    {
+                        allContestants = quiz.Contestants;
                     }
                     return new ParticipantQuizDetails()
                     {
@@ -116,6 +146,51 @@ namespace QuizMaster.Application.Quizzes
                         Answer = answerText,
                         TimeRemainingMs = timeRemainingMs,
                         TimeRemainingPerc = timeRemainingPerc,
+                        ContestantScores = allContestants,
+                    };
+                }
+            }
+        }
+
+        public class QuizMasterQueryHandler : IRequestHandler<QuizMasterQuery, QuizMasterQuizDetails>
+        {
+            private readonly QuizContext context;
+
+            public QuizMasterQueryHandler(QuizContext context)
+            {
+                this.context = context;
+            }
+
+            public async Task<QuizMasterQuizDetails> Handle(QuizMasterQuery request, CancellationToken cancellationToken)
+            {
+                var quiz = await context.Quiz
+                                            .Include(x => x.Contestants)
+                                            .Include(x => x.QuizQuestions)
+                                            .SingleOrDefaultAsync(x => x.Code == request.QuizCode);
+                if (quiz == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    var questionText = "";
+                    var contestantAnswers = new List<ContestantAnswer>();
+                    if (quiz.QuestionNo > 0)
+                    {
+                        var question = quiz.QuizQuestions.Find(x => x.Number == quiz.QuestionNo);
+                        questionText = question.Question;
+                        contestantAnswers = await context.ContestantAnswers.Where(y => y.QuizQuestionId == question.Id).ToListAsync();
+                    }
+                    return new QuizMasterQuizDetails()
+                    {
+                        QuizName = quiz.Name,
+                        QuizState = quiz.State,
+                        Questions = quiz.QuizQuestions,
+                        Contestants = quiz.Contestants,
+                        CurrentQuestionNo = quiz.QuestionNo,
+                        CurrentQuestionStartTime = quiz.QuestionStartTime,
+                        CurrentQuestion = questionText,
+                        CurrentContestantAnswers = contestantAnswers,
                     };
                 }
             }

@@ -4,8 +4,10 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using QuizMaster.Api.SignalR;
+using QuizMaster.Api.Filters;
 using QuizMaster.Application.Contestants;
 using QuizMaster.Domain;
+using System.Collections.Generic;
 
 namespace TodoApi.Controllers
 {
@@ -41,12 +43,41 @@ namespace TodoApi.Controllers
         {
             var contestant = await mediator.Send(command);
 
-            if(contestant == null){
+            if (contestant == null)
+            {
                 return NotFound();
             }
 
             await hubContext.Clients.Group(command.QuizCode.ToString()).SendAsync("ContestantJoined", contestant);
             return CreatedAtAction("Get", new { id = contestant.Id }, contestant);
+        }
+
+        [ServiceFilter(typeof(ContestantsApiKeyAuthAttribute))]
+        [HttpPost("{id}")]
+        public async Task<ActionResult<Contestant>> Update(Update.CommandBody commandBody, Guid id)
+        {
+            var contestant = await mediator.Send(new Update.Command() { ContestantId = id, Update = commandBody });
+
+            if (contestant == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(contestant);
+        }
+
+        [ServiceFilter(typeof(ContestantsApiKeyAuthAttribute))]
+        [HttpPost("updates")]
+        public async Task<ActionResult<List<Contestant>>> UpdateMultiple(List<Update.Command> commandList)
+        {
+            var contestants = await mediator.Send(new Update.CommandList(){Commands = commandList});
+
+            if (contestants == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(contestants);
         }
 
         // PUT api/values/5
