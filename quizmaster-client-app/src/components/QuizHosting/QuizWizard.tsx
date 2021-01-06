@@ -114,7 +114,15 @@ export default function QuizWizard() {
   const getQuizUrl = () => {
     const url = window.location.href;
     const arr = url.split("/");
-    return arr[0] + "//" + arr[2] + "/quiz/" + quizCode + "/" + quizName;
+    return (
+      arr[0] +
+      "//" +
+      arr[2] +
+      "/quiz/" +
+      quizCode +
+      "/" +
+      encodeURIComponent(quizName)
+    );
   };
 
   const getQuizMasterUrl = () => {
