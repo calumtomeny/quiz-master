@@ -48,7 +48,6 @@ export default function QuizHoster() {
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(0);
   const [contestants, setContestants] = useState<Contestant[]>([]);
   const [showQuizMarker, setShowQuizMarker] = useState<boolean>(true);
-  const [quizIsComplete, setQuizIsComplete] = useState<boolean>(false);
   const [answers, setAnswers] = useState<Data[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
@@ -70,6 +69,12 @@ export default function QuizHoster() {
     return config;
   });
 
+  //---------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
+  //---------------------------UTILITY FUNCTIONS-------------------------------
+  //---------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
+
   const isFinalQuestion = () => currentQuestionNumber === quizQuestions.length;
 
   const getQuizQuestion = (questionNumber: number) => {
@@ -79,6 +84,22 @@ export default function QuizHoster() {
     return question;
   };
 
+  const roundIsComplete = () =>
+    timeLeftAsAPercentage === 0 || answers.length === contestants.length;
+
+  function getContestantScoreForRound(
+    scores: ContestantScore[],
+    contestantId: string,
+  ): number {
+    return scores.find((x) => x.ContestantId == contestantId)?.Score ?? 0;
+  }
+
+  //---------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
+  //---------------------------ACTION FUNCTIONS--------------------------------
+  //---------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
+
   const updateQuizStateReady = () => {
     const nextQuestionNumber = currentQuestionNumber + 1;
     setCurrentQuestionNumber(nextQuestionNumber);
@@ -87,7 +108,7 @@ export default function QuizHoster() {
     );
     axios.post(`/api/quizzes/${id}`, {
       QuestionNo: currentQuestionNumber + 1,
-      QuizState: QuizState.QuestionReady,
+      QuizState: QuizState.NextQuestionReady,
     });
   };
 
@@ -104,7 +125,7 @@ export default function QuizHoster() {
     setFinalQuestionCompleted(true);
     axios.post(`/api/quizzes/${id}`, {
       QuestionNo: 0,
-      QuizState: QuizState.QuestionReady,
+      QuizState: QuizState.ResultsReady,
     });
   };
 
@@ -112,13 +133,12 @@ export default function QuizHoster() {
     axios.post(`/api/quizzes/${id}`, { QuizState: QuizState.QuizEnded });
   };
 
-  const messageContestants = () => {
+  const messageContestantsQuestionStart = () => {
     const quizQuestion = getQuizQuestion(currentQuestionNumber);
     const message: QuizMasterMessage = {
-      start: false,
+      state: QuizState.QuestionInProgress,
       question: quizQuestion?.Question ?? "",
       answer: "",
-      complete: false,
       questionNumber: quizQuestion?.QuestionNumber ?? 1,
       kick: false,
       standings: [],
@@ -130,6 +150,32 @@ export default function QuizHoster() {
     setTimeLeftAsAPercentage(100);
   };
 
+  const messageContestantsQuestionReady = () => {
+    const message: QuizMasterMessage = {
+      state: QuizState.NextQuestionReady,
+      question: "",
+      answer: "",
+      questionNumber: currentQuestionNumber + 1,
+      kick: false,
+      standings: [],
+    };
+
+    axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
+  };
+
+  const messageContestantsPendingResults = () => {
+    const message: QuizMasterMessage = {
+      state: QuizState.ResultsReady,
+      question: "",
+      answer: "",
+      questionNumber: 0,
+      kick: false,
+      standings: [],
+    };
+
+    axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
+  };
+
   const onQuizInitiate = () => {
     axios
       .post(`/api/quizzes/${id}`, {
@@ -138,21 +184,17 @@ export default function QuizHoster() {
         QuestionStartTime: Date.now(),
       })
       .then(() => {
-        messageContestants();
+        messageContestantsQuestionStart();
       });
     setCurrentQuizState(QuizState.QuestionInProgress);
   };
 
-  const roundIsComplete = () =>
-    timeLeftAsAPercentage === 0 || answers.length === contestants.length;
-
   const onGoToNextQuestion = () => {
     if (finalQuestionCompleted) {
       const message: QuizMasterMessage = {
-        start: false,
+        state: QuizState.QuizEnded,
         question: "",
         answer: "",
-        complete: true,
         questionNumber: 0,
         kick: false,
         standings: contestants,
@@ -160,23 +202,18 @@ export default function QuizHoster() {
       axios
         .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
         .then(() => {
-          setQuizIsComplete(true);
           updateQuizStateFinished();
+          setShowQuizMarker(false);
+          setCurrentQuizState(QuizState.QuizEnded);
         });
     } else {
       setShowQuizMarker(true);
       setAnswers([]);
-      messageContestants();
+      messageContestantsQuestionStart();
       updateQuizStateInProgress();
+      setCurrentQuizState(QuizState.QuestionInProgress);
     }
   };
-
-  function getContestantScoreForRound(
-    scores: ContestantScore[],
-    contestantId: string,
-  ): number {
-    return scores.find((x) => x.ContestantId == contestantId)?.Score ?? 0;
-  }
 
   const onAcceptAnswers = (correctResponses: QuestionResponse[]) => {
     //Loop through responses to determine fastest answer
@@ -224,8 +261,12 @@ export default function QuizHoster() {
     });
     if (isFinalQuestion()) {
       updateQuizStatePendingResults();
+      messageContestantsPendingResults();
+      setCurrentQuizState(QuizState.ResultsReady);
     } else {
       updateQuizStateReady();
+      messageContestantsQuestionReady();
+      setCurrentQuizState(QuizState.NextQuestionReady);
     }
   };
 
@@ -244,6 +285,12 @@ export default function QuizHoster() {
         );
       });
   };
+
+  //---------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
+  //------------------------------USE EFFECTS----------------------------------
+  //---------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 
   useEffect(() => {
     const interval = 100;
@@ -313,13 +360,12 @@ export default function QuizHoster() {
 
       if (
         res.data.currentQuestionNo == 1 &&
-        res.data.quizState == QuizState.QuestionReady
+        res.data.quizState == QuizState.FirstQuestionReady
       ) {
         const message: QuizMasterMessage = {
-          start: true,
+          state: QuizState.FirstQuestionReady,
           question: "",
           answer: "",
-          complete: false,
           questionNumber: 1,
           kick: false,
           standings: [],
@@ -345,18 +391,14 @@ export default function QuizHoster() {
             (totalTimeInSecs * 1000);
           return Math.max(100 - increment, 0);
         });
-      } else if (
-        res.data.quizState === QuizState.QuestionReady &&
-        res.data.currentQuestionNo == 0
-      ) {
+      } else if (res.data.quizState === QuizState.ResultsReady) {
         setShowQuizMarker(false);
         setFinalQuestionCompleted(true);
-      } else if (res.data.quizState === QuizState.QuestionReady) {
+      } else if (res.data.quizState === QuizState.NextQuestionReady) {
         setShowQuizMarker(false);
       } else if (res.data.quizState == QuizState.QuizEnded) {
         setShowQuizMarker(false);
         setFinalQuestionCompleted(true);
-        setQuizIsComplete(true);
       }
     });
 
@@ -400,6 +442,12 @@ export default function QuizHoster() {
     createHubConnection();
   }, [id]);
 
+  //---------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
+  //----------------------------------RENDER-----------------------------------
+  //---------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
+
   return (
     <div className={classes.root}>
       <Box mt={2}>
@@ -408,12 +456,11 @@ export default function QuizHoster() {
         </Typography>
       </Box>
       <Box pt={3} pb={3}>
-        {currentQuestionNumber === 1 &&
-        currentQuizState === QuizState.QuestionReady ? (
+        {currentQuizState === QuizState.FirstQuestionReady ? (
           <QuizInitiator quizName={quizName} clickHandler={onQuizInitiate} />
         ) : (
           <>
-            {!quizIsComplete && !finalQuestionCompleted ? (
+            {currentQuizState === QuizState.QuestionInProgress ? (
               <>
                 <QuizQuestionDisplay
                   quizQuestion={currentQuizQuestion}
@@ -424,10 +471,22 @@ export default function QuizHoster() {
                   Answer: {currentQuizQuestion.Answer}
                 </Typography>
               </>
+            ) : currentQuizState === QuizState.NextQuestionReady ? (
+              <>
+                <Typography component="h1" variant="h5">
+                  Get ready for Question {currentQuestionNumber}!
+                </Typography>
+              </>
+            ) : currentQuizState === QuizState.ResultsReady ? (
+              <>
+                <Typography component="h1" variant="h5">
+                  The Final Results are Ready
+                </Typography>
+              </>
             ) : (
               <></>
             )}
-            {!quizIsComplete ? (
+            {currentQuizState != QuizState.QuizEnded ? (
               <>
                 <Paper className={classes.paper}>
                   {showQuizMarker ? (
@@ -445,14 +504,14 @@ export default function QuizHoster() {
                       className={classes.nextQuestion}
                       onClick={onGoToNextQuestion}
                     >
-                      {finalQuestionCompleted
-                        ? "Show final standings"
-                        : "Go to next question"}
+                      {currentQuizState === QuizState.ResultsReady
+                        ? "Show Final Standings"
+                        : "Start Question " + currentQuestionNumber}
                     </Button>
                   )}
                 </Paper>
                 <Typography component="h1" variant="h5">
-                  {quizIsComplete ? "Final Standings" : "Quiz Standings"}
+                  Quiz Standings
                 </Typography>
                 <QuizStandings contestantStandings={contestants} />
               </>

@@ -3,8 +3,10 @@ namespace QuizMaster.Domain
     public enum QuizState
     {
         QuizNotStarted,
-        QuestionReady,
+        FirstQuestionReady,
         QuestionInProgress,
+        NextQuestionReady,
+        ResultsReady,
         QuizEnded,
     }
 }
