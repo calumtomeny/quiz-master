@@ -80,10 +80,10 @@ export default function QuizJoiner() {
     const participantID = localStorage.getItem("participantId") || "";
     const participantName = localStorage.getItem("participantName") || "";
 
-    // The user has been or is a participant, let's check if they're a participant of this quiz.
+    // The user has been, or is a participant, let's check if they're a participant of this quiz.
     if (participantID) {
       axios.get(`/api/quizzes/${id}/details/${participantID}`).then((res) => {
-        // They are a participant of this quiz so let's check if the quiz is in progress.
+        // They are a participant of this quiz, so let's check if the quiz is in progress.
         if (res.data.quizState == 1 || res.data.quizState == 2) {
           // The quiz is in progress, let's help them get back into the action!
           setQuizForParticipantAlreadyInProgress(true);
