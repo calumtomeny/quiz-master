@@ -212,7 +212,6 @@ export default function QuestionResponder() {
             setQuizIsComplete(true);
             setQuizState(message.state);
           } else {
-            //QuizState.QuestionInProgress
             setQuizQuestion(
               new QuizQuestion(
                 message.question,
