@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e44e40c0-df47-4e8a-9e67-580ef170593f",
+		"_postman_id": "fa865383-192d-4f13-ba2d-c2a099b8abb9",
 		"name": "Quiz Master API Tests",
 		"description": "Tests for the Quiz Master API.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -12,7 +12,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "e3c84723-9acd-438c-b478-41f3bbefa835",
 						"exec": [
 							"pm.test(\"Successful POST request\", function () {\r",
 							"    pm.expect(pm.response.code).to.be.oneOf([201,202]);\r",
@@ -69,7 +68,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "93181f85-c986-4836-8606-f74651951791",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -103,7 +101,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "203d4cd9-8b33-4378-950b-c6b999346ad5",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -143,7 +140,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "352c418b-9c09-4161-bdbd-cf213bafe7d9",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -183,7 +179,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "a4b5301f-f000-4095-a71b-0d845f155b75",
 						"exec": [
 							"pm.test(\"Status code is 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
@@ -216,7 +211,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "1ebf60c6-c05c-4a9d-8e46-4c13e3f18b4b",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -266,7 +260,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "3c9fb6ae-4468-43d8-8b48-c5d84d6cac48",
 						"exec": [
 							"pm.test(\"Status code is 404\", function () {\r",
 							"    pm.response.to.have.status(404);\r",
@@ -316,7 +309,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "ec60bb5d-6d44-4627-bf1f-aa1a7ed95cb2",
 						"exec": [
 							"pm.test(\"Status code is 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
@@ -366,7 +358,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "fc5d6079-c697-4b3f-a23f-da3f7d5466c6",
 						"exec": [
 							"pm.test(\"Status code is 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
@@ -416,7 +407,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "69695c0e-8226-4adc-ba62-a9e3989c6d32",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -465,7 +455,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "be723d93-f044-4195-abd3-0d73fe0aebe6",
 						"exec": [
 							"pm.test(\"Status code is 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
@@ -514,7 +503,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "3dc8655e-a937-4e18-8e06-7b801c7c1da9",
 						"exec": [
 							"pm.test(\"Successful POST request\", function () {\r",
 							"    pm.expect(pm.response.code).to.be.oneOf([201,202]);\r",
@@ -567,7 +555,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "d26baca7-b5a3-432d-8eae-4e05dbf3349b",
 						"exec": [
 							"pm.test(\"Status code is 404\", function () {\r",
 							"    pm.response.to.have.status(404);\r",
@@ -609,12 +596,58 @@
 			"response": []
 		},
 		{
+			"name": "Start the quiz",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "ApiKey",
+						"type": "text",
+						"value": "{{ApiKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"QuestionNo\": 1,\r\n    \"QuizState\": 2,\r\n    \"QuestionStartTime\": 123456\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/quizzes/{{QuizId}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"quizzes",
+						"{{QuizId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Send participant message without API key",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "b0e4bd19-a679-4e74-af88-205f08443af6",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -635,7 +668,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"ParticipantId\": \"{{ContestantId}}\",\r\n    \"Answer\": \"Test answer\"\r\n}",
+					"raw": "{\r\n    \"participantId\": \"{{ContestantId}}\",\r\n    \"answer\": \"Test Answer\",\r\n    \"answerTimeLeftAsAPercentage\": 96.77,\r\n    \"questionNo\": 1,\r\n    \"answerTimeLeftInMs\": 116124\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -664,7 +697,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "5e155fe9-b62d-4275-89f2-9b716432e2c4",
 						"exec": [
 							"pm.test(\"Status code is 404\", function () {\r",
 							"    pm.response.to.have.status(404);\r",
@@ -708,6 +740,5 @@
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
