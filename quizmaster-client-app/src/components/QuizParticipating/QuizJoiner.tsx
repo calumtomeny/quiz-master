@@ -42,7 +42,7 @@ export default function QuizJoiner() {
     setQuizForParticipantAlreadyInProgress,
   ] = useState<boolean>(false);
   const [
-    quizAlreadyStartedForWithoutParticipant,
+    quizAlreadyStartedWithoutParticipant,
     setQuizAlreadyStartedWithoutParticipant,
   ] = useState<boolean>(false);
 
@@ -120,7 +120,7 @@ export default function QuizJoiner() {
           Joining &apos;{quizName}&apos;...
         </Typography>
       )}
-      {quizNotFound ? null : quizAlreadyStartedForWithoutParticipant ? (
+      {quizNotFound ? null : quizAlreadyStartedWithoutParticipant ? (
         <Typography className={classes.sorryText} color="primary">
           Sorry! The Quiz has already started. Please contact the Quiz Master if
           you would like to join.
