@@ -2,6 +2,7 @@ import React, { useReducer, useRef, useEffect, useState } from "react";
 import Axios from "axios";
 import QuizQuestion from "../../Common/QuizQuestion";
 import MaterialTable from "material-table";
+import { Box } from "@material-ui/core";
 import reducer from "./QuestionReducer";
 import QuestionInitialiser from "./QuestionInitialiser";
 import TableFieldEditor from "./TableFieldEditor";
@@ -9,6 +10,12 @@ import TableFieldEditor from "./TableFieldEditor";
 export default function QuestionCreator(props: any) {
   const [state, dispatch] = useReducer(reducer, {
     columns: [
+      {
+        // title: "Number",
+        field: "number",
+        width: 50,
+        editable: "never",
+      },
       {
         title: "Question",
         field: "question",
@@ -61,43 +68,49 @@ export default function QuestionCreator(props: any) {
         onInitialQuestionSubmitted={setInitialQuestion}
         isInitialQuestion={isInitialQuestion}
       />
-      {state.data.length || !doneInitialGet ? (
-        <MaterialTable
-          options={{
-            actionsColumnIndex: -1,
-          }}
-          title="Questions"
-          columns={state.columns}
-          data={state.data}
-          editable={{
-            onRowAdd: (newData) =>
-              new Promise<void>((resolve) => {
-                setTimeout(() => {
-                  resolve();
-                  dispatch({ type: "add", payload: newData });
-                }, 600);
-              }),
-            onRowUpdate: (newData, oldData) =>
-              new Promise<void>((resolve) => {
-                setTimeout(() => {
-                  resolve();
-                  if (oldData) {
-                    dispatch({ type: "update", payload: newData });
-                  }
-                }, 600);
-              }),
-            onRowDelete: (oldData) =>
-              new Promise<void>((resolve) => {
-                setTimeout(() => {
-                  resolve();
-                  dispatch({ type: "delete", payload: oldData });
-                }, 600);
-              }),
-          }}
-        />
-      ) : (
-        <></>
-      )}
+      <Box pt={3} pb={3}>
+        {state.data.length || !doneInitialGet ? (
+          <MaterialTable
+            options={{
+              actionsColumnIndex: -1,
+              draggable: false,
+              filtering: false,
+              paging: false,
+              rowStyle: {
+                wordBreak: "break-all",
+              },
+            }}
+            localization={{
+              header: {
+                actions: "",
+              },
+            }}
+            title="Your Quiz"
+            columns={state.columns}
+            data={state.data}
+            editable={{
+              onRowUpdate: (newData, oldData) =>
+                new Promise<void>((resolve) => {
+                  setTimeout(() => {
+                    resolve();
+                    if (oldData) {
+                      dispatch({ type: "update", payload: newData });
+                    }
+                  }, 600);
+                }),
+              onRowDelete: (oldData) =>
+                new Promise<void>((resolve) => {
+                  setTimeout(() => {
+                    resolve();
+                    dispatch({ type: "delete", payload: oldData });
+                  }, 600);
+                }),
+            }}
+          />
+        ) : (
+          <></>
+        )}
+      </Box>
     </>
   );
 }
