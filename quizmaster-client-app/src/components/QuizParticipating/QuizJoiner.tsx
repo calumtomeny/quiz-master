@@ -37,16 +37,27 @@ export default function QuizJoiner() {
   const [quizName, setQuizName] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [quizNotFound, setQuizNotFound] = useState<boolean>(false);
-  const [quizAlreadyStarted, setQuizAlreadyStarted] = useState<boolean>(false);
+  const [
+    quizForParticipantAlreadyInProgress,
+    setQuizForParticipantAlreadyInProgress,
+  ] = useState<boolean>(false);
+  const [
+    quizAlreadyStartedWithoutParticipant,
+    setQuizAlreadyStartedWithoutParticipant,
+  ] = useState<boolean>(false);
 
   const onNameChange = (e: ChangeEvent<HTMLInputElement>) =>
     setName(e.currentTarget.value);
+
+  const goToTheQuizInProgress = () => {
+    history.push(`/quiz/${id}`);
+  };
 
   const onHostQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios.get(`/api/quizzes/${id}/state`).then((res) => {
       if (res.data.quizState == QuizState.QuizNotStarted) {
-        setQuizAlreadyStarted(false);
+        setQuizAlreadyStartedWithoutParticipant(false);
         axios
           .post("/api/contestants", {
             quizCode: `${id}`,
@@ -55,15 +66,32 @@ export default function QuizJoiner() {
           .then((res) => {
             console.log(res.data);
             localStorage.setItem("participantId", res.data.id);
+            localStorage.setItem("participantName", name);
             history.push(`/quiz/${id}`);
           });
       } else {
-        setQuizAlreadyStarted(true);
+        setQuizAlreadyStartedWithoutParticipant(true);
       }
     });
   };
 
   useEffect(() => {
+    // The participant might already be part of a quiz in progress so let's try and get their ID.
+    const participantID = localStorage.getItem("participantId") || "";
+    const participantName = localStorage.getItem("participantName") || "";
+
+    // The user has been, or is a participant, let's check if they're a participant of this quiz.
+    if (participantID) {
+      axios.get(`/api/quizzes/${id}/details/${participantID}`).then((res) => {
+        // They are a participant of this quiz, so let's check if the quiz is in progress.
+        if (res.data.quizState == 1 || res.data.quizState == 2) {
+          // The quiz is in progress, let's help them get back into the action!
+          setQuizForParticipantAlreadyInProgress(true);
+          setName(participantName);
+        }
+      });
+    }
+
     async function loadQuiz() {
       try {
         const res = await axios.get(`/api/quizzes/${id}/name`);
@@ -83,12 +111,16 @@ export default function QuizJoiner() {
         <Typography component="h2" variant="h5">
           Oops! The quiz was not found.
         </Typography>
+      ) : quizForParticipantAlreadyInProgress ? (
+        <Typography component="h2" variant="h5">
+          Hi {name}, you&apos;re already part of this quiz!
+        </Typography>
       ) : (
         <Typography component="h2" variant="h5">
           Joining &apos;{quizName}&apos;...
         </Typography>
       )}
-      {quizNotFound ? null : quizAlreadyStarted ? (
+      {quizNotFound ? null : quizAlreadyStartedWithoutParticipant ? (
         <Typography className={classes.sorryText} color="primary">
           Sorry! The Quiz has already started. Please contact the Quiz Master if
           you would like to join.
@@ -107,16 +139,30 @@ export default function QuizJoiner() {
             onChange={onNameChange}
             value={name}
             data-testid="participant-name-input"
+            disabled={quizForParticipantAlreadyInProgress}
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Let&apos;s go!
-          </Button>
+          {quizForParticipantAlreadyInProgress ? (
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={goToTheQuizInProgress}
+            >
+              Get back to the action!
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Let&apos;s go!
+            </Button>
+          )}
         </form>
       )}
     </>
