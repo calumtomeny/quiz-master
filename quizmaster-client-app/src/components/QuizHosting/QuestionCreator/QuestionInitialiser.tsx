@@ -10,7 +10,6 @@ import {
 const useStyles = makeStyles({
   questionField: {
     wordWrap: "break-word",
-    maxwidth: "100%",
   },
   answerField: {
     flex: 1,
@@ -98,7 +97,7 @@ export default function QuestionInitialiser(props: any) {
           color="primary"
           data-testid="add-question-button"
         >
-          Add
+          OK
         </Button>
       </Grid>
     </form>

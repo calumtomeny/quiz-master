@@ -11,7 +11,6 @@ export default function QuestionCreator(props: any) {
   const [state, dispatch] = useReducer(reducer, {
     columns: [
       {
-        // title: "Number",
         field: "number",
         width: 50,
         editable: "never",
@@ -76,6 +75,9 @@ export default function QuestionCreator(props: any) {
               draggable: false,
               filtering: false,
               paging: false,
+              search: false,
+              toolbar: false,
+              padding: "dense",
               rowStyle: {
                 wordBreak: "break-all",
               },
@@ -85,7 +87,7 @@ export default function QuestionCreator(props: any) {
                 actions: "",
               },
             }}
-            title="Your Quiz"
+            title=""
             columns={state.columns}
             data={state.data}
             editable={{
