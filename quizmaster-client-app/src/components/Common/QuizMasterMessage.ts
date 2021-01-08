@@ -1,8 +1,8 @@
 import Contestant from "../QuizHosting/Contestant";
+import QuizState from "./QuizState";
 
 interface QuizMasterMessage {
-  start: boolean;
-  complete: boolean;
+  state: QuizState;
   question: string;
   answer: string;
   questionNumber: number;

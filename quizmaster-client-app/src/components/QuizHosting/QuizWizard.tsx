@@ -146,7 +146,7 @@ export default function QuizWizard() {
       axios
         .post(`/api/quizzes/${id}`, {
           QuestionNo: 1,
-          QuizState: QuizState.QuestionReady,
+          QuizState: QuizState.FirstQuestionReady,
         })
         .then(() => {
           history.push(`/quiz/${id}/${quizName}/host`);

@@ -1,7 +1,9 @@
 enum QuizState {
   QuizNotStarted,
-  QuestionReady,
+  FirstQuestionReady,
   QuestionInProgress,
+  NextQuestionReady,
+  ResultsReady,
   QuizEnded,
 }
 
