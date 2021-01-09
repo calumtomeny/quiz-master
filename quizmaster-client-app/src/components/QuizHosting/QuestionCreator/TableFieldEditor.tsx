@@ -9,7 +9,7 @@ export default function TableFieldEditor(props: any) {
       multiline
       required
       onChange={(e) => props.onChange(e.target.value)}
-      autoFocus={props.columnDef.tableData.columnOrder === 0 ? true : false}
+      autoFocus={props.columnDef.tableData.columnOrder === 0}
     />
   );
 }
