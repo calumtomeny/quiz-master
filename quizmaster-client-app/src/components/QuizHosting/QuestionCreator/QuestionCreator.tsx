@@ -2,12 +2,18 @@ import React, { useReducer, useRef, useEffect, useState } from "react";
 import Axios from "axios";
 import QuizQuestion from "../../Common/QuizQuestion";
 import MaterialTable from "material-table";
-import { Box } from "@material-ui/core";
+import { Box, TextField } from "@material-ui/core";
 import reducer from "./QuestionReducer";
 import QuestionInitialiser from "./QuestionInitialiser";
 import TableFieldEditor from "./TableFieldEditor";
 
 export default function QuestionCreator(props: any) {
+  const [editFieldError, setEditFieldError] = useState({
+    error: false,
+    label: "",
+    helperText: "",
+  });
+
   const [state, dispatch] = useReducer(reducer, {
     columns: [
       {
@@ -18,7 +24,18 @@ export default function QuestionCreator(props: any) {
       {
         title: "Question",
         field: "question",
-        editComponent: TableFieldEditor,
+        // eslint-disable-next-line react/display-name
+        editComponent: (props: any) => (
+          <TextField
+            error={editFieldError.error}
+            helperText={editFieldError.helperText}
+            value={props.value ? props.value : editFieldError.helperText}
+            fullWidth
+            multiline
+            onChange={(e) => props.onChange(e.target.value)}
+            autoFocus={props.columnDef.tableData.columnOrder === 0}
+          />
+        ),
       },
       {
         title: "Answer",
@@ -67,6 +84,8 @@ export default function QuestionCreator(props: any) {
         onInitialQuestionSubmitted={setInitialQuestion}
         isInitialQuestion={isInitialQuestion}
       />
+      <span>Helper: {editFieldError.helperText}</span>
+      <button onClick={() => console.log(editFieldError)}></button>
       <Box pt={3} pb={3}>
         {state.data.length || !doneInitialGet ? (
           <MaterialTable
@@ -91,9 +110,18 @@ export default function QuestionCreator(props: any) {
             columns={state.columns}
             data={state.data}
             editable={{
-              onRowUpdate: (newData, oldData) =>
-                new Promise<void>((resolve) => {
+              onRowUpdate: (newData: any, oldData: any) =>
+                new Promise<void>((resolve, reject) => {
                   setTimeout(() => {
+                    if (newData.question === "") {
+                      setEditFieldError({
+                        error: true,
+                        label: "required",
+                        helperText: "Required helper text",
+                      });
+                      reject();
+                      return;
+                    }
                     resolve();
                     if (oldData) {
                       dispatch({ type: "update", payload: newData });
