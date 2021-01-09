@@ -56,7 +56,6 @@ export default function QuestionResponder() {
   const [quizName, setQuizName] = useState<string>("");
   const [answer, setAnswer] = useState<string>("");
   const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>();
-  const [quizInitialized, setQuizInitialized] = useState<boolean>(false);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(0);
   const [quizIsComplete, setQuizIsComplete] = useState<boolean>(false);
@@ -73,10 +72,11 @@ export default function QuestionResponder() {
   const [pageError, setPageError] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [questionNo, setQuestionNo] = useState(0);
-  const [awaitingFinalScores, setAwaitingFinalScores] = useState(false);
   const [disconnectedDialogOpen, setDisconnectedDialogOpen] = useState<boolean>(
     false,
   );
+  const [quizState, setQuizState] = useState(QuizState.QuizNotStarted);
+
   const apiBaseUrl = process.env.REACT_APP_BASE_API_URL;
 
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
@@ -145,12 +145,7 @@ export default function QuestionResponder() {
         setPageLoading(false);
         setQuizName(res.data.quizName);
         setQuestionNo(res.data.questionNo);
-        if (
-          res.data.quizState == QuizState.QuestionReady &&
-          res.data.questionNo > 0
-        ) {
-          setQuizInitialized(true);
-        } else if (res.data.quizState == QuizState.QuestionInProgress) {
+        if (res.data.quizState == QuizState.QuestionInProgress) {
           setQuizQuestion(
             new QuizQuestion(res.data.question, "", res.data.questionNo),
           );
@@ -169,11 +164,6 @@ export default function QuestionResponder() {
             setButtonDisabled(false);
             setSubmitText("Submit");
           }
-        } else if (
-          res.data.questionNo == 0 &&
-          res.data.quizState == QuizState.QuestionReady
-        ) {
-          setAwaitingFinalScores(true);
         } else if (res.data.quizState == QuizState.QuizEnded) {
           const newContestantStandings = res.data.contestantScores.map(
             (contestant: any) => {
@@ -187,6 +177,7 @@ export default function QuestionResponder() {
           setContestantStandings(newContestantStandings);
           setQuizIsComplete(true);
         }
+        setQuizState(res.data.quizState);
       })
       .catch(() => {
         setPageError(true);
@@ -202,17 +193,24 @@ export default function QuestionResponder() {
 
       try {
         hubConnect.on("ContestantUpdate", (message: QuizMasterMessage) => {
-          if (message.start) {
-            setQuizInitialized(true);
-            setQuestionNo(message.questionNumber);
-          } else if (message.complete) {
-            setContestantStandings(message.standings);
-            setQuizIsComplete(true);
-          } else if (message.kick) {
+          if (message.kick) {
             console.log("Leaving group...");
             hubConnect.invoke("RemoveFromGroup", quizId);
             console.log("Connection removed.");
             setKicked(true);
+          } else if (message.state == QuizState.FirstQuestionReady) {
+            setQuestionNo(message.questionNumber);
+            setQuizState(message.state);
+          } else if (message.state == QuizState.NextQuestionReady) {
+            setQuestionNo(message.questionNumber);
+            setQuizState(message.state);
+          } else if (message.state == QuizState.ResultsReady) {
+            setQuestionNo(0);
+            setQuizState(message.state);
+          } else if (message.state == QuizState.QuizEnded) {
+            setContestantStandings(message.standings);
+            setQuizIsComplete(true);
+            setQuizState(message.state);
           } else {
             setQuizQuestion(
               new QuizQuestion(
@@ -229,6 +227,7 @@ export default function QuestionResponder() {
             setAnswer("");
             setButtonDisabled(false);
             setSubmitText("Submit");
+            setQuizState(message.state);
           }
         });
       } catch (err) {
@@ -262,10 +261,11 @@ export default function QuestionResponder() {
   return (
     <>
       <Typography component="h2" variant="h5">
-        {!quizIsComplete
-          ? quizInitialized && !quizQuestion
-            ? "You're all set..."
-            : quizName
+        {quizState == QuizState.FirstQuestionReady ||
+        quizState == QuizState.NextQuestionReady
+          ? "You're all set..."
+          : quizState != QuizState.QuizEnded
+          ? quizName
           : ""}
       </Typography>
 
@@ -295,17 +295,18 @@ export default function QuestionResponder() {
             <QuizStandings contestantStandings={contestantStandings} />
           </div>
         </>
-      ) : quizInitialized && !quizQuestion ? (
+      ) : quizState === QuizState.FirstQuestionReady ||
+        quizState === QuizState.NextQuestionReady ? (
         <Box mb={2}>
           <p>Get ready for question {questionNo}</p>
           <LinearProgress />
         </Box>
-      ) : awaitingFinalScores ? (
+      ) : quizState === QuizState.ResultsReady ? (
         <Box mb={2}>
           <p>Get ready for the final scores</p>
           <LinearProgress />
         </Box>
-      ) : quizQuestion ? (
+      ) : quizState === QuizState.QuestionInProgress ? (
         <>
           <QuizQuestionDisplay
             quizQuestion={quizQuestion}

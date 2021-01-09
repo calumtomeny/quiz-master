@@ -231,7 +231,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"Start\": false,\r\n    \"Complete\": true,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1\r\n}",
+					"raw": "{\r\n    \"State\": 2,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1,\r\n    \"Kicked\": false,\r\n    \"Standings\": []\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -280,7 +280,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"Start\": false,\r\n    \"Complete\": true,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1\r\n}",
+					"raw": "{\r\n    \"State\": 2,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1,\r\n    \"Kicked\": false,\r\n    \"Standings\": []\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -329,7 +329,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"Start\": false,\r\n    \"Complete\": true,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1\r\n}",
+					"raw": "{\r\n    \"State\": 2,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1,\r\n    \"Kicked\": false,\r\n    \"Standings\": []\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -378,7 +378,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"Start\": false,\r\n    \"Complete\": true,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1\r\n}",
+					"raw": "{\r\n    \"State\": 2,\r\n    \"Question\": \"Test question.\",\r\n    \"Answer\": \"Test answer.\",\r\n    \"QuestionNumber\": 1,\r\n    \"Kicked\": false,\r\n    \"Standings\": []\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

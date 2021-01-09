@@ -412,7 +412,7 @@ export default function QuestionMarker(props: {
             onClick={onAcceptAnswers}
           >
             <DoneIcon className={fabClasses.extendedIcon} />
-            Continue to next question
+            Calculate scores and prepare next question
           </Fab>
         </Zoom>
       </TableContainer>
