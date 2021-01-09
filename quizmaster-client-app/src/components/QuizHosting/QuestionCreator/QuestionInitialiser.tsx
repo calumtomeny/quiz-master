@@ -1,10 +1,30 @@
 import React, { useState, useRef, useEffect, ChangeEvent } from "react";
-import { Typography, TextField, Button } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  TextField,
+  Button,
+  makeStyles,
+} from "@material-ui/core";
+
+const useStyles = makeStyles({
+  questionField: {
+    wordWrap: "break-word",
+  },
+  answerField: {
+    flex: 1,
+  },
+  button: {
+    margin: "10px 0 10px 10px",
+  },
+});
 
 export default function QuestionInitialiser(props: any) {
   const [question, setQuestion] = useState<string>("");
   const [answer, setAnswer] = useState<string>("");
   const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
+
+  const classes = useStyles();
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -40,6 +60,8 @@ export default function QuestionInitialiser(props: any) {
       </Typography>
       <TextField
         margin="normal"
+        variant="outlined"
+        className={classes.questionField}
         required
         fullWidth
         id="question"
@@ -51,26 +73,33 @@ export default function QuestionInitialiser(props: any) {
         value={question}
         data-testid="question-input"
       />
-      <TextField
-        margin="normal"
-        required
-        fullWidth
-        id="answer"
-        label="Answer"
-        name="answer"
-        onChange={onAnswerChange}
-        value={answer}
-        data-testid="answer-input"
-      />
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        color="primary"
-        data-testid="add-question-button"
+      <Grid
+        container
+        direction="row"
+        justify="flex-start"
+        alignItems="flex-end"
       >
-        ok
-      </Button>
+        <TextField
+          variant="outlined"
+          required
+          className={classes.answerField}
+          id="answer"
+          label="Answer"
+          name="answer"
+          onChange={onAnswerChange}
+          value={answer}
+          data-testid="answer-input"
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          className={classes.button}
+          color="primary"
+          data-testid="add-question-button"
+        >
+          OK
+        </Button>
+      </Grid>
     </form>
   );
 }
