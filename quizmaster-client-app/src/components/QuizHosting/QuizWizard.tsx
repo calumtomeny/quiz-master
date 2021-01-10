@@ -240,7 +240,7 @@ export default function QuizWizard() {
               following link:
               <div>
                 {quizName ? (
-                  <a data-testid="quiz-url" href={getQuizMasterUrl()}>
+                  <a data-testid="quiz-master-url" href={getQuizMasterUrl()}>
                     {getQuizMasterUrl()}
                   </a>
                 ) : null}
