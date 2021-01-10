@@ -71,7 +71,7 @@ export default function AboutModal(props: any) {
           </Typography>
           <Typography variant="body2" className={classes.faqAnswer}>
             {`No. Although exact matches will be automatically marked as correct, the quiz master has the option
-            of marking non-matches as correct if they deem it to be a good answer, they have complete discretion!`}
+            of marking non-matches as correct if they deem them to be good answers - they have complete discretion!`}
           </Typography>
         </div>
         <div>
@@ -79,7 +79,7 @@ export default function AboutModal(props: any) {
             Does the app support images and sound?
           </Typography>
           <Typography variant="body2" className={classes.faqAnswer}>
-            {`Since the app is used in combination with web-meet tools, images, video and sound can be presented by
+            {`Since the app is used in combination with web-meet tools, media can be presented by
             the quiz master to the contestants over screen share. Placeholder questions can be used in the app
             such as "Image No 1" or "Song No 5" etc, so the app is still used to collect contestants'
             rapid responses to the visual/audio questions. The app does not currently allow images and sound to be embedded
