@@ -57,11 +57,11 @@ export default function AboutModal(props: any) {
           </Typography>
           <Typography variant="body2" className={classes.faqAnswer}>
             {`No. Quiz.Coffee is an app for socialising!
-            Therefore it should be used in combination with web-meet tools such as Zoom, Google Meet, Teams etc;
+            Therefore it should be used in combination with web-meet tools such as Zoom, Google Meet, Teams, Jitsi etc;
             or if you're lucky enough for this to be allowed: in-person face to face!
             If you are a quiz master you can deliver the questions in your own style and make as big a show as you like!
             The app's main goal is to collect answers from contestants, count scores,
-            and encourage speedy responses with bonus points (and also discouraging cheating!)`}
+            and encourage speedy responses with bonus points (whilst also discouraging cheating!)`}
           </Typography>
         </div>
         <div>
