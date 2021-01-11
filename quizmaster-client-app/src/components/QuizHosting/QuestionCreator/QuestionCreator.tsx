@@ -12,51 +12,71 @@ export default function QuestionCreator(props: any) {
     error: false,
     label: "",
     helperText: "",
+    validateInput: false,
   });
 
-  const [state, dispatch] = useReducer(reducer, {
-    columns: [
-      {
-        field: "number",
-        width: 50,
-        editable: "never",
-      },
-      {
-        title: "Question",
-        field: "question",
-        // eslint-disable-next-line react/display-name
-        editComponent: (props: any) => (
-          <TextField
-            error={editFieldError.error}
-            helperText={editFieldError.helperText}
-            value={props.value ? props.value : editFieldError.helperText}
-            fullWidth
-            multiline
-            onChange={(e) => props.onChange(e.target.value)}
-            autoFocus={props.columnDef.tableData.columnOrder === 0}
-          />
-        ),
-      },
-      {
-        title: "Answer",
-        field: "answer",
-        editComponent: TableFieldEditor,
-      },
-    ],
+  const columns = [
+    {
+      field: "number",
+      width: 50,
+      editable: "never",
+    },
+    {
+      title: "Question",
+      field: "question",
+      // eslint-disable-next-line react/display-name
+      editComponent: (props: any) => (
+        <TextField
+          error={
+            !props.value && editFieldError.validateInput
+              ? editFieldError.error
+              : false
+          }
+          label={
+            !props.value && editFieldError.validateInput
+              ? editFieldError.helperText
+              : ""
+          }
+          value={props.value ? props.value : ""}
+          fullWidth
+          multiline
+          variant="outlined"
+          size="small"
+          onChange={(e) => {
+            props.onChange(e.target.value);
+          }}
+          autoFocus={props.columnDef.tableData.columnOrder === 0}
+        />
+      ),
+    },
+    {
+      title: "Answer",
+      field: "answer",
+      editComponent: TableFieldEditor,
+    },
+  ];
+
+  const [columnsState, setColumnsState] = useState<any>(columns);
+  const [dataState, dispatch] = useReducer(reducer, {
     data: [],
   });
-
   const [doneInitialGet, setDoneInitialGet] = useState<boolean>(false);
   const isFirstRun = useRef(true);
   const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
 
   const setInitialQuestion = (question: string, answer: string) => {
     dispatch({ type: "add", payload: { question: question, answer: answer } });
+    setEditFieldError({
+      error: true,
+      label: "required",
+      helperText: "Required",
+      validateInput: true,
+    });
   };
 
   useEffect(() => {
-    props.onQuestionsUpdated(state.data.length);
-  }, [state]);
+    props.onQuestionsUpdated(dataState.data.length);
+  }, [dataState]);
 
   useEffect(() => {
     Axios.get(`/api/quizzes/${props.quizId}/questions`).then((results) => {
@@ -67,16 +87,20 @@ export default function QuestionCreator(props: any) {
   }, [props.quizId]);
 
   useEffect(() => {
-    if (!isFirstRun.current && doneInitialGet && state.data.length) {
+    if (!isFirstRun.current && doneInitialGet && dataState.data.length) {
       Axios.post(
         `/api/quizzes/${props.quizId}/questions`,
-        state.data.map(
+        dataState.data.map(
           (x: any) => new QuizQuestion(x.question, x.answer, x.number),
         ),
       );
     }
     isFirstRun.current = false;
-  }, [state, doneInitialGet, props.quizId]);
+  }, [dataState, doneInitialGet, props.quizId]);
+
+  useEffect(() => {
+    setColumnsState(columns);
+  }, [editFieldError, dataState]);
 
   return (
     <>
@@ -84,10 +108,8 @@ export default function QuestionCreator(props: any) {
         onInitialQuestionSubmitted={setInitialQuestion}
         isInitialQuestion={isInitialQuestion}
       />
-      <span>Helper: {editFieldError.helperText}</span>
-      <button onClick={() => console.log(editFieldError)}></button>
       <Box pt={3} pb={3}>
-        {state.data.length || !doneInitialGet ? (
+        {dataState.data.length || !doneInitialGet ? (
           <MaterialTable
             options={{
               actionsColumnIndex: -1,
@@ -96,7 +118,6 @@ export default function QuestionCreator(props: any) {
               paging: false,
               search: false,
               toolbar: false,
-              padding: "dense",
               rowStyle: {
                 wordBreak: "break-all",
               },
@@ -107,17 +128,19 @@ export default function QuestionCreator(props: any) {
               },
             }}
             title=""
-            columns={state.columns}
-            data={state.data}
+            columns={columnsState}
+            data={dataState.data}
             editable={{
               onRowUpdate: (newData: any, oldData: any) =>
                 new Promise<void>((resolve, reject) => {
                   setTimeout(() => {
                     if (newData.question === "") {
+                      setColumnsState([]);
                       setEditFieldError({
                         error: true,
                         label: "required",
-                        helperText: "Required helper text",
+                        helperText: "Required",
+                        validateInput: true,
                       });
                       reject();
                       return;
