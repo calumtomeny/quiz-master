@@ -5,7 +5,6 @@ import MaterialTable from "material-table";
 import { Box, TextField } from "@material-ui/core";
 import reducer from "./QuestionReducer";
 import QuestionInitialiser from "./QuestionInitialiser";
-import TableFieldEditor from "./TableFieldEditor";
 
 export default function QuestionCreator(props: any) {
   const [editFieldError, setEditFieldError] = useState({
@@ -28,12 +27,12 @@ export default function QuestionCreator(props: any) {
       editComponent: (props: any) => (
         <TextField
           error={
-            !props.value && editFieldError.validateInput
+            !props.value.trim() && editFieldError.validateInput
               ? editFieldError.error
               : false
           }
           label={
-            !props.value && editFieldError.validateInput
+            !props.value.trim() && editFieldError.validateInput
               ? editFieldError.helperText
               : ""
           }
@@ -42,9 +41,7 @@ export default function QuestionCreator(props: any) {
           multiline
           variant="outlined"
           size="small"
-          onChange={(e) => {
-            props.onChange(e.target.value);
-          }}
+          onChange={(e) => props.onChange(e.target.value)}
           autoFocus={props.columnDef.tableData.columnOrder === 0}
         />
       ),
@@ -52,7 +49,27 @@ export default function QuestionCreator(props: any) {
     {
       title: "Answer",
       field: "answer",
-      editComponent: TableFieldEditor,
+      // eslint-disable-next-line react/display-name
+      editComponent: (props: any) => (
+        <TextField
+          error={
+            !props.value.trim() && editFieldError.validateInput
+              ? editFieldError.error
+              : false
+          }
+          label={
+            !props.value.trim() && editFieldError.validateInput
+              ? editFieldError.helperText
+              : ""
+          }
+          value={props.value ? props.value : ""}
+          fullWidth
+          multiline
+          variant="outlined"
+          size="small"
+          onChange={(e) => props.onChange(e.target.value)}
+        />
+      ),
     },
   ];
 
@@ -64,7 +81,7 @@ export default function QuestionCreator(props: any) {
   const isFirstRun = useRef(true);
   const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
 
-  const setInitialQuestion = (question: string, answer: string) => {
+  const setQuestion = (question: string, answer: string) => {
     dispatch({ type: "add", payload: { question: question, answer: answer } });
     setEditFieldError({
       error: true,
@@ -105,7 +122,7 @@ export default function QuestionCreator(props: any) {
   return (
     <>
       <QuestionInitialiser
-        onInitialQuestionSubmitted={setInitialQuestion}
+        onQuestionSubmitted={setQuestion}
         isInitialQuestion={isInitialQuestion}
       />
       <Box pt={3} pb={3}>
@@ -118,6 +135,7 @@ export default function QuestionCreator(props: any) {
               paging: false,
               search: false,
               toolbar: false,
+              sorting: false,
               rowStyle: {
                 wordBreak: "break-all",
               },
@@ -134,7 +152,9 @@ export default function QuestionCreator(props: any) {
               onRowUpdate: (newData: any, oldData: any) =>
                 new Promise<void>((resolve, reject) => {
                   setTimeout(() => {
-                    if (newData.question === "") {
+                    const question = newData.question.trim();
+                    const answer = newData.answer.trim();
+                    if (question === "" || answer === "") {
                       setColumnsState([]);
                       setEditFieldError({
                         error: true,
