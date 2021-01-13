@@ -16,14 +16,14 @@ namespace QuizMaster.Application.ContestantAnswers
             [Required]
             public string QuizCode { get; set; }
             [Required]
-            public int QuestionNumber { get; set; }               
+            public int QuestionNumber { get; set; }
             [Required]
             public Guid ContestantId { get; set; }
- 
+
             [Required]
-            public string Answer { get; set; }    
+            public string Answer { get; set; }
             [Required]
-            public long TimeRemainingMs { get; set; }   
+            public long TimeRemainingMs { get; set; }
             [Required]
             public float PercentageTimeRemaining { get; set; }
 
@@ -35,7 +35,7 @@ namespace QuizMaster.Application.ContestantAnswers
                 this.Answer = answer;
                 this.TimeRemainingMs = timeRemainingMs;
                 this.PercentageTimeRemaining = percentageTimeRemaining;
-            }                                                       
+            }
         }
 
         public class Handler : IRequestHandler<Command, ContestantAnswer>
@@ -62,8 +62,8 @@ namespace QuizMaster.Application.ContestantAnswers
                 if (question == null)
                 {
                     return null;
-                } 
-                var contestantAnswer = new ContestantAnswer(question.Id,contestant.Id,request.Answer,request.TimeRemainingMs,request.PercentageTimeRemaining);
+                }
+                var contestantAnswer = new ContestantAnswer(question.Id, contestant.Id, request.Answer, request.TimeRemainingMs, request.PercentageTimeRemaining, false, false, 0, 0);
                 context.ContestantAnswers.Add(contestantAnswer);
 
                 var success = await context.SaveChangesAsync() > 0;
