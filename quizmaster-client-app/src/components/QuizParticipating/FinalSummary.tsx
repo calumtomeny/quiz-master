@@ -57,19 +57,11 @@ export default function FinalSummary(props: { participantId: string }) {
   }, [props.participantId]);
 
   const getAnswerClass = (score: number) => {
-    if (score > 0) {
-      return classes.answerIsCorrect;
-    } else {
-      return classes.answerIsIncorrect;
-    }
+    return score > 0 ? classes.answerIsCorrect : classes.answerIsIncorrect;
   };
 
   const getFastestClass = (fastest: boolean) => {
-    if (fastest) {
-      return classes.answerIsFastest;
-    } else {
-      return classes.answerIsNotFastest;
-    }
+    return fastest ? classes.answerIsFastest : classes.answerIsNotFastest;
   };
 
   return (

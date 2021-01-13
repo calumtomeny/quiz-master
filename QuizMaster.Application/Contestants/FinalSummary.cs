@@ -49,7 +49,7 @@ namespace QuizMaster.Application.Contestants
                     return null;
                 }
 
-                var quiz = await context.Quiz.Include("QuizQuestions.ContestantAnswers").SingleOrDefaultAsync(x => x.Id == contestant.QuizId);
+                var quiz = await context.Quiz.Include(x => x.QuizQuestions).ThenInclude(y => y.ContestantAnswers).SingleOrDefaultAsync(x => x.Id == contestant.QuizId);
                 if (quiz == null)
                 {
                     return null;

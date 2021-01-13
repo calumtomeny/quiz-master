@@ -86,19 +86,11 @@ export default function QuizStandings(props: {
   }, [props.contestantStandings]);
 
   const getNameClass = (id: string) => {
-    if (id == participantId) {
-      return classes.ownName;
-    } else {
-      return classes.otherName;
-    }
+    return id == participantId ? classes.ownName : classes.otherName;
   };
 
   const getRankClass = (id: string) => {
-    if (id == participantId) {
-      return classes.ownRank;
-    } else {
-      return classes.otherRank;
-    }
+    return id == participantId ? classes.ownRank : classes.otherRank;
   };
 
   return (
