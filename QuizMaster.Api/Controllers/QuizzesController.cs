@@ -127,6 +127,27 @@ namespace TodoApi.Controllers
             return Ok();
         }
 
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
+        [HttpPost("{id}/updatecontestantanswers")]
+        public async Task<ActionResult<List<Contestant>>> UpdateContestantAnswers(QuizMaster.Application.ContestantAnswers.Update.RequestBody requestBody, string id)
+        {
+            var contestants = await mediator.Send(
+                new QuizMaster.Application.ContestantAnswers.Update.Command()
+                {
+                    QuizCode = id,
+                    QuestionNo = requestBody.QuestionNo,
+                    AnswerUpdates = requestBody.AnswerUpdates
+                }
+            );
+
+            if (contestants == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(contestants);
+        }
+
         // POST api/values
         [HttpPost]
         public async Task<ActionResult<Quiz>> Post(Create.Command command)

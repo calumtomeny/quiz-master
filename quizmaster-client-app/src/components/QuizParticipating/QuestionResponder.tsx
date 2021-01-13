@@ -24,6 +24,7 @@ import ParticipantMessage from "../Common/ParticipantMessage";
 import Contestant from "../QuizHosting/Contestant";
 import QuizStandings from "../QuizHosting/QuizStandings";
 import QuizState from "../Common/QuizState";
+import FinalSummary from "./FinalSummary";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -180,6 +181,7 @@ export default function QuestionResponder() {
                 id: contestant.id,
                 name: contestant.name,
                 score: contestant.score,
+                bonusPoints: contestant.bonusPoints,
               };
             },
           );
@@ -270,8 +272,9 @@ export default function QuestionResponder() {
   return (
     <>
       <Typography component="h2" variant="h5">
-        {quizState == QuizState.FirstQuestionReady ||
-        quizState == QuizState.NextQuestionReady
+        {(quizState == QuizState.FirstQuestionReady ||
+          quizState == QuizState.NextQuestionReady) &&
+        !kicked
           ? "You're all set..."
           : quizState != QuizState.QuizEnded
           ? quizName
@@ -301,7 +304,12 @@ export default function QuestionResponder() {
           <div className={classes.finalStandings}>
             <h2>{quizName}</h2>
             <h1>Final Standings</h1>
-            <QuizStandings contestantStandings={contestantStandings} />
+            <QuizStandings
+              contestantStandings={contestantStandings}
+              quizState={quizState}
+            />
+            <h2>Questions</h2>
+            <FinalSummary participantId={participantId} />
           </div>
         </>
       ) : quizState === QuizState.FirstQuestionReady ||
@@ -335,6 +343,7 @@ export default function QuestionResponder() {
               onChange={onAnswerChange}
               value={answer}
               onKeyPress={handleEnter}
+              autoComplete="off"
             />
             <Button
               variant="contained"

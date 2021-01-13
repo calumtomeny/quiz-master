@@ -70,7 +70,7 @@ namespace TodoApi.Controllers
         [HttpPost("updates")]
         public async Task<ActionResult<List<Contestant>>> UpdateMultiple(List<Update.Command> commandList)
         {
-            var contestants = await mediator.Send(new Update.CommandList(){Commands = commandList});
+            var contestants = await mediator.Send(new Update.CommandList() { Commands = commandList });
 
             if (contestants == null)
             {
@@ -90,6 +90,19 @@ namespace TodoApi.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        [HttpGet("{id}/finalsummary")]
+        public async Task<ActionResult<Contestant>> GetFinalSummary(Guid id)
+        {
+            var summary = await mediator.Send(new QuizMaster.Application.Contestants.FinalSummary.Query(id));
+
+            if (summary == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(summary);
         }
     }
 }
