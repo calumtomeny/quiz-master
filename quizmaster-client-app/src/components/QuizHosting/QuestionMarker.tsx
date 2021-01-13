@@ -290,7 +290,7 @@ export default function QuestionMarker(props: {
     );
     setAutoSelected(newAutoSelected);
     setSelected(Array.from(newAutoSelected));
-  }, [props.answer, props.rows]);
+  }, [props.answer, props.rows, manuallyDeselected, manuallySelected]);
 
   const onAcceptAnswers = () => {
     const correctAnswers = props.rows.filter((x) => selected.includes(x.id));
