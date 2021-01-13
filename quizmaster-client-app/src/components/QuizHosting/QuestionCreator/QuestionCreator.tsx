@@ -2,44 +2,98 @@ import React, { useReducer, useRef, useEffect, useState } from "react";
 import Axios from "axios";
 import QuizQuestion from "../../Common/QuizQuestion";
 import MaterialTable from "material-table";
-import { Box } from "@material-ui/core";
+import { Box, TextField } from "@material-ui/core";
 import reducer from "./QuestionReducer";
 import QuestionInitialiser from "./QuestionInitialiser";
-import TableFieldEditor from "./TableFieldEditor";
 
 export default function QuestionCreator(props: any) {
-  const [state, dispatch] = useReducer(reducer, {
-    columns: [
-      {
-        field: "number",
-        width: 50,
-        editable: "never",
-      },
-      {
-        title: "Question",
-        field: "question",
-        editComponent: TableFieldEditor,
-      },
-      {
-        title: "Answer",
-        field: "answer",
-        editComponent: TableFieldEditor,
-      },
-    ],
-    data: [],
+  const [editFieldError, setEditFieldError] = useState({
+    error: false,
+    label: "",
+    helperText: "",
+    validateInput: false,
   });
 
+  const columns = [
+    {
+      field: "number",
+      width: 50,
+      editable: "never",
+    },
+    {
+      title: "Question",
+      field: "question",
+      // eslint-disable-next-line react/display-name
+      editComponent: (props: any) => (
+        <TextField
+          error={
+            !props.value.trim() && editFieldError.validateInput
+              ? editFieldError.error
+              : false
+          }
+          label={
+            !props.value.trim() && editFieldError.validateInput
+              ? editFieldError.helperText
+              : ""
+          }
+          value={props.value ? props.value : ""}
+          fullWidth
+          multiline
+          variant="outlined"
+          size="small"
+          onChange={(e) => props.onChange(e.target.value)}
+          autoFocus={props.columnDef.tableData.columnOrder === 0}
+        />
+      ),
+    },
+    {
+      title: "Answer",
+      field: "answer",
+      // eslint-disable-next-line react/display-name
+      editComponent: (props: any) => (
+        <TextField
+          error={
+            !props.value.trim() && editFieldError.validateInput
+              ? editFieldError.error
+              : false
+          }
+          label={
+            !props.value.trim() && editFieldError.validateInput
+              ? editFieldError.helperText
+              : ""
+          }
+          value={props.value ? props.value : ""}
+          fullWidth
+          multiline
+          variant="outlined"
+          size="small"
+          onChange={(e) => props.onChange(e.target.value)}
+        />
+      ),
+    },
+  ];
+
+  const [columnsState, setColumnsState] = useState<any>(columns);
+  const [dataState, dispatch] = useReducer(reducer, {
+    data: [],
+  });
   const [doneInitialGet, setDoneInitialGet] = useState<boolean>(false);
   const isFirstRun = useRef(true);
   const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
 
-  const setInitialQuestion = (question: string, answer: string) => {
+  const setQuestion = (question: string, answer: string) => {
     dispatch({ type: "add", payload: { question: question, answer: answer } });
+    setEditFieldError({
+      error: true,
+      label: "required",
+      helperText: "Required",
+      validateInput: true,
+    });
   };
 
   useEffect(() => {
-    props.onQuestionsUpdated(state.data.length);
-  }, [state]);
+    props.onQuestionsUpdated(dataState.data.length);
+  }, [dataState]);
 
   useEffect(() => {
     Axios.get(`/api/quizzes/${props.quizId}/questions`).then((results) => {
@@ -50,25 +104,29 @@ export default function QuestionCreator(props: any) {
   }, [props.quizId]);
 
   useEffect(() => {
-    if (!isFirstRun.current && doneInitialGet && state.data.length) {
+    if (!isFirstRun.current && doneInitialGet && dataState.data.length) {
       Axios.post(
         `/api/quizzes/${props.quizId}/questions`,
-        state.data.map(
+        dataState.data.map(
           (x: any) => new QuizQuestion(x.question, x.answer, x.number),
         ),
       );
     }
     isFirstRun.current = false;
-  }, [state, doneInitialGet, props.quizId]);
+  }, [dataState, doneInitialGet, props.quizId]);
+
+  useEffect(() => {
+    setColumnsState(columns);
+  }, [editFieldError, dataState]);
 
   return (
     <>
       <QuestionInitialiser
-        onInitialQuestionSubmitted={setInitialQuestion}
+        onQuestionSubmitted={setQuestion}
         isInitialQuestion={isInitialQuestion}
       />
       <Box pt={3} pb={3}>
-        {state.data.length || !doneInitialGet ? (
+        {dataState.data.length || !doneInitialGet ? (
           <MaterialTable
             options={{
               actionsColumnIndex: -1,
@@ -77,7 +135,7 @@ export default function QuestionCreator(props: any) {
               paging: false,
               search: false,
               toolbar: false,
-              padding: "dense",
+              sorting: false,
               rowStyle: {
                 wordBreak: "break-all",
               },
@@ -88,12 +146,25 @@ export default function QuestionCreator(props: any) {
               },
             }}
             title=""
-            columns={state.columns}
-            data={state.data}
+            columns={columnsState}
+            data={dataState.data}
             editable={{
-              onRowUpdate: (newData, oldData) =>
-                new Promise<void>((resolve) => {
+              onRowUpdate: (newData: any, oldData: any) =>
+                new Promise<void>((resolve, reject) => {
                   setTimeout(() => {
+                    const question = newData.question.trim();
+                    const answer = newData.answer.trim();
+                    if (question === "" || answer === "") {
+                      setColumnsState([]);
+                      setEditFieldError({
+                        error: true,
+                        label: "required",
+                        helperText: "Required",
+                        validateInput: true,
+                      });
+                      reject();
+                      return;
+                    }
                     resolve();
                     if (oldData) {
                       dispatch({ type: "update", payload: newData });
