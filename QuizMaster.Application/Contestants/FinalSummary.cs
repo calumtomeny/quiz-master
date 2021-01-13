@@ -63,8 +63,6 @@ namespace QuizMaster.Application.Contestants
 
                 foreach (QuizQuestion question in quiz.QuizQuestions)
                 {
-                    //var questionNo = question.Number
-                    //var answerText = 
                     var contestantAnswerText = "";
                     var contestantIsFastest = false;
                     var score = 0;
@@ -84,10 +82,6 @@ namespace QuizMaster.Application.Contestants
                         {
                             var fastestContestant = await context.Contestants.SingleOrDefaultAsync(x => x.Id == fastestContestantAnswer.ContestantId);
                             fastestContestantName = fastestContestant.Name;
-                        }
-                        else
-                        {
-                            fastestContestantName = "";
                         }
                     }
                     else

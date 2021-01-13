@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
     color: "#ffffff",
   },
   emojiCell: {
-    //maxWidth: "2em",
     paddingLeft: 0,
   },
   tableheaderCell: {
@@ -27,18 +26,15 @@ const useStyles = makeStyles((theme) => ({
   },
   tableheaderRankCell: {
     color: "#ffffff",
-    //maxWidth: "2em",
     paddingRight: 0,
   },
   ownRank: {
     color: theme.palette.primary.main,
     fontWeight: "bold",
-    //maxWidth: "2em",
     paddingRight: 0,
   },
   otherRank: {
     color: "#000000",
-    //maxWidth: "2em",
     paddingRight: 0,
   },
   ownName: {
