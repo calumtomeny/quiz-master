@@ -57,6 +57,7 @@ export default function QuestionResponder() {
   const [quizName, setQuizName] = useState<string>("");
   const [answer, setAnswer] = useState<string>("");
   const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>();
+  const [isAnswerRequired, setIsAnswerRequired] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(0);
   const [quizIsComplete, setQuizIsComplete] = useState<boolean>(false);
@@ -80,10 +81,18 @@ export default function QuestionResponder() {
 
   const apiBaseUrl = process.env.REACT_APP_BASE_API_URL;
 
-  const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
+  const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) => {
     setAnswer(e.currentTarget.value);
+    if (e.currentTarget.value) {
+      setIsAnswerRequired(false);
+    }
+  };
 
   const onAnswerSubmit = () => {
+    if (!answer) {
+      setIsAnswerRequired(true);
+      return;
+    }
     setAnswerSubmitted(true);
     const message: ParticipantMessage = {
       participantId: participantId,
@@ -328,6 +337,8 @@ export default function QuestionResponder() {
               id="standard-required"
               label="Answer"
               defaultValue=""
+              error={isAnswerRequired}
+              helperText={isAnswerRequired ? "Please type an answer" : ""}
               className={classes.textArea}
               onChange={onAnswerChange}
               value={answer}
