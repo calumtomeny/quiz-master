@@ -97,14 +97,6 @@ export default function QuizStandings(props: {
     }
   };
 
-  const getScoreClass = (id: string) => {
-    if (id == participantId) {
-      return classes.ownScore;
-    } else {
-      return classes.otherScore;
-    }
-  };
-
   const getRankClass = (id: string) => {
     if (id == participantId) {
       return classes.ownRank;
@@ -126,13 +118,7 @@ export default function QuizStandings(props: {
               Name
             </TableCell>
             <TableCell className={classes.tableheaderCell} align="center">
-              Correct
-            </TableCell>
-            <TableCell className={classes.tableheaderCell} align="center">
-              Bonus Points
-            </TableCell>
-            <TableCell className={classes.tableheaderCell} align="center">
-              Total Score
+              Score (Speed Bonus)
             </TableCell>
           </TableRow>
         </TableHead>
@@ -165,19 +151,7 @@ export default function QuizStandings(props: {
                   align="center"
                   className={getNameClass(contestantStanding.id)}
                 >
-                  {contestantStanding.score - contestantStanding.bonusPoints}
-                </TableCell>
-                <TableCell
-                  align="center"
-                  className={getNameClass(contestantStanding.id)}
-                >
-                  {contestantStanding.bonusPoints}
-                </TableCell>
-                <TableCell
-                  align="center"
-                  className={getScoreClass(contestantStanding.id)}
-                >
-                  {contestantStanding.score}
+                  {contestantStanding.score} ({contestantStanding.bonusPoints})
                 </TableCell>
               </TableRow>
             ))}

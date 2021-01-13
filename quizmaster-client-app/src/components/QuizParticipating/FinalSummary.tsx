@@ -14,6 +14,10 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 100,
   },
+  questionTable: {
+    minWidth: 100,
+    marginBottom: 10,
+  },
   tableheader: {
     backgroundColor: theme.palette.primary.main,
     color: "#ffffff",
@@ -26,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
   },
   answerIsIncorrect: {
-    color: "#000000",
+    color: "red",
     fontWeight: "bold",
   },
   answerIsFastest: {
@@ -70,42 +74,47 @@ export default function FinalSummary(props: { participantId: string }) {
 
   return (
     <TableContainer component={Paper}>
-      <Table size="small" className={classes.table} aria-label="summary table">
-        <TableHead>
-          <TableRow className={classes.tableheader}>
-            <TableCell className={classes.tableheaderCell}>Number</TableCell>
-            <TableCell className={classes.tableheaderCell} align="center">
-              Question
-            </TableCell>
-            <TableCell className={classes.tableheaderCell} align="center">
-              Correct Answer
-            </TableCell>
-            <TableCell className={classes.tableheaderCell} align="center">
-              Your Answer
-            </TableCell>
-            <TableCell className={classes.tableheaderCell} align="center">
-              Fastest Contestant
-            </TableCell>
-            <TableCell className={classes.tableheaderCell} align="center">
-              Score
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {questionSummaries
-            .sort((a, b) => a.number - b.number)
-            .map((question: QuestionSummary) => (
-              <TableRow key={question.number}>
-                <TableCell component="th" scope="row">
-                  {question.number}
+      {questionSummaries
+        .sort((a, b) => a.number - b.number)
+        .map((question: QuestionSummary) => (
+          <Table
+            size="small"
+            className={classes.questionTable}
+            aria-label={"question table " + question.number}
+            key={question.number}
+          >
+            <TableHead>
+              <TableRow className={classes.tableheader}>
+                <TableCell
+                  align="center"
+                  colSpan={2}
+                  className={classes.tableheaderCell}
+                >
+                  {"Question " + question.number + ": " + question.question}
                 </TableCell>
-                <TableCell align="center">{question.question}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  Correct Answer
+                </TableCell>
                 <TableCell align="center">{question.correctAnswer}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  Your Answer
+                </TableCell>
                 <TableCell
                   align="center"
                   className={getAnswerClass(question.score)}
                 >
                   {question.contestantAnswer}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  Fastest Answer
                 </TableCell>
                 <TableCell
                   align="center"
@@ -113,11 +122,16 @@ export default function FinalSummary(props: { participantId: string }) {
                 >
                   {question.fastestContestantName}
                 </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  Score
+                </TableCell>
                 <TableCell align="center">{question.score}</TableCell>
               </TableRow>
-            ))}
-        </TableBody>
-      </Table>
+            </TableBody>
+          </Table>
+        ))}
     </TableContainer>
   );
 }

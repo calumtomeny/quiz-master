@@ -206,10 +206,10 @@ export default function QuizHoster() {
         kick: false,
         standings: contestants,
       };
+      updateQuizStateFinished();
       axios
         .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
         .then(() => {
-          updateQuizStateFinished();
           setShowQuizMarker(false);
           setCurrentQuizState(QuizState.QuizEnded);
         });
