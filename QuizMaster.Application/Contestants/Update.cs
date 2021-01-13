@@ -23,13 +23,14 @@ namespace QuizMaster.Application.Contestants
 
         public class CommandList : IRequest<List<Contestant>>
         {
-        [Required]
-        public List<Command> Commands { get; set; }
-        }        
+            [Required]
+            public List<Command> Commands { get; set; }
+        }
 
         public class CommandBody : IRequest<Contestant>
         {
             public int? Score { get; set; }
+            public int? BonusPoints { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Contestant>
@@ -51,6 +52,10 @@ namespace QuizMaster.Application.Contestants
                 if (request.Update.Score.HasValue)
                 {
                     contestant.Score = request.Update.Score.Value;
+                }
+                if (request.Update.BonusPoints.HasValue)
+                {
+                    contestant.BonusPoints = request.Update.BonusPoints.Value;
                 }
 
                 if (context.ChangeTracker.HasChanges())
@@ -89,6 +94,10 @@ namespace QuizMaster.Application.Contestants
                         if (command.Update.Score.HasValue)
                         {
                             contestant.Score = command.Update.Score.Value;
+                        }
+                        if (command.Update.BonusPoints.HasValue)
+                        {
+                            contestant.BonusPoints = command.Update.BonusPoints.Value;
                         }
                         contestants.Add(contestant);
                     }

@@ -17,7 +17,7 @@ import Data from "./QuestionResponse";
 import ParticipantMessage from "../Common/ParticipantMessage";
 import QuizStandings from "./QuizStandings";
 import QuestionResponse from "./QuestionResponse";
-import ContestantScore from "./ContestantScore";
+import ContestantAnswerScore from "./ContestantAnswerScore";
 import QuizState from "../Common/QuizState";
 
 const useStyles = makeStyles((theme) => ({
@@ -88,10 +88,17 @@ export default function QuizHoster() {
     timeLeftAsAPercentage === 0 || answers.length === contestants.length;
 
   function getContestantScoreForRound(
-    scores: ContestantScore[],
+    scores: ContestantAnswerScore[],
     contestantId: string,
   ): number {
     return scores.find((x) => x.ContestantId === contestantId)?.Score ?? 0;
+  }
+
+  function getContestantBonusPointsForRound(
+    scores: ContestantAnswerScore[],
+    contestantId: string,
+  ): number {
+    return scores.find((x) => x.ContestantId == contestantId)?.BonusPoints ?? 0;
   }
 
   //---------------------------------------------------------------------------
@@ -199,10 +206,10 @@ export default function QuizHoster() {
         kick: false,
         standings: contestants,
       };
+      updateQuizStateFinished();
       axios
         .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
         .then(() => {
-          updateQuizStateFinished();
           setShowQuizMarker(false);
           setCurrentQuizState(QuizState.QuizEnded);
         });
@@ -227,18 +234,23 @@ export default function QuizHoster() {
     });
 
     //Loop through responses to build scores
-    const roundScores: ContestantScore[] = [];
+    const roundScores: ContestantAnswerScore[] = [];
+
     correctResponses.forEach((response) => {
+      let fastest = false;
       let score = 1;
       if (response.id === fastestContestant) {
         score = 2;
+        fastest = true;
       }
-      const contestantScore: ContestantScore = {
+      const contestantAnswerScore: ContestantAnswerScore = {
         ContestantId: response.id,
-        ContestantName: response.name,
+        Correct: true,
+        Fastest: fastest,
         Score: score,
+        BonusPoints: score - 1,
       };
-      roundScores.push(contestantScore);
+      roundScores.push(contestantAnswerScore);
     });
 
     const updatedContestants = contestants.map((contestant) => {
@@ -247,18 +259,32 @@ export default function QuizHoster() {
         score:
           contestant.score +
           getContestantScoreForRound(roundScores, contestant.id),
+        bonusPoints:
+          contestant.bonusPoints +
+          getContestantBonusPointsForRound(roundScores, contestant.id),
       };
     });
     setContestants(updatedContestants);
     const updateCommands = updatedContestants.map((contestant) => {
       return {
         ContestantId: contestant.id,
-        Update: { Score: contestant.score },
+        Update: {
+          Score: contestant.score,
+          BonusPoints: contestant.bonusPoints,
+        },
       };
     });
-    axios.post(`/api/contestants/updates`, updateCommands).then(() => {
-      setShowQuizMarker(false);
-    });
+    const answersUpdateCommand = {
+      QuestionNo: currentQuestionNumber,
+      AnswerUpdates: roundScores,
+    };
+    axios
+      .post(`/api/quizzes/${id}/updatecontestantanswers`, answersUpdateCommand)
+      .then(() => {
+        axios.post(`/api/contestants/updates`, updateCommands).then(() => {
+          setShowQuizMarker(false);
+        });
+      });
     if (isFinalQuestion()) {
       updateQuizStatePendingResults();
       messageContestantsPendingResults();
@@ -335,6 +361,7 @@ export default function QuizHoster() {
           name: contestant.name,
           id: contestant.id,
           score: contestant.score,
+          bonusPoints: contestant.bonusPoints,
         } as Contestant;
       });
       setContestants(contestantsList);
@@ -522,12 +549,18 @@ export default function QuizHoster() {
                 <Typography component="h1" variant="h5">
                   Quiz Standings
                 </Typography>
-                <QuizStandings contestantStandings={contestants} />
+                <QuizStandings
+                  contestantStandings={contestants}
+                  quizState={currentQuizState}
+                />
               </>
             ) : (
               <div className={classes.finalStandings}>
                 <h1>Final Standings</h1>
-                <QuizStandings contestantStandings={contestants} />
+                <QuizStandings
+                  contestantStandings={contestants}
+                  quizState={currentQuizState}
+                />
                 <Button
                   type="submit"
                   variant="contained"
