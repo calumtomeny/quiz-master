@@ -93,13 +93,13 @@ export default function QuestionCreator(props: any) {
 
   useEffect(() => {
     props.onQuestionsUpdated(dataState.data.length);
-  }, [dataState]);
+  }, [dataState, props]);
 
   useEffect(() => {
     Axios.get(`/api/quizzes/${props.quizId}/questions`).then((results) => {
       dispatch({ type: "set", payload: results.data });
       setDoneInitialGet(true);
-      setIsInitialQuestion(results.data.length == 0);
+      setIsInitialQuestion(results.data.length === 0);
     });
   }, [props.quizId]);
 

@@ -56,7 +56,7 @@ export default function QuizJoiner() {
   const onHostQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios.get(`/api/quizzes/${id}/state`).then((res) => {
-      if (res.data.quizState == QuizState.QuizNotStarted) {
+      if (res.data.quizState === QuizState.QuizNotStarted) {
         setQuizAlreadyStartedWithoutParticipant(false);
         axios
           .post("/api/contestants", {

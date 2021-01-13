@@ -91,7 +91,7 @@ export default function QuizHoster() {
     scores: ContestantAnswerScore[],
     contestantId: string,
   ): number {
-    return scores.find((x) => x.ContestantId == contestantId)?.Score ?? 0;
+    return scores.find((x) => x.ContestantId === contestantId)?.Score ?? 0;
   }
 
   function getContestantBonusPointsForRound(
@@ -239,7 +239,7 @@ export default function QuizHoster() {
     correctResponses.forEach((response) => {
       let fastest = false;
       let score = 1;
-      if (response.id == fastestContestant) {
+      if (response.id === fastestContestant) {
         score = 2;
         fastest = true;
       }
@@ -319,6 +319,9 @@ export default function QuizHoster() {
   //---------------------------------------------------------------------------
 
   useEffect(() => {
+    const roundIsComplete = () =>
+      timeLeftAsAPercentage === 0 || answers.length === contestants.length;
+
     const interval = 100;
 
     function progress() {
@@ -337,7 +340,13 @@ export default function QuizHoster() {
     return () => {
       clearInterval(timer);
     };
-  }, [timeLeftAsAPercentage]);
+  }, [
+    timeLeftAsAPercentage,
+    questionStartTime,
+    totalTimeInSeconds,
+    answers.length,
+    contestants.length,
+  ]);
 
   useEffect(() => {
     //useEffect on 'id' state variable. This code will run when the page is first loaded or refreshed
@@ -386,8 +395,8 @@ export default function QuizHoster() {
       setCurrentQuizState(res.data.quizState);
 
       if (
-        res.data.currentQuestionNo == 1 &&
-        res.data.quizState == QuizState.FirstQuestionReady
+        res.data.currentQuestionNo === 1 &&
+        res.data.quizState === QuizState.FirstQuestionReady
       ) {
         const message: QuizMasterMessage = {
           state: QuizState.FirstQuestionReady,
@@ -398,7 +407,7 @@ export default function QuizHoster() {
           standings: [],
         };
         axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
-      } else if (res.data.quizState == QuizState.QuestionInProgress) {
+      } else if (res.data.quizState === QuizState.QuestionInProgress) {
         setShowQuizMarker(true);
         setAnswers(() =>
           res.data.currentContestantAnswers.map((x: any) => {
@@ -423,7 +432,7 @@ export default function QuizHoster() {
         setFinalQuestionCompleted(true);
       } else if (res.data.quizState === QuizState.NextQuestionReady) {
         setShowQuizMarker(false);
-      } else if (res.data.quizState == QuizState.QuizEnded) {
+      } else if (res.data.quizState === QuizState.QuizEnded) {
         setShowQuizMarker(false);
         setFinalQuestionCompleted(true);
       }
@@ -513,7 +522,7 @@ export default function QuizHoster() {
             ) : (
               <></>
             )}
-            {currentQuizState != QuizState.QuizEnded ? (
+            {currentQuizState !== QuizState.QuizEnded ? (
               <>
                 <Paper className={classes.paper}>
                   {showQuizMarker ? (

@@ -140,7 +140,7 @@ export default function QuestionResponder() {
     return () => {
       clearInterval(timer);
     };
-  }, [timeLeftAsAPercentage]);
+  }, [timeLeftAsAPercentage, answerSubmitted, startTime, totalTimeInSeconds]);
 
   useEffect(() => {
     //Set Participant ID
@@ -155,13 +155,13 @@ export default function QuestionResponder() {
         setPageLoading(false);
         setQuizName(res.data.quizName);
         setQuestionNo(res.data.questionNo);
-        if (res.data.quizState == QuizState.QuestionInProgress) {
+        if (res.data.quizState === QuizState.QuestionInProgress) {
           setQuizQuestion(
             new QuizQuestion(res.data.question, "", res.data.questionNo),
           );
           setTotalTimeInSeconds(45);
           setStartTime(res.data.questionStartTime);
-          if (res.data.answer != "") {
+          if (res.data.answer !== "") {
             setAnswerSubmitted(true);
             setTimeLeftAsAPercentage(res.data.timeRemainingPerc);
             setAnswer(res.data.answer);
@@ -174,7 +174,7 @@ export default function QuestionResponder() {
             setButtonDisabled(false);
             setSubmitText("Submit");
           }
-        } else if (res.data.quizState == QuizState.QuizEnded) {
+        } else if (res.data.quizState === QuizState.QuizEnded) {
           const newContestantStandings = res.data.contestantScores.map(
             (contestant: any) => {
               return {
@@ -209,16 +209,16 @@ export default function QuestionResponder() {
             hubConnect.invoke("RemoveFromGroup", quizId);
             console.log("Connection removed.");
             setKicked(true);
-          } else if (message.state == QuizState.FirstQuestionReady) {
+          } else if (message.state === QuizState.FirstQuestionReady) {
             setQuestionNo(message.questionNumber);
             setQuizState(message.state);
-          } else if (message.state == QuizState.NextQuestionReady) {
+          } else if (message.state === QuizState.NextQuestionReady) {
             setQuestionNo(message.questionNumber);
             setQuizState(message.state);
-          } else if (message.state == QuizState.ResultsReady) {
+          } else if (message.state === QuizState.ResultsReady) {
             setQuestionNo(0);
             setQuizState(message.state);
-          } else if (message.state == QuizState.QuizEnded) {
+          } else if (message.state === QuizState.QuizEnded) {
             setContestantStandings(message.standings);
             setQuizIsComplete(true);
             setQuizState(message.state);
@@ -267,16 +267,16 @@ export default function QuestionResponder() {
       startSignalRConnection(hubConnect);
     };
     createHubConnection();
-  }, [quizId]);
+  }, [quizId, apiBaseUrl]);
 
   return (
     <>
       <Typography component="h2" variant="h5">
-        {(quizState == QuizState.FirstQuestionReady ||
-          quizState == QuizState.NextQuestionReady) &&
+        {(quizState === QuizState.FirstQuestionReady ||
+          quizState === QuizState.NextQuestionReady) &&
         !kicked
           ? "You're all set..."
-          : quizState != QuizState.QuizEnded
+          : quizState !== QuizState.QuizEnded
           ? quizName
           : ""}
       </Typography>
@@ -372,7 +372,7 @@ export default function QuestionResponder() {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             The connection to the server was lost, refresh the page to attempt
-            to reconnnect.
+            to reconnect.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
