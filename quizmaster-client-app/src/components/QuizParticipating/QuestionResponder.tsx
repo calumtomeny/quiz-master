@@ -24,6 +24,7 @@ import ParticipantMessage from "../Common/ParticipantMessage";
 import Contestant from "../QuizHosting/Contestant";
 import QuizStandings from "../QuizHosting/QuizStandings";
 import QuizState from "../Common/QuizState";
+import FinalSummary from "./FinalSummary";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -56,6 +57,7 @@ export default function QuestionResponder() {
   const [quizName, setQuizName] = useState<string>("");
   const [answer, setAnswer] = useState<string>("");
   const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>();
+  const [isAnswerRequired, setIsAnswerRequired] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(0);
   const [quizIsComplete, setQuizIsComplete] = useState<boolean>(false);
@@ -79,10 +81,18 @@ export default function QuestionResponder() {
 
   const apiBaseUrl = process.env.REACT_APP_BASE_API_URL;
 
-  const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) =>
+  const onAnswerChange = (e: ChangeEvent<HTMLInputElement>) => {
     setAnswer(e.currentTarget.value);
+    if (e.currentTarget.value) {
+      setIsAnswerRequired(false);
+    }
+  };
 
   const onAnswerSubmit = () => {
+    if (!answer) {
+      setIsAnswerRequired(true);
+      return;
+    }
     setAnswerSubmitted(true);
     const message: ParticipantMessage = {
       participantId: participantId,
@@ -171,6 +181,7 @@ export default function QuestionResponder() {
                 id: contestant.id,
                 name: contestant.name,
                 score: contestant.score,
+                bonusPoints: contestant.bonusPoints,
               };
             },
           );
@@ -261,8 +272,9 @@ export default function QuestionResponder() {
   return (
     <>
       <Typography component="h2" variant="h5">
-        {quizState == QuizState.FirstQuestionReady ||
-        quizState == QuizState.NextQuestionReady
+        {(quizState == QuizState.FirstQuestionReady ||
+          quizState == QuizState.NextQuestionReady) &&
+        !kicked
           ? "You're all set..."
           : quizState != QuizState.QuizEnded
           ? quizName
@@ -292,7 +304,12 @@ export default function QuestionResponder() {
           <div className={classes.finalStandings}>
             <h2>{quizName}</h2>
             <h1>Final Standings</h1>
-            <QuizStandings contestantStandings={contestantStandings} />
+            <QuizStandings
+              contestantStandings={contestantStandings}
+              quizState={quizState}
+            />
+            <h2>Questions</h2>
+            <FinalSummary participantId={participantId} />
           </div>
         </>
       ) : quizState === QuizState.FirstQuestionReady ||
@@ -320,10 +337,13 @@ export default function QuestionResponder() {
               id="standard-required"
               label="Answer"
               defaultValue=""
+              error={isAnswerRequired}
+              helperText={isAnswerRequired ? "Please type an answer" : ""}
               className={classes.textArea}
               onChange={onAnswerChange}
               value={answer}
               onKeyPress={handleEnter}
+              autoComplete="off"
             />
             <Button
               variant="contained"

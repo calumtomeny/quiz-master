@@ -5,5 +5,6 @@ namespace QuizMaster.Application
         public string Id { get; set; }
         public string Name { get; set; }
         public int Score { get; set; }
+        public int BonusPoints { get; set; }
     }
 }

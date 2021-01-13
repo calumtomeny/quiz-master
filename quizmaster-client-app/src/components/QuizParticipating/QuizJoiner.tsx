@@ -82,14 +82,15 @@ export default function QuizJoiner() {
 
     // The user has been, or is a participant, let's check if they're a participant of this quiz.
     if (participantID) {
-      axios.get(`/api/quizzes/${id}/details/${participantID}`).then((res) => {
-        // They are a participant of this quiz, so let's check if the quiz is in progress.
-        if (res.data.quizState == 1 || res.data.quizState == 2) {
-          // The quiz is in progress, let's help them get back into the action!
+      axios
+        .get(`/api/quizzes/${id}/details/${participantID}`)
+        .then(() => {
           setQuizForParticipantAlreadyInProgress(true);
           setName(participantName);
-        }
-      });
+        })
+        .catch(() => {
+          setQuizForParticipantAlreadyInProgress(false);
+        });
     }
 
     async function loadQuiz() {
