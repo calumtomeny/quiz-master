@@ -151,6 +151,7 @@ export default function QuizJoiner() {
           <TextField
             variant="outlined"
             margin="normal"
+            error={participantNameExists}
             required
             fullWidth
             id="your-name"
