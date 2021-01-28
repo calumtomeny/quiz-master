@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using QuizMaster.Domain;
 using QuizMaster.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuizMaster.Application.Contestants
 {
@@ -30,25 +31,34 @@ namespace QuizMaster.Application.Contestants
 
             public async Task<Contestant> Handle(Command request, CancellationToken cancellationToken)
             {
-                var quiz = context.Quiz.SingleOrDefault(x => x.Code == request.QuizCode);
+                var quiz = context.Quiz.Include(x => x.Contestants).SingleOrDefault(x => x.Code == request.QuizCode);
 
                 if (quiz == null)
                 {
                     return null;
                 }
 
-                var contestant = new Contestant(request.ContestantName, quiz.Id);
+                var contestantName = request.ContestantName.Trim();
 
-                context.Contestants.Add(contestant);
-
-                var success = await context.SaveChangesAsync() > 0;
-
-                if (success)
+                if (quiz.Contestants.Any(x => x.Name == contestantName))
                 {
-                    return contestant;
-                }
+                    var contestant = new Contestant(contestantName, quiz.Id);
 
-                throw new Exception("There was a problem saving changes.");
+                    context.Contestants.Add(contestant);
+
+                    var success = await context.SaveChangesAsync() > 0;
+
+                    if (success)
+                    {
+                        return contestant;
+                    }
+
+                    throw new Exception("There was a problem saving changes.");
+                }
+                else 
+                {
+                    return null;
+                }
             }
         }
     }
