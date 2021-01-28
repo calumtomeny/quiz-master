@@ -40,8 +40,7 @@ namespace QuizMaster.Application.Contestants
 
                 var contestantName = request.ContestantName.Trim();
 
-                var existingContestant = quiz.Contestants.Find(x => x.Name == contestantName);
-                if (existingContestant == null)
+                if (quiz.Contestants.Any(x => x.Name == contestantName))
                 {
                     var contestant = new Contestant(contestantName, quiz.Id);
 
