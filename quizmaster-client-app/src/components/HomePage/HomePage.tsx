@@ -10,7 +10,7 @@ import CoffeeIcon from "@material-ui/icons/LocalCafeOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import PostAddIcon from "@material-ui/icons/PostAdd";
-import girlWithCoffee from "./girl_with_coffee.jpeg";
+import coffeeOnTable from "./coffee-on-table.jpg";
 import { useHistory } from "react-router-dom";
 import Axios from "axios";
 import { Snackbar, SnackbarCloseReason } from "@material-ui/core";
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100vh",
   },
   image: {
-    backgroundImage: `url(${girlWithCoffee})`,
+    backgroundImage: `url(${coffeeOnTable})`,
     backgroundRepeat: "no-repeat",
     backgroundColor:
       theme.palette.type === "light"
