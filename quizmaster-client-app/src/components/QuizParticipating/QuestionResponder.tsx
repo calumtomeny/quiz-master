@@ -332,7 +332,6 @@ export default function QuestionResponder() {
           />
           <Paper elevation={1} className={classes.answer}>
             <TextField
-              autoFocus
               required
               id="standard-required"
               label="Answer"
