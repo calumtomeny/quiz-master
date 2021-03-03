@@ -10,7 +10,7 @@ import CoffeeIcon from "@material-ui/icons/LocalCafeOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import PostAddIcon from "@material-ui/icons/PostAdd";
-import coffeeOnTable from "./coffee-on-table.jpg";
+import coffeeAndLaptop from "./coffee-and-laptop.jpg";
 import { useHistory } from "react-router-dom";
 import Axios from "axios";
 import { Snackbar, SnackbarCloseReason } from "@material-ui/core";
@@ -22,9 +22,10 @@ import Header from "../Common/Header";
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
+    backgroundColor: "#000000",
   },
   image: {
-    backgroundImage: `url(${coffeeOnTable})`,
+    backgroundImage: `url(${coffeeAndLaptop})`,
     backgroundRepeat: "no-repeat",
     backgroundColor:
       theme.palette.type === "light"
