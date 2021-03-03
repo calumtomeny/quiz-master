@@ -22,7 +22,6 @@ import Header from "../Common/Header";
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
-    backgroundColor: "#000000",
   },
   image: {
     backgroundImage: `url(${coffeeAndLaptop})`,
