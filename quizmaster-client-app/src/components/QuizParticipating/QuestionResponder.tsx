@@ -65,6 +65,7 @@ export default function QuestionResponder() {
   const { quizId } = useParams<{ quizId: string }>();
   const [participantId, setParticipantId] = useState<string>("");
   const [startTime, setStartTime] = useState<number>(0);
+  const settingsTotalTimeInSeconds = 20;
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
   const [answerSubmitted, setAnswerSubmitted] = useState<boolean>(false);
   const [kicked, setKicked] = useState<boolean>(false);
@@ -159,7 +160,7 @@ export default function QuestionResponder() {
           setQuizQuestion(
             new QuizQuestion(res.data.question, "", res.data.questionNo),
           );
-          setTotalTimeInSeconds(45);
+          setTotalTimeInSeconds(settingsTotalTimeInSeconds);
           setStartTime(res.data.questionStartTime);
           if (res.data.answer !== "") {
             setAnswerSubmitted(true);
@@ -231,7 +232,7 @@ export default function QuestionResponder() {
               ),
             );
             setQuestionNo(message.questionNumber);
-            setTotalTimeInSeconds(45);
+            setTotalTimeInSeconds(settingsTotalTimeInSeconds);
             setStartTime(Date.now());
             setAnswerSubmitted(false);
             setTimeLeftAsAPercentage(100);
@@ -332,7 +333,6 @@ export default function QuestionResponder() {
           />
           <Paper elevation={1} className={classes.answer}>
             <TextField
-              autoFocus
               required
               id="standard-required"
               label="Answer"
