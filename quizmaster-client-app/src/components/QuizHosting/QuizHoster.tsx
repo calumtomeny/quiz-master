@@ -522,7 +522,9 @@ export default function QuizHoster() {
             ) : (
               <></>
             )}
-            {currentQuizState !== QuizState.QuizEnded ? (
+            {currentQuizState === QuizState.QuizNotStarted ? (
+              <></>
+            ) : currentQuizState !== QuizState.QuizEnded ? (
               <>
                 <Paper className={classes.paper}>
                   {showQuizMarker ? (
