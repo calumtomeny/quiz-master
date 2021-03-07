@@ -22,7 +22,6 @@ namespace QuizMaster.Application.ExampleQuestions
 
                 TextInfo textInfo = new CultureInfo("en-GB", false).TextInfo;
                
-
                 csvRecords = csvRecords.Where(x => !string.IsNullOrWhiteSpace(x.Question) && !string.IsNullOrWhiteSpace(x.Answer)).ToList();
 
                 context.Database.ExecuteSqlRaw("DELETE FROM [ExampleQuestions]");
