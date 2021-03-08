@@ -287,12 +287,10 @@ export default function QuizHoster() {
         });
       });
     if (isFinalQuestion()) {
-      setShowQuizMarker(false);
       updateQuizStatePendingResults();
       messageContestantsPendingResults();
       setCurrentQuizState(QuizState.ResultsReady);
     } else {
-      setShowQuizMarker(false);
       updateQuizStateReady();
       messageContestantsQuestionReady();
       setCurrentQuizState(QuizState.NextQuestionReady);
