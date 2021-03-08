@@ -287,6 +287,7 @@ export default function QuizHoster() {
           setShowQuizMarker(false);
         });
       });
+    setShowQuizMarker(false);
     if (isFinalQuestion()) {
       updateQuizStatePendingResults();
       messageContestantsPendingResults();
@@ -519,7 +520,9 @@ export default function QuizHoster() {
             ) : (
               <></>
             )}
-            {currentQuizState !== QuizState.QuizEnded ? (
+            {currentQuizState === QuizState.QuizNotStarted ? (
+              <></>
+            ) : currentQuizState !== QuizState.QuizEnded ? (
               <>
                 <Paper className={classes.paper}>
                   {showQuizMarker ? (
