@@ -86,7 +86,8 @@ export default function QuizHoster() {
   };
 
   const roundIsComplete = () =>
-    timeLeftAsAPercentage === 0 || answers.length === contestants.length;
+    (timeLeftAsAPercentage === 0 || answers.length === contestants.length) &&
+    answers.length > 0;
 
   function getContestantScoreForRound(
     scores: ContestantAnswerScore[],
@@ -508,17 +509,13 @@ export default function QuizHoster() {
                 </Typography>
               </>
             ) : currentQuizState === QuizState.NextQuestionReady ? (
-              <>
-                <Typography component="h1" variant="h5">
-                  Get ready for Question {currentQuestionNumber}!
-                </Typography>
-              </>
+              <Typography component="h1" variant="h5">
+                Get ready for Question {currentQuestionNumber}!
+              </Typography>
             ) : currentQuizState === QuizState.ResultsReady ? (
-              <>
-                <Typography component="h1" variant="h5">
-                  The Final Results are Ready
-                </Typography>
-              </>
+              <Typography component="h1" variant="h5">
+                The Final Results are Ready
+              </Typography>
             ) : (
               <></>
             )}
