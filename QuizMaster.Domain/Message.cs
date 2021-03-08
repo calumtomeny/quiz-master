@@ -5,7 +5,6 @@ namespace QuizMaster.Domain
         public Message(string body)
         {
             this.Body = body;
-
         }
         public string Body { get; private set; }
     }

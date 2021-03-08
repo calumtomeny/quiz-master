@@ -9,6 +9,11 @@
     <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.4"/>
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.4"/>
   </ItemGroup>
+  <ItemGroup> 
+    <Content Include="AppData\**"> 
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> 
+    </Content> 
+  </ItemGroup>
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
