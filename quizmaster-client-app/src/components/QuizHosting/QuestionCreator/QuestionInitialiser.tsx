@@ -56,7 +56,7 @@ export default function QuestionInitialiser(props: any) {
 
   useEffect(() => {
     setIsInitialQuestion(props.isInitialQuestion);
-  });
+  }, []);
 
   useEffect(() => {
     if (inputRef.current) {
