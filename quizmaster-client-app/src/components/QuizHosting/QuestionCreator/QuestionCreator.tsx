@@ -91,6 +91,16 @@ export default function QuestionCreator(props: any) {
     });
   };
 
+  const createTenQuestions = () => {
+    Axios.get(`/api/quizzes/${props.quizId}/generatequestions`).then(
+      (results) => {
+        dispatch({ type: "set", payload: results.data });
+        setDoneInitialGet(true);
+        setIsInitialQuestion(false);
+      },
+    );
+  };
+
   useEffect(() => {
     props.onQuestionsUpdated(dataState.data.length);
   }, [dataState, props]);
@@ -123,6 +133,7 @@ export default function QuestionCreator(props: any) {
     <>
       <QuestionInitialiser
         onQuestionSubmitted={setQuestion}
+        onCreateTenQuestions={createTenQuestions}
         isInitialQuestion={isInitialQuestion}
       />
       <Box pt={3} pb={3}>

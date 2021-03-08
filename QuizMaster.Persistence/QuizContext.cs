@@ -9,10 +9,12 @@ namespace QuizMaster.Persistence
         {
 
         }
+
         public DbSet<Quiz> Quiz { get; set; }
         public DbSet<Contestant> Contestants { get; set; }
         public DbSet<QuizQuestion> QuizQuestions { get; set; }
         public DbSet<ContestantAnswer> ContestantAnswers { get; set; }
+        public DbSet<ExampleQuestion> ExampleQuestions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

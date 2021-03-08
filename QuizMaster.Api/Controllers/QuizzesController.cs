@@ -209,6 +209,14 @@ namespace TodoApi.Controllers
             return Ok(await mediator.Send(new QuizMaster.Application.Questions.List.Query() { QuizCode = id }));
         }
 
+        // GET api/quizzes/{id}/generatequestions
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
+        [HttpGet("{id}/generatequestions")]
+        public async Task<ActionResult<List<ExampleQuestion>>> GenerateQuestions(string id)
+        {
+            return Ok(await mediator.Send(new QuizMaster.Application.ExampleQuestions.List.Query() { QuizCode = id }));
+        }
+
         // PUT api/values/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)

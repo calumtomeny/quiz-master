@@ -40,7 +40,6 @@ namespace QuizMaster.Application.Questions
             public Handler(QuizContext context)
             {
                 this.context = context;
-
             }
 
             public async Task<List<QuizQuestion>> Handle(Command request, CancellationToken cancellationToken)
