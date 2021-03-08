@@ -1,25 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using QuizMaster.Api.SignalR;
 using QuizMaster.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
-using QuizMaster.Application.Quizzes;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-using System.IO;
-using System.Reflection;
 using QuizMaster.Api.Filters;
 using Microsoft.AspNetCore.Http.Connections;
+using QuizMaster.Application.ExampleQuestions;
+using List = QuizMaster.Application.Quizzes.List;
 
 namespace QuizMaster.Api
 {
@@ -62,8 +53,10 @@ namespace QuizMaster.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
         {
+            lifetime.ApplicationStarted.Register(OnApplicationStarted);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -93,6 +86,12 @@ namespace QuizMaster.Api
             {
                 spa.Options.SourcePath = "ClientApp/build";
             });
+        }
+
+        public void OnApplicationStarted()
+        {
+            var importer = new CsvImporter();
+            importer.Import(Configuration.GetConnectionString("DefaultConnection"));
         }
     }
 }

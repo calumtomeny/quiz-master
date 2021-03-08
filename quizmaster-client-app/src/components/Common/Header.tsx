@@ -78,7 +78,7 @@ export default function Header() {
     <>
       <AppBar position="fixed">
         <Toolbar variant="dense">
-          {location.pathname == "/" ? homePageIconButton : iconButton}
+          {location.pathname === "/" ? homePageIconButton : iconButton}
           <Typography variant="h6" className={classes.title}>
             Quiz.Coffee
           </Typography>

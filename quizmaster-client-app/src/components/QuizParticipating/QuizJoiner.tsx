@@ -37,6 +37,10 @@ export default function QuizJoiner() {
   const [quizName, setQuizName] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [quizNotFound, setQuizNotFound] = useState<boolean>(false);
+  const [joinButtonDisabled, setJoinButtonDisabled] = useState<boolean>(false);
+  const [participantNameExists, setParticipantNameExists] = useState<boolean>(
+    false,
+  );
   const [
     quizForParticipantAlreadyInProgress,
     setQuizForParticipantAlreadyInProgress,
@@ -53,10 +57,11 @@ export default function QuizJoiner() {
     history.push(`/quiz/${id}`);
   };
 
-  const onHostQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onJoinQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setJoinButtonDisabled(true);
     axios.get(`/api/quizzes/${id}/state`).then((res) => {
-      if (res.data.quizState == QuizState.QuizNotStarted) {
+      if (res.data.quizState === QuizState.QuizNotStarted) {
         setQuizAlreadyStartedWithoutParticipant(false);
         axios
           .post("/api/contestants", {
@@ -68,6 +73,10 @@ export default function QuizJoiner() {
             localStorage.setItem("participantId", res.data.id);
             localStorage.setItem("participantName", name);
             history.push(`/quiz/${id}`);
+          })
+          .catch(() => {
+            setParticipantNameExists(true);
+            setJoinButtonDisabled(false);
           });
       } else {
         setQuizAlreadyStartedWithoutParticipant(true);
@@ -114,12 +123,23 @@ export default function QuizJoiner() {
         </Typography>
       ) : quizForParticipantAlreadyInProgress ? (
         <Typography component="h2" variant="h5">
-          Hi {name}, you&apos;re already part of this quiz!
+          &apos;{quizName}&apos;
         </Typography>
       ) : (
         <Typography component="h2" variant="h5">
           Joining &apos;{quizName}&apos;...
         </Typography>
+      )}
+      {quizForParticipantAlreadyInProgress ? (
+        <Typography component="h5" variant="h6" color="primary">
+          Hi {name}, you&apos;re already part of this quiz!
+        </Typography>
+      ) : participantNameExists ? (
+        <Typography component="h5" variant="h6" color="primary">
+          Hi, that name is already taken for this quiz, please try another one!
+        </Typography>
+      ) : (
+        <></>
       )}
       {quizNotFound ? null : quizAlreadyStartedWithoutParticipant ? (
         <Typography className={classes.sorryText} color="primary">
@@ -127,10 +147,11 @@ export default function QuizJoiner() {
           you would like to join.
         </Typography>
       ) : (
-        <form className={classes.form} onSubmit={onHostQuizSubmit}>
+        <form className={classes.form} onSubmit={onJoinQuizSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
+            error={participantNameExists}
             required
             fullWidth
             id="your-name"
@@ -160,6 +181,7 @@ export default function QuizJoiner() {
               variant="contained"
               color="primary"
               className={classes.submit}
+              disabled={joinButtonDisabled}
             >
               Let&apos;s go!
             </Button>

@@ -50,6 +50,7 @@ export default function QuizHoster() {
   const [showQuizMarker, setShowQuizMarker] = useState<boolean>(true);
   const [answers, setAnswers] = useState<Data[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
+  const settingsTotalTimeInSeconds = 20;
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
   const [questionStartTime, setQuestionStartTime] = useState<number>(0);
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState<number>(1);
@@ -91,7 +92,7 @@ export default function QuizHoster() {
     scores: ContestantAnswerScore[],
     contestantId: string,
   ): number {
-    return scores.find((x) => x.ContestantId == contestantId)?.Score ?? 0;
+    return scores.find((x) => x.ContestantId === contestantId)?.Score ?? 0;
   }
 
   function getContestantBonusPointsForRound(
@@ -152,7 +153,7 @@ export default function QuizHoster() {
     };
 
     axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
-    setTotalTimeInSeconds(45);
+    setTotalTimeInSeconds(settingsTotalTimeInSeconds);
     setQuestionStartTime(Date.now());
     setTimeLeftAsAPercentage(100);
   };
@@ -239,7 +240,7 @@ export default function QuizHoster() {
     correctResponses.forEach((response) => {
       let fastest = false;
       let score = 1;
-      if (response.id == fastestContestant) {
+      if (response.id === fastestContestant) {
         score = 2;
         fastest = true;
       }
@@ -285,6 +286,7 @@ export default function QuizHoster() {
           setShowQuizMarker(false);
         });
       });
+    setShowQuizMarker(false);
     if (isFinalQuestion()) {
       updateQuizStatePendingResults();
       messageContestantsPendingResults();
@@ -319,6 +321,9 @@ export default function QuizHoster() {
   //---------------------------------------------------------------------------
 
   useEffect(() => {
+    const roundIsComplete = () =>
+      timeLeftAsAPercentage === 0 || answers.length === contestants.length;
+
     const interval = 100;
 
     function progress() {
@@ -337,15 +342,20 @@ export default function QuizHoster() {
     return () => {
       clearInterval(timer);
     };
-  }, [timeLeftAsAPercentage]);
+  }, [
+    timeLeftAsAPercentage,
+    questionStartTime,
+    totalTimeInSeconds,
+    answers.length,
+    contestants.length,
+  ]);
 
   useEffect(() => {
     //useEffect on 'id' state variable. This code will run when the page is first loaded or refreshed
     let contestantsList: Contestant[] = [];
     axios.get(`/api/quizzes/${id}/details`).then((res) => {
       setQuizName(res.data.quizName);
-      const totalTimeInSecs = 45;
-      setTotalTimeInSeconds(totalTimeInSecs);
+      setTotalTimeInSeconds(settingsTotalTimeInSeconds);
 
       contestantsList = res.data.contestants.map((contestant: any) => {
         return {
@@ -386,8 +396,8 @@ export default function QuizHoster() {
       setCurrentQuizState(res.data.quizState);
 
       if (
-        res.data.currentQuestionNo == 1 &&
-        res.data.quizState == QuizState.FirstQuestionReady
+        res.data.currentQuestionNo === 1 &&
+        res.data.quizState === QuizState.FirstQuestionReady
       ) {
         const message: QuizMasterMessage = {
           state: QuizState.FirstQuestionReady,
@@ -398,7 +408,7 @@ export default function QuizHoster() {
           standings: [],
         };
         axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
-      } else if (res.data.quizState == QuizState.QuestionInProgress) {
+      } else if (res.data.quizState === QuizState.QuestionInProgress) {
         setShowQuizMarker(true);
         setAnswers(() =>
           res.data.currentContestantAnswers.map((x: any) => {
@@ -415,7 +425,7 @@ export default function QuizHoster() {
         setTimeLeftAsAPercentage(() => {
           const increment =
             (100 * (Date.now() - res.data.currentQuestionStartTime)) /
-            (totalTimeInSecs * 1000);
+            (totalTimeInSeconds * 1000);
           return Math.max(100 - increment, 0);
         });
       } else if (res.data.quizState === QuizState.ResultsReady) {
@@ -423,7 +433,7 @@ export default function QuizHoster() {
         setFinalQuestionCompleted(true);
       } else if (res.data.quizState === QuizState.NextQuestionReady) {
         setShowQuizMarker(false);
-      } else if (res.data.quizState == QuizState.QuizEnded) {
+      } else if (res.data.quizState === QuizState.QuizEnded) {
         setShowQuizMarker(false);
         setFinalQuestionCompleted(true);
       }
@@ -513,7 +523,9 @@ export default function QuizHoster() {
             ) : (
               <></>
             )}
-            {currentQuizState != QuizState.QuizEnded ? (
+            {currentQuizState === QuizState.QuizNotStarted ? (
+              <></>
+            ) : currentQuizState !== QuizState.QuizEnded ? (
               <>
                 <Paper className={classes.paper}>
                   {showQuizMarker ? (
