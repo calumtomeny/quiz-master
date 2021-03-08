@@ -128,7 +128,6 @@ export default function QuestionInitialiser(props: any) {
               variant="contained"
               className={classes.button}
               color="default"
-              data-testid="add-question-button"
             >
               Create 10 questions to get me started!
             </Button>
