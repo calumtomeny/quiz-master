@@ -131,7 +131,7 @@ function HomePage() {
               onSubmit={onJoinQuizSubmit}
               data-testid="join-quiz"
             >
-              <Typography component="h2" variant="h5" align="center">
+              <Typography component="h1" variant="h5" align="center">
                 Join quiz
               </Typography>
               <TextField
