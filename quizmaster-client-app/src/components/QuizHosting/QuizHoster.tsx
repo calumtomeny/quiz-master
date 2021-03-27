@@ -50,7 +50,7 @@ export default function QuizHoster() {
   const [showQuizMarker, setShowQuizMarker] = useState<boolean>(true);
   const [answers, setAnswers] = useState<Data[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
-  const settingsTotalTimeInSeconds = 20;
+  const settingsTotalTimeInSeconds = 90;
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
   const [questionStartTime, setQuestionStartTime] = useState<number>(0);
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState<number>(1);
