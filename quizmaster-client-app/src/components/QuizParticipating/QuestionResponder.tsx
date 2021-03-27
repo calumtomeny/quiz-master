@@ -65,7 +65,7 @@ export default function QuestionResponder() {
   const { quizId } = useParams<{ quizId: string }>();
   const [participantId, setParticipantId] = useState<string>("");
   const [startTime, setStartTime] = useState<number>(0);
-  const settingsTotalTimeInSeconds = 20;
+  const settingsTotalTimeInSeconds = 90;
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
   const [answerSubmitted, setAnswerSubmitted] = useState<boolean>(false);
   const [kicked, setKicked] = useState<boolean>(false);
