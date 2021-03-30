@@ -138,8 +138,8 @@ export default function QuizHoster() {
     });
   };
 
-  const updateQuizStateFinished = () => {
-    axios.post(`/api/quizzes/${id}`, { QuizState: QuizState.QuizEnded });
+  const updateQuizStateFinished = async () => {
+    await axios.post(`/api/quizzes/${id}`, { QuizState: QuizState.QuizEnded });
   };
 
   const messageContestantsQuestionStart = () => {
@@ -198,7 +198,7 @@ export default function QuizHoster() {
     setCurrentQuizState(QuizState.QuestionInProgress);
   };
 
-  const onGoToNextQuestion = () => {
+  const onGoToNextQuestion = async () => {
     if (finalQuestionCompleted) {
       const message: QuizMasterMessage = {
         state: QuizState.QuizEnded,
@@ -208,7 +208,7 @@ export default function QuizHoster() {
         kick: false,
         standings: contestants,
       };
-      updateQuizStateFinished();
+      await updateQuizStateFinished();
       axios
         .post(`/api/quizzes/${id}/command/quizmastermessage`, message)
         .then(() => {
