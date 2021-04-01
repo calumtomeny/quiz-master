@@ -80,6 +80,9 @@ export default function QuestionCreator(props: any) {
   const [doneInitialGet, setDoneInitialGet] = useState<boolean>(false);
   const isFirstRun = useRef(true);
   const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
+  const [questionsLoadingInProgress, setQuestionsLoadingInProgress] = useState(
+    false,
+  );
 
   const setQuestion = (question: string, answer: string) => {
     dispatch({ type: "add", payload: { question: question, answer: answer } });
@@ -92,9 +95,11 @@ export default function QuestionCreator(props: any) {
   };
 
   const createTenQuestions = () => {
+    setQuestionsLoadingInProgress(true);
     Axios.get(`/api/quizzes/${props.quizId}/generatequestions`).then(
       (results) => {
         dispatch({ type: "set", payload: results.data });
+        setQuestionsLoadingInProgress(false);
         setDoneInitialGet(true);
         setIsInitialQuestion(false);
       },
@@ -135,6 +140,7 @@ export default function QuestionCreator(props: any) {
         onQuestionSubmitted={setQuestion}
         onCreateTenQuestions={createTenQuestions}
         isInitialQuestion={isInitialQuestion}
+        questionsLoadingInProgress={questionsLoadingInProgress}
       />
       <Box pt={3} pb={3}>
         {dataState.data.length || !doneInitialGet ? (

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, ChangeEvent } from "react";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import {
   Typography,
   TextField,
@@ -11,6 +12,10 @@ const useStyles = makeStyles({
   button: {
     marginTop: "10px",
   },
+  loadingCircle: {
+    textAlign: "center",
+    marginTop: "10px",
+  },
 });
 
 export default function QuestionInitialiser(props: any) {
@@ -19,6 +24,9 @@ export default function QuestionInitialiser(props: any) {
   const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
   const [isInvalidQuestion, setIsInvalidQuestion] = useState(false);
   const [isInvalidAnswer, setIsInvalidAnswer] = useState(false);
+  const [questionsLoadingInProgress, setQuestionsLoadingInProgress] = useState(
+    false,
+  );
 
   const classes = useStyles();
 
@@ -57,6 +65,10 @@ export default function QuestionInitialiser(props: any) {
   useEffect(() => {
     setIsInitialQuestion(props.isInitialQuestion);
   }, []);
+
+  useEffect(() => {
+    setQuestionsLoadingInProgress(props.questionsLoadingInProgress);
+  }, [props.questionsLoadingInProgress]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -116,6 +128,13 @@ export default function QuestionInitialiser(props: any) {
           OK
         </Button>
       </form>
+      {questionsLoadingInProgress ? (
+        <div className={classes.loadingCircle}>
+          <CircularProgress />
+        </div>
+      ) : (
+        <></>
+      )}
       {isInitialQuestion ? (
         <form onSubmit={onCreateTenQuestions} data-testid="create-question">
           <Box marginTop={4}>
