@@ -276,7 +276,7 @@ export default function QuestionResponder() {
         {(quizState === QuizState.FirstQuestionReady ||
           quizState === QuizState.NextQuestionReady) &&
         !kicked
-          ? "You're all set..."
+          ? "Get ready for question " + questionNo + "!"
           : quizState !== QuizState.QuizEnded
           ? quizName
           : ""}
@@ -316,7 +316,11 @@ export default function QuestionResponder() {
       ) : quizState === QuizState.FirstQuestionReady ||
         quizState === QuizState.NextQuestionReady ? (
         <Box mb={2}>
-          <p>Get ready for question {questionNo}</p>
+          <p>Fastest correct answer will get a bonus point!</p>
+          <p>
+            Spelling doesn&apos;t have to be exact if you have a kind Quiz
+            Master :)
+          </p>
           <LinearProgress />
         </Box>
       ) : quizState === QuizState.ResultsReady ? (

@@ -6,11 +6,6 @@ import {
   Step,
   StepLabel,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
   Snackbar,
 } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
@@ -20,6 +15,8 @@ import HostLobby from "./HostLobby";
 import axios from "axios";
 import { Alert } from "@material-ui/lab";
 import QuizState from "../../Common/QuizState";
+import ResetQuizModal from "./ResetQuizModal";
+import StartQuizModal from "./StartQuizModal";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,6 +71,8 @@ export default function QuizWizard() {
   const [resetAlertOpen, setResetAlertOpen] = useState<boolean>(false);
   const [refreshContestants, setRefreshContestants] = useState<boolean>(false);
   const [resetSuccessOpen, setResetSuccessOpen] = useState<boolean>(false);
+  const [startQuizAlertOpen, setStartQuizAlertOpen] = useState<boolean>(false);
+  const [contestantsArrived, setContestantsArrived] = useState<boolean>(false);
 
   useEffect(() => {
     axios.get(`/api/quizzes/${id}`).then((res) => {
@@ -90,6 +89,13 @@ export default function QuizWizard() {
     }
   };
 
+  const onContestantArrival = () => {
+    setContestantsArrived(true);
+    if (activeStep === steps.length - 1) {
+      setNextButtonEnabled(true);
+    }
+  };
+
   const getStepContent = () => {
     return activeStep === 0 ? (
       <div className={classes.stepContainer}>
@@ -102,7 +108,10 @@ export default function QuizWizard() {
       <div className={classes.stepContainer}>No options yet.</div>
     ) : (
       <div className={classes.stepContainer}>
-        <HostLobby refreshContestants={refreshContestants} />
+        <HostLobby
+          refreshContestants={refreshContestants}
+          onContestantArrival={onContestantArrival}
+        />
       </div>
     );
   };
@@ -141,16 +150,33 @@ export default function QuizWizard() {
     );
   };
 
+  const startQuiz = () => {
+    setStartQuizAlertOpen(true);
+  };
+
+  const handleStartQuizAlertClose = () => {
+    setStartQuizAlertOpen(false);
+  };
+
+  const handleCancelStartQuiz = () => {
+    setStartQuizAlertOpen(false);
+  };
+
+  const handleConfirmStartQuiz = () => {
+    setStartQuizAlertOpen(false);
+    axios
+      .post(`/api/quizzes/${id}`, {
+        QuestionNo: 1,
+        QuizState: QuizState.FirstQuestionReady,
+      })
+      .then(() => {
+        history.push(`/quiz/${id}/${quizName}/host`);
+      });
+  };
+
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
-      axios
-        .post(`/api/quizzes/${id}`, {
-          QuestionNo: 1,
-          QuizState: QuizState.FirstQuestionReady,
-        })
-        .then(() => {
-          history.push(`/quiz/${id}/${quizName}/host`);
-        });
+      startQuiz();
     }
 
     let newSkipped = skipped;
@@ -159,13 +185,19 @@ export default function QuizWizard() {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
     }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (activeStep < steps.length - 1) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
     setSkipped(newSkipped);
+
+    if (activeStep === steps.length - 2 && !contestantsArrived) {
+      setNextButtonEnabled(false);
+    }
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setNextButtonEnabled(true);
   };
 
   const handleReset = () => {
@@ -192,6 +224,10 @@ export default function QuizWizard() {
     axios.post(`/api/quizzes/${id}/resetcontestants`, {}).then(() => {
       setRefreshContestants(!refreshContestants);
       updateQuizStateInitial();
+      setContestantsArrived(false);
+      if (activeStep === steps.length - 1) {
+        setNextButtonEnabled(false);
+      }
       setResetSuccessOpen(true);
     });
   };
@@ -262,7 +298,7 @@ export default function QuizWizard() {
               disabled={!nextButtonEnabled}
               className={classes.button}
             >
-              {activeStep === steps.length - 1 ? "Let's play!" : "Next"}
+              {activeStep === steps.length - 1 ? "Start Quiz" : "Next"}
             </Button>
             <Button
               variant="contained"
@@ -270,35 +306,20 @@ export default function QuizWizard() {
               onClick={handleReset}
               className={classes.resetButton}
             >
-              Reset Quiz
+              Reset Participants
             </Button>
-            <Dialog
+            <StartQuizModal
+              open={startQuizAlertOpen}
+              onClose={handleStartQuizAlertClose}
+              handleCancelStart={handleCancelStartQuiz}
+              handleConfirmStart={handleConfirmStartQuiz}
+            />
+            <ResetQuizModal
               open={resetAlertOpen}
               onClose={handleResetAlertClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">
-                {"Reset Quiz Participants?"}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  This will remove all participants from the quiz
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleCancelReset} color="primary" autoFocus>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleConfirmReset}
-                  color="secondary"
-                  variant="contained"
-                >
-                  Reset
-                </Button>
-              </DialogActions>
-            </Dialog>
+              handleCancelReset={handleCancelReset}
+              handleConfirmReset={handleConfirmReset}
+            />
             <Snackbar
               open={resetSuccessOpen}
               autoHideDuration={6000}

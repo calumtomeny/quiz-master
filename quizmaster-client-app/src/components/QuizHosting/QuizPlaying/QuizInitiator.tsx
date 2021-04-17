@@ -11,7 +11,10 @@ export default function QuizInitiator(props: any) {
   const classes = useStyles();
   return (
     <>
-      <p>You are about to start the quiz.</p>
+      <p>
+        Prepare your participants for the first question. The fastest correct
+        answer will get a bonus point!
+      </p>
       <Button
         type="submit"
         fullWidth
@@ -20,7 +23,7 @@ export default function QuizInitiator(props: any) {
         className={classes.submit}
         onClick={props.clickHandler}
       >
-        Go to the first question...
+        Show first question...
       </Button>
     </>
   );
