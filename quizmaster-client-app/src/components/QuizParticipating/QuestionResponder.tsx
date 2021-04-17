@@ -19,10 +19,10 @@ import {
 } from "@material-ui/core";
 import QuizMasterMessage from "../Common/QuizMasterMessage";
 import QuizQuestion from "../Common/QuizQuestion";
-import QuizQuestionDisplay from "../QuizHosting/QuizQuestionDisplay";
+import QuizQuestionDisplay from "../Common/QuizQuestionDisplay";
 import ParticipantMessage from "../Common/ParticipantMessage";
-import Contestant from "../QuizHosting/Contestant";
-import QuizStandings from "../QuizHosting/QuizStandings";
+import Contestant from "../Common/Contestant";
+import QuizStandings from "../Common/QuizStandings";
 import QuizState from "../Common/QuizState";
 import FinalSummary from "./FinalSummary";
 

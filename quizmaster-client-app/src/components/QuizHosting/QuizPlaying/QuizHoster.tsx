@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 import QuizQuestion from "../../Common/QuizQuestion";
 import QuizInitiator from "./QuizInitiator";
 import { Box, Paper } from "@material-ui/core";
-import QuizQuestionDisplay from "./QuizQuestionDisplay";
+import QuizQuestionDisplay from "../../Common/QuizQuestionDisplay";
 import QuestionMarker from "./QuestionMarker";
 import Data from "./QuestionResponse";
 import ParticipantMessage from "../../Common/ParticipantMessage";
