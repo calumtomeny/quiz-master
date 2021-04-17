@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import ContestantList from "./ContestantList";
+import ContestantList from "../../Common/ContestantList";
 import "./HostLobby.css";
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import Contestant from "./Contestant";
+import Contestant from "../../Common/Contestant";
 
 export default function HostLobby(props: { refreshContestants: boolean }) {
   const { id } = useParams<{ id: string }>();
