@@ -8,7 +8,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Contestant from "./Contestant";
-import QuizState from "../Common/QuizState";
+import QuizState from "./QuizState";
 
 const useStyles = makeStyles((theme) => ({
   table: {
