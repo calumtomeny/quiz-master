@@ -1,4 +1,4 @@
-import Contestant from "../QuizHosting/Contestant";
+import Contestant from "./Contestant";
 import QuizState from "./QuizState";
 
 interface QuizMasterMessage {

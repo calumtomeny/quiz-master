@@ -19,7 +19,7 @@ import QuestionCreator from "./QuestionCreator/QuestionCreator";
 import HostLobby from "./HostLobby";
 import axios from "axios";
 import { Alert } from "@material-ui/lab";
-import QuizState from "../Common/QuizState";
+import QuizState from "../../Common/QuizState";
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -1,6 +1,6 @@
 import React, { useReducer, useRef, useEffect, useState } from "react";
 import Axios from "axios";
-import QuizQuestion from "../../Common/QuizQuestion";
+import QuizQuestion from "../../../Common/QuizQuestion";
 import MaterialTable from "material-table";
 import { Box, TextField } from "@material-ui/core";
 import reducer from "./QuestionReducer";

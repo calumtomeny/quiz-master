@@ -3,22 +3,22 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { useHistory, useParams } from "react-router-dom";
-import "./HostLobby.css";
+import "../QuizCreating/HostLobby.css";
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import Contestant from "./Contestant";
-import QuizMasterMessage from "../Common/QuizMasterMessage";
+import Contestant from "../../Common/Contestant";
+import QuizMasterMessage from "../../Common/QuizMasterMessage";
 import Button from "@material-ui/core/Button";
-import QuizQuestion from "../Common/QuizQuestion";
+import QuizQuestion from "../../Common/QuizQuestion";
 import QuizInitiator from "./QuizInitiator";
 import { Box, Paper } from "@material-ui/core";
-import QuizQuestionDisplay from "./QuizQuestionDisplay";
+import QuizQuestionDisplay from "../../Common/QuizQuestionDisplay";
 import QuestionMarker from "./QuestionMarker";
 import Data from "./QuestionResponse";
-import ParticipantMessage from "../Common/ParticipantMessage";
-import QuizStandings from "./QuizStandings";
+import ParticipantMessage from "../../Common/ParticipantMessage";
+import QuizStandings from "../../Common/QuizStandings";
 import QuestionResponse from "./QuestionResponse";
 import ContestantAnswerScore from "./ContestantAnswerScore";
-import QuizState from "../Common/QuizState";
+import QuizState from "../../Common/QuizState";
 import HostFinalSummary from "./HostFinalSummary";
 
 const useStyles = makeStyles((theme) => ({
@@ -433,14 +433,11 @@ export default function QuizHoster() {
       } else if (res.data.quizState === QuizState.ResultsReady) {
         setShowQuizMarker(false);
         setFinalQuestionCompleted(true);
-        console.log("state: Results Ready");
       } else if (res.data.quizState === QuizState.NextQuestionReady) {
         setShowQuizMarker(false);
-        console.log("state: Next Question Ready");
       } else if (res.data.quizState === QuizState.QuizEnded) {
         setShowQuizMarker(false);
         setFinalQuestionCompleted(true);
-        console.log("state: Quiz Ended");
       }
     });
 
@@ -565,7 +562,6 @@ export default function QuizHoster() {
                   contestantStandings={contestants}
                   quizState={currentQuizState}
                 />
-                <h2>Questions</h2>
                 <HostFinalSummary id={id} />
                 <Button
                   type="submit"

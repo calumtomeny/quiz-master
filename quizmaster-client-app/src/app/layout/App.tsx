@@ -1,11 +1,11 @@
 import Layout from "./Layout";
 import React from "react";
-import QuizWizard from "../../components/QuizHosting/QuizWizard";
+import QuizWizard from "../../components/QuizHosting/QuizCreating/QuizWizard";
 import QuizJoiner from "../../components/QuizParticipating/QuizJoiner";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import HomePage from "../../components/HomePage/HomePage";
 import QuestionResponder from "../../components/QuizParticipating/QuestionResponder";
-import QuizHoster from "../../components/QuizHosting/QuizHoster";
+import QuizHoster from "../../components/QuizHosting/QuizPlaying/QuizHoster";
 import NotFound from "../../components/Common/NotFound";
 
 function App() {
