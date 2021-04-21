@@ -17,5 +17,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>Portable</DebugType>
   </PropertyGroup>
 </Project>

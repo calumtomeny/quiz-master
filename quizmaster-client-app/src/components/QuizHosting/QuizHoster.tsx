@@ -19,6 +19,7 @@ import QuizStandings from "./QuizStandings";
 import QuestionResponse from "./QuestionResponse";
 import ContestantAnswerScore from "./ContestantAnswerScore";
 import QuizState from "../Common/QuizState";
+import HostFinalSummary from "./HostFinalSummary";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -432,11 +433,14 @@ export default function QuizHoster() {
       } else if (res.data.quizState === QuizState.ResultsReady) {
         setShowQuizMarker(false);
         setFinalQuestionCompleted(true);
+        console.log("state: Results Ready");
       } else if (res.data.quizState === QuizState.NextQuestionReady) {
         setShowQuizMarker(false);
+        console.log("state: Next Question Ready");
       } else if (res.data.quizState === QuizState.QuizEnded) {
         setShowQuizMarker(false);
         setFinalQuestionCompleted(true);
+        console.log("state: Quiz Ended");
       }
     });
 
@@ -561,6 +565,8 @@ export default function QuizHoster() {
                   contestantStandings={contestants}
                   quizState={currentQuizState}
                 />
+                <h2>Questions</h2>
+                <HostFinalSummary id={id} />
                 <Button
                   type="submit"
                   variant="contained"
