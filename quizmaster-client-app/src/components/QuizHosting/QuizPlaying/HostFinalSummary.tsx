@@ -64,7 +64,6 @@ export default function HostFinalSummary(props: { id: string }) {
     axios
       .get(`/api/quizzes/${props.id}/finalsummary`)
       .then((res) => {
-        console.log("res.data (HostFinalSummary): ", res);
         setQuestionSummaries(res.data);
       })
       .catch((err) => console.log(err));

@@ -562,6 +562,7 @@ export default function QuizHoster() {
                   contestantStandings={contestants}
                   quizState={currentQuizState}
                 />
+                <h2>Questions</h2>
                 <HostFinalSummary id={id} />
                 <Button
                   type="submit"
