@@ -46,7 +46,10 @@ namespace QuizMaster.Application.Quizzes
             }
             public async Task<List<QuestionSummary>> Handle(Query request, CancellationToken cancellationToken)
             {
-                Quiz quiz = await context.Quiz.Include(x => x.Contestants).Include(x => x.QuizQuestions).ThenInclude(x => x.ContestantAnswers).SingleOrDefaultAsync(x => x.Code == request.QuizCode);
+                Quiz quiz = await context.Quiz
+                    .Include(x => x.QuizQuestions).ThenInclude(x => x.ContestantAnswers)
+                    .Include(x => x.Contestants)
+                    .SingleOrDefaultAsync(x => x.Code == request.QuizCode);
                 if (quiz == null)
                 {
                     return null;
@@ -54,27 +57,24 @@ namespace QuizMaster.Application.Quizzes
                 var questionSummaries = new List<QuestionSummary>();
                 foreach (QuizQuestion question in quiz.QuizQuestions)
                 {
-                    var answers = new List<ContestantResponse>();
-                    foreach (var contestant in quiz.Contestants)
+                    var answers = quiz.Contestants.Select(x =>
                     {
-                        var contestantAnswer = question.ContestantAnswers.Single(x => x.ContestantId == contestant.Id);
-                        answers.Add(
-                            new ContestantResponse
-                            {
-                                Name = contestant.Name,
-                                Answer = contestantAnswer.Answer,
-                                AnsweredCorrectly = contestantAnswer.Correct,
-                                AnsweredCorrectlyFastest = contestantAnswer.Fastest,
-                            }
-                        );
-                    }
+                        var contestantAnswer = question.ContestantAnswers.Single(c => c.ContestantId == x.Id);
+                        return new ContestantResponse
+                        {
+                            Name = x.Name,
+                            Answer = contestantAnswer.Answer,
+                            AnsweredCorrectly = contestantAnswer.Correct,
+                            AnsweredCorrectlyFastest = contestantAnswer.Fastest,
+                        };
+                    });
                     questionSummaries.Add(
                         new QuestionSummary
                         {
                             Number = question.Number,
                             Question = question.Question,
                             Answer = question.Answer,
-                            Contestants = answers,
+                            Contestants = answers.ToList(),
                         }
                     );
 
