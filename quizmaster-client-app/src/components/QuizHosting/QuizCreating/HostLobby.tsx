@@ -7,7 +7,10 @@ import "./HostLobby.css";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import Contestant from "../../Common/Contestant";
 
-export default function HostLobby(props: { refreshContestants: boolean }) {
+export default function HostLobby(props: {
+  refreshContestants: boolean;
+  onContestantArrival: () => void;
+}) {
   const { id } = useParams<{ id: string }>();
   const [contestants, setContestants] = useState<string[]>([]);
 
@@ -24,6 +27,9 @@ export default function HostLobby(props: { refreshContestants: boolean }) {
         .get(`/api/quizzes/${id}/contestants`)
         .then((res) => {
           setContestants(res.data.map((contestant: any) => contestant.name));
+          if (res.data.length > 0) {
+            props.onContestantArrival();
+          }
         })
         .then(async () => {
           try {
@@ -42,6 +48,7 @@ export default function HostLobby(props: { refreshContestants: boolean }) {
             hubConnect.on("ContestantJoined", (contestant: Contestant) => {
               console.log("Contestant joined: ", contestant.name);
               setContestants((c) => [...c, contestant.name]);
+              props.onContestantArrival();
             });
           } catch (err) {
             alert(err);
