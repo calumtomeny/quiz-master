@@ -106,7 +106,7 @@ export default function FinalSummary(props: { participantId: string }) {
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">
-                  Fastest Answer
+                  Fastest Contestant
                 </TableCell>
                 <TableCell
                   align="center"
