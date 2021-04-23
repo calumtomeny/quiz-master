@@ -77,7 +77,6 @@ namespace QuizMaster.Application.Quizzes
                             Contestants = answers.ToList(),
                         }
                     );
-
                 }
                 return questionSummaries;
             }
