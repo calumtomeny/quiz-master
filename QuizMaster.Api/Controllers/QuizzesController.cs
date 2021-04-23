@@ -93,7 +93,6 @@ namespace TodoApi.Controllers
             return Ok(quizSummary);
         }
 
-
         [HttpGet("{id}/state")]
         public async Task<ActionResult<Details.QuizStateValues>> GetQuizState(string id)
         {
