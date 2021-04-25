@@ -25,6 +25,7 @@ import Contestant from "../Common/Contestant";
 import QuizStandings from "../Common/QuizStandings";
 import QuizState from "../Common/QuizState";
 import FinalSummary from "./FinalSummary";
+import ParticipantLobby from "./ParticipantLobby";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -62,7 +63,7 @@ export default function QuestionResponder() {
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(0);
   const [quizIsComplete, setQuizIsComplete] = useState<boolean>(false);
   const [submitText, setSubmitText] = useState<string>("Submit");
-  const { quizId } = useParams<{ quizId: string }>();
+  const { id } = useParams<{ id: string }>();
   const [participantId, setParticipantId] = useState<string>("");
   const [startTime, setStartTime] = useState<number>(0);
   const settingsTotalTimeInSeconds = 90;
@@ -105,7 +106,7 @@ export default function QuestionResponder() {
       ),
     };
     setSubmitText("Submitted. Please Wait.");
-    axios.post(`/api/quizzes/${quizId}/command/participantmessage`, message);
+    axios.post(`/api/quizzes/${id}/command/participantmessage`, message);
 
     setButtonDisabled(true);
   };
@@ -150,7 +151,7 @@ export default function QuestionResponder() {
 
     //Get Quiz Details if the participant is a member of the quiz
     axios
-      .get(`/api/quizzes/${quizId}/details/${participantID}`)
+      .get(`/api/quizzes/${id}/details/${participantID}`)
       .then((res) => {
         setPageError(false);
         setPageLoading(false);
@@ -207,7 +208,7 @@ export default function QuestionResponder() {
         hubConnect.on("ContestantUpdate", (message: QuizMasterMessage) => {
           if (message.kick) {
             console.log("Leaving group...");
-            hubConnect.invoke("RemoveFromGroup", quizId);
+            hubConnect.invoke("RemoveFromGroup", id);
             console.log("Connection removed.");
             setKicked(true);
           } else if (message.state === QuizState.FirstQuestionReady) {
@@ -254,7 +255,7 @@ export default function QuestionResponder() {
           .then(() => console.log(hubConnect.state))
           .then(() => {
             console.log("Joining group...");
-            hubConnect.invoke("AddToGroup", quizId);
+            hubConnect.invoke("AddToGroup", id);
             console.log("Connection successful!");
           })
           .catch(() => {
@@ -268,11 +269,11 @@ export default function QuestionResponder() {
       startSignalRConnection(hubConnect);
     };
     createHubConnection();
-  }, [quizId, apiBaseUrl]);
+  }, [id, apiBaseUrl]);
 
   return (
     <>
-      <Typography component="h2" variant="h5">
+      <Typography component="h1" variant="h5">
         {(quizState === QuizState.FirstQuestionReady ||
           quizState === QuizState.NextQuestionReady) &&
         !kicked
@@ -362,7 +363,7 @@ export default function QuestionResponder() {
           </Paper>
         </>
       ) : (
-        <p>The quiz will start soon.</p>
+        <ParticipantLobby />
       )}
       <Dialog
         open={disconnectedDialogOpen}
