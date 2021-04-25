@@ -97,7 +97,6 @@ namespace TodoApi.Controllers
             });
         }
 
-        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
         [HttpGet("{id}/contestants")]
         public async Task<ActionResult<Contestant>> GetContestants(string id)
         {
