@@ -11,7 +11,7 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/QuizMaster.Api/bin/Debug/netcoreapp3.1/QuizMaster.Api.dll",
-            "args": [],
+            "args": ["debug"],
             "cwd": "${workspaceFolder}/QuizMaster.Api",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser

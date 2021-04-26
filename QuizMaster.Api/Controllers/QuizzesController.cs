@@ -9,6 +9,7 @@ using QuizMaster.Api.SignalR;
 using QuizMaster.Application;
 using QuizMaster.Application.Quizzes;
 using QuizMaster.Domain;
+using static QuizMaster.Application.Quizzes.FinalSummary;
 
 namespace TodoApi.Controllers
 {
@@ -77,6 +78,19 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
             return Ok(quizDetails);
+        }
+
+        [ServiceFilter(typeof(ApiKeyAuthAttribute))]
+        [HttpGet("{id}/finalsummary")]
+        public async Task<ActionResult<List<QuestionSummary>>> GetQuizFinalSummary(string id)
+        {
+            var quizSummary = await mediator.Send(new QuizMaster.Application.Quizzes.FinalSummary.Query(id));
+
+            if (quizSummary == null)
+            {
+                return NotFound();
+            }
+            return Ok(quizSummary);
         }
 
         [HttpGet("{id}/state")]

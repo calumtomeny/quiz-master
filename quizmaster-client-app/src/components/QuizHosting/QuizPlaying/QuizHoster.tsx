@@ -19,6 +19,7 @@ import QuizStandings from "../../Common/QuizStandings";
 import QuestionResponse from "./QuestionResponse";
 import ContestantAnswerScore from "./ContestantAnswerScore";
 import QuizState from "../../Common/QuizState";
+import HostFinalSummary from "./HostFinalSummary";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -561,6 +562,8 @@ export default function QuizHoster() {
                   contestantStandings={contestants}
                   quizState={currentQuizState}
                 />
+                <h2>Questions</h2>
+                <HostFinalSummary id={id} />
                 <Button
                   type="submit"
                   variant="contained"
