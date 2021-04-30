@@ -18,6 +18,9 @@ function Reducer(state: any, action: any) {
         x.number === action.payload.number ? action.payload : x,
       );
       return { ...state, data };
+    case "dragAndDrop":
+      data = action.payload;
+      return { data };
     case "delete":
       data = state.data.filter((x: any) => x !== action.payload);
       return { ...state, data };
