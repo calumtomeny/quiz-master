@@ -1,11 +1,17 @@
-import React, { useReducer, useRef, useEffect, useState } from "react";
+import React, {
+  useReducer,
+  useRef,
+  useEffect,
+  useState,
+  ChangeEvent,
+} from "react";
 import Axios from "axios";
 import QuizQuestion from "../../../Common/QuizQuestion";
 // import MaterialTable from "material-table";
 import {
   Box,
   TableCell,
-  // TextField,
+  TextField,
   TableContainer,
   Table,
   TableHead,
@@ -14,7 +20,7 @@ import {
   Paper,
   IconButton,
 } from "@material-ui/core";
-import { Edit, Delete } from "@material-ui/icons";
+import { Edit, Delete, Check } from "@material-ui/icons";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import reducer from "./QuestionReducer";
 import QuestionInitialiser from "./QuestionInitialiser";
@@ -91,6 +97,10 @@ export default function QuestionCreator(props: any) {
   const [dataState, dispatch] = useReducer(reducer, {
     data: [],
   });
+  console.log("dataState: ", dataState);
+  const [questionsAndAnswers, setQuesitonsAndAnswers] = useState<any>([]);
+  console.log("q&as: ", questionsAndAnswers);
+  const [editIndex, setEditIndex] = useState<number>(-1);
   const [doneInitialGet, setDoneInitialGet] = useState<boolean>(false);
   const isFirstRun = useRef(true);
   const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
@@ -113,6 +123,7 @@ export default function QuestionCreator(props: any) {
     Axios.get(`/api/quizzes/${props.quizId}/generatequestions`).then(
       (results) => {
         dispatch({ type: "set", payload: results.data });
+        setQuesitonsAndAnswers(results.data);
         setQuestionsLoadingInProgress(false);
         setDoneInitialGet(true);
         setIsInitialQuestion(false);
@@ -149,6 +160,7 @@ export default function QuestionCreator(props: any) {
   useEffect(() => {
     Axios.get(`/api/quizzes/${props.quizId}/questions`).then((results) => {
       dispatch({ type: "set", payload: results.data });
+      setQuesitonsAndAnswers(results.data);
       setDoneInitialGet(true);
       setIsInitialQuestion(results.data.length === 0);
     });
@@ -158,10 +170,10 @@ export default function QuestionCreator(props: any) {
     if (!isFirstRun.current && doneInitialGet && dataState.data.length) {
       Axios.post(
         `/api/quizzes/${props.quizId}/questions`,
-        dataState.data.map(
+        questionsAndAnswers.map(
           (x: any) => new QuizQuestion(x.question, x.answer, x.number),
         ),
-      );
+      ).then((res) => setQuesitonsAndAnswers(res.data));
     }
     isFirstRun.current = false;
   }, [dataState, doneInitialGet, props.quizId]);
@@ -169,6 +181,116 @@ export default function QuestionCreator(props: any) {
   // useEffect(() => {
   //   setColumnsState(columns);
   // }, [editFieldError, dataState]);
+
+  const handleRemove = (i: number) =>
+    dispatch({ type: "delete", payload: dataState.data[i] });
+
+  const startEditing = (i: number) => setEditIndex(i);
+
+  const stopEditing = (i: number) => {
+    console.log(i);
+    setEditIndex(-1);
+    // dispatch({ type: "update", payload: questionsAndAnswers[i] });
+  };
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    name: string,
+    i: number,
+  ) => {
+    const { value } = e.currentTarget;
+    if (name === "question") {
+      dispatch({ type: "update", payload: questionsAndAnswers[i] });
+      // setQuesitonsAndAnswers(
+      //   questionsAndAnswers.map((row: any, j: number) =>
+      //     j === i ? { ...row, question: value } : row,
+      //   ),
+      // );
+    }
+    if (name === "answer") {
+      setQuesitonsAndAnswers(
+        questionsAndAnswers.map((row: any, j: number) =>
+          j === i ? { ...row, answer: value } : row,
+        ),
+      );
+    }
+  };
+
+  const row = (
+    x: Row,
+    i: number,
+    handleRemove: any,
+    startEditing: any,
+    stopEditing: any,
+    handleChange: any,
+  ) => {
+    const currentlyEditing = editIndex === i;
+    return (
+      <Draggable key={x.number} draggableId={x.number.toString()} index={i}>
+        {(provided) => (
+          <TableRow
+            key={x.number}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            innerRef={provided.innerRef}
+          >
+            <TableCell component="th" scope="row">
+              {i + 1}
+            </TableCell>
+            <TableCell>
+              {currentlyEditing ? (
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Question"
+                  onChange={(e) => handleChange(e, "question", i)}
+                  value={x.question}
+                />
+              ) : (
+                x.question
+              )}
+            </TableCell>
+            <TableCell>
+              {currentlyEditing ? (
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Answer"
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      payload: e.currentTarget.value,
+                    })
+                  }
+                  value={x.answer}
+                />
+              ) : (
+                x.answer
+              )}
+            </TableCell>
+            <TableCell>
+              {currentlyEditing ? (
+                <IconButton aria-label="Edit" onClick={() => stopEditing(i)}>
+                  <Check />
+                </IconButton>
+              ) : (
+                <IconButton aria-label="Edit" onClick={() => startEditing(i)}>
+                  <Edit />
+                </IconButton>
+              )}
+              <IconButton aria-label="Delete" onClick={() => handleRemove(i)}>
+                <Delete />
+              </IconButton>
+            </TableCell>
+          </TableRow>
+        )}
+      </Draggable>
+    );
+  };
 
   return (
     <>
@@ -197,36 +319,16 @@ export default function QuestionCreator(props: any) {
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
-                      {dataState.data.map((row: Row, index: number) => (
-                        <Draggable
-                          key={row.number}
-                          draggableId={row.number.toString()}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <TableRow
-                              key={row.number}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              innerRef={provided.innerRef}
-                            >
-                              <TableCell component="th" scope="row">
-                                {index + 1}
-                              </TableCell>
-                              <TableCell>{row.question}</TableCell>
-                              <TableCell>{row.answer}</TableCell>
-                              <TableCell>
-                                <IconButton>
-                                  <Edit />
-                                </IconButton>
-                                <IconButton aria-label="delete">
-                                  <Delete />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </Draggable>
-                      ))}
+                      {dataState.data.map((x: Row, i: number) =>
+                        row(
+                          x,
+                          i,
+                          handleRemove,
+                          startEditing,
+                          stopEditing,
+                          handleChange,
+                        ),
+                      )}
                       {provided.placeholder}
                     </TableBody>
                   )}

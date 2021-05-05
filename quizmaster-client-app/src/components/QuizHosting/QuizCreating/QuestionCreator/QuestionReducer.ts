@@ -21,6 +21,10 @@ function Reducer(state: any, action: any) {
     case "dragAndDrop":
       data = action.payload;
       return { data };
+    case "onChange":
+      data = action.payload;
+      console.log("onChange reducer: ", data);
+      return { data };
     case "delete":
       data = state.data.filter((x: any) => x !== action.payload);
       return { ...state, data };
