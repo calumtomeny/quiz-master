@@ -1,11 +1,17 @@
-import React, { useReducer, useRef, useEffect, useState } from "react";
+import React, {
+  useReducer,
+  useRef,
+  useEffect,
+  useState,
+  ChangeEvent,
+} from "react";
 import Axios from "axios";
 import QuizQuestion from "../../../Common/QuizQuestion";
-// import MaterialTable from "material-table";
+// import { makeStyles } from "@material-ui/core/styles";
 import {
   Box,
   TableCell,
-  // TextField,
+  TextField,
   TableContainer,
   Table,
   TableHead,
@@ -13,84 +19,31 @@ import {
   TableBody,
   Paper,
   IconButton,
+  Typography,
 } from "@material-ui/core";
-import { Edit, Delete } from "@material-ui/icons";
+import { Edit, Delete, Check, DragHandle, Clear } from "@material-ui/icons";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import reducer from "./QuestionReducer";
 import QuestionInitialiser from "./QuestionInitialiser";
 import Row from "./Row";
 
+// const useStyles = makeStyles(() => ({}));
+
 export default function QuestionCreator(props: any) {
-  // const [editFieldError, setEditFieldError] = useState({
-  //   error: false,
-  //   label: "",
-  //   helperText: "",
-  //   validateInput: false,
-  // });
+  // const classes = useStyles();
 
-  // const columns = [
-  //   {
-  //     field: "number",
-  //     width: 50,
-  //     editable: "never",
-  //   },
-  //   {
-  //     title: "Question",
-  //     field: "question",
-  //     // eslint-disable-next-line react/display-name
-  //     editComponent: (props: any) => (
-  //       <TextField
-  //         error={
-  //           !props.value.trim() && editFieldError.validateInput
-  //             ? editFieldError.error
-  //             : false
-  //         }
-  //         label={
-  //           !props.value.trim() && editFieldError.validateInput
-  //             ? editFieldError.helperText
-  //             : ""
-  //         }
-  //         value={props.value ? props.value : ""}
-  //         fullWidth
-  //         multiline
-  //         variant="outlined"
-  //         size="small"
-  //         onChange={(e) => props.onChange(e.target.value)}
-  //         autoFocus={props.columnDef.tableData.columnOrder === 0}
-  //       />
-  //     ),
-  //   },
-  //   {
-  //     title: "Answer",
-  //     field: "answer",
-  //     // eslint-disable-next-line react/display-name
-  //     editComponent: (props: any) => (
-  //       <TextField
-  //         error={
-  //           !props.value.trim() && editFieldError.validateInput
-  //             ? editFieldError.error
-  //             : false
-  //         }
-  //         label={
-  //           !props.value.trim() && editFieldError.validateInput
-  //             ? editFieldError.helperText
-  //             : ""
-  //         }
-  //         value={props.value ? props.value : ""}
-  //         fullWidth
-  //         multiline
-  //         variant="outlined"
-  //         size="small"
-  //         onChange={(e) => props.onChange(e.target.value)}
-  //       />
-  //     ),
-  //   },
-  // ];
-
-  // const [columnsState, setColumnsState] = useState<any>(columns);
   const [dataState, dispatch] = useReducer(reducer, {
     data: [],
   });
+  const [editQAndA, setEditQAndA] = useState<Row>({
+    number: 0,
+    question: "",
+    answer: "",
+  });
+  const [currentlyEditing, setCurrentlyEditing] = useState<boolean>(false);
+  const [currentlyDeleting, setCurrentlyDeleting] = useState<boolean>(false);
+  const [editIndex, setEditIndex] = useState<number>(-1);
+  const [deleteIndex, setDeleteIndex] = useState<number>(-1);
   const [doneInitialGet, setDoneInitialGet] = useState<boolean>(false);
   const isFirstRun = useRef(true);
   const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
@@ -100,12 +53,6 @@ export default function QuestionCreator(props: any) {
 
   const setQuestion = (question: string, answer: string) => {
     dispatch({ type: "add", payload: { question: question, answer: answer } });
-    // setEditFieldError({
-    //   error: true,
-    //   label: "required",
-    //   helperText: "Required",
-    //   validateInput: true,
-    // });
   };
 
   const createTenQuestions = () => {
@@ -140,6 +87,56 @@ export default function QuestionCreator(props: any) {
 
     changeItemPosition(newData, source.index, destination.index);
     dispatch({ type: "dragAndDrop", payload: newData });
+    if (currentlyEditing || currentlyDeleting) {
+      setEditIndex(destination.index);
+      setDeleteIndex(destination.index);
+    }
+  };
+
+  const startDeleting = (i: number) => {
+    setDeleteIndex(i);
+    setCurrentlyDeleting(true);
+  };
+
+  const handleRemove = (i: number) => {
+    setCurrentlyDeleting(false);
+    setEditIndex(-1);
+    setDeleteIndex(-1);
+    dispatch({ type: "delete", payload: dataState.data[i] });
+  };
+
+  const resetEditQAndA = () =>
+    setEditQAndA({
+      number: 0,
+      question: "",
+      answer: "",
+    });
+
+  const startEditing = (i: number) => {
+    const { number, question, answer } = dataState.data[i];
+    setEditIndex(i);
+    setCurrentlyEditing(true);
+    setEditQAndA({ number, question, answer });
+  };
+
+  const stopEditing = () => {
+    if (!editQAndA.question || !editQAndA.answer) return;
+    setEditIndex(-1);
+    setCurrentlyEditing(false);
+    dispatch({ type: "update", payload: editQAndA });
+    resetEditQAndA();
+  };
+
+  const cancelEdit = () => {
+    setEditIndex(-1);
+    setCurrentlyEditing(false);
+    resetEditQAndA();
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
+    const { value } = e.currentTarget;
+    if (field === "question") setEditQAndA({ ...editQAndA, question: value });
+    if (field === "answer") setEditQAndA({ ...editQAndA, answer: value });
   };
 
   useEffect(() => {
@@ -166,9 +163,134 @@ export default function QuestionCreator(props: any) {
     isFirstRun.current = false;
   }, [dataState, doneInitialGet, props.quizId]);
 
-  // useEffect(() => {
-  //   setColumnsState(columns);
-  // }, [editFieldError, dataState]);
+  const row = (
+    x: Row,
+    i: number,
+    handleRemove: any,
+    startEditing: any,
+    stopEditing: any,
+    handleChange: any,
+  ) => {
+    const editingRow = currentlyEditing && editIndex === i;
+    const deletingRow = currentlyDeleting && deleteIndex === i;
+    return (
+      <Draggable key={x.number} draggableId={x.number.toString()} index={i}>
+        {(provided) => (
+          <TableRow
+            key={x.number}
+            {...provided.draggableProps}
+            innerRef={provided.innerRef}
+          >
+            <TableCell align="justify" {...provided.dragHandleProps}>
+              <DragHandle />
+            </TableCell>
+            <TableCell component="th" scope="row">
+              {i + 1}
+            </TableCell>
+            <TableCell>
+              {editingRow ? (
+                <TextField
+                  variant="standard"
+                  margin="normal"
+                  size="small"
+                  error={!editQAndA.question}
+                  fullWidth
+                  label={!editQAndA.question ? "Required" : "Question"}
+                  onChange={(e) => handleChange(e, "question")}
+                  value={editQAndA.question}
+                />
+              ) : deletingRow ? (
+                <>
+                  <Typography variant="body1" color="error">
+                    Are you sure you want to delete this?
+                  </Typography>
+                </>
+              ) : (
+                x.question
+              )}
+            </TableCell>
+            <TableCell>
+              {editingRow ? (
+                <TextField
+                  variant="standard"
+                  margin="normal"
+                  size="small"
+                  error={!editQAndA.answer}
+                  required
+                  fullWidth
+                  label={!editQAndA.answer ? "Required" : "Answer"}
+                  onChange={(e) => handleChange(e, "answer")}
+                  value={editQAndA.answer}
+                />
+              ) : deletingRow ? (
+                <></>
+              ) : (
+                x.answer
+              )}
+            </TableCell>
+            {editingRow ? (
+              <>
+                <TableCell>
+                  <IconButton aria-label="Edit" onClick={() => stopEditing()}>
+                    <Check />
+                  </IconButton>
+                </TableCell>
+                <TableCell>
+                  <IconButton aria-label="Edit" onClick={() => cancelEdit()}>
+                    <Clear />
+                  </IconButton>
+                </TableCell>
+              </>
+            ) : deletingRow ? (
+              <>
+                <TableCell>
+                  <IconButton
+                    aria-label="Edit"
+                    onClick={() => {
+                      handleRemove(i);
+                      stopEditing();
+                      resetEditQAndA();
+                      setCurrentlyDeleting(false);
+                    }}
+                  >
+                    <Check />
+                  </IconButton>
+                </TableCell>
+                <TableCell>
+                  <IconButton
+                    aria-label="Edit"
+                    onClick={() => {
+                      setCurrentlyDeleting(false);
+                    }}
+                  >
+                    <Clear />
+                  </IconButton>
+                </TableCell>
+              </>
+            ) : (
+              <>
+                <TableCell>
+                  <IconButton aria-label="Edit" onClick={() => startEditing(i)}>
+                    <Edit />
+                  </IconButton>
+                </TableCell>
+                <TableCell>
+                  <IconButton
+                    aria-label="Delete"
+                    onClick={() => startDeleting(i)}
+                  >
+                    <Delete />
+                  </IconButton>
+                </TableCell>
+              </>
+            )}
+          </TableRow>
+        )}
+      </Draggable>
+    );
+  };
+
+  // disable drag and drop for only one item
 
   return (
     <>
@@ -184,10 +306,12 @@ export default function QuestionCreator(props: any) {
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell>{/* Drag Handle */}</TableCell>
                   <TableCell>{/* Number */}</TableCell>
                   <TableCell>Question</TableCell>
-                  <TableCell>Number</TableCell>
-                  <TableCell>{/* Icons */}</TableCell>
+                  <TableCell>{currentlyDeleting ? "" : "Answer"}</TableCell>
+                  <TableCell>{/* Icon */}</TableCell>
+                  <TableCell>{/* Icon */}</TableCell>
                 </TableRow>
               </TableHead>
               <DragDropContext onDragEnd={onDragEnd}>
@@ -197,36 +321,16 @@ export default function QuestionCreator(props: any) {
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
-                      {dataState.data.map((row: Row, index: number) => (
-                        <Draggable
-                          key={row.number}
-                          draggableId={row.number.toString()}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <TableRow
-                              key={row.number}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              innerRef={provided.innerRef}
-                            >
-                              <TableCell component="th" scope="row">
-                                {index + 1}
-                              </TableCell>
-                              <TableCell>{row.question}</TableCell>
-                              <TableCell>{row.answer}</TableCell>
-                              <TableCell>
-                                <IconButton>
-                                  <Edit />
-                                </IconButton>
-                                <IconButton aria-label="delete">
-                                  <Delete />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </Draggable>
-                      ))}
+                      {dataState.data.map((x: Row, i: number) =>
+                        row(
+                          x,
+                          i,
+                          handleRemove,
+                          startEditing,
+                          stopEditing,
+                          handleChange,
+                        ),
+                      )}
                       {provided.placeholder}
                     </TableBody>
                   )}
@@ -235,59 +339,6 @@ export default function QuestionCreator(props: any) {
             </Table>
           </TableContainer>
         ) : (
-          // <MaterialTable
-          //   options={{
-          //     actionsColumnIndex: -1,
-          //     draggable: false,
-          //     filtering: false,
-          //     paging: false,
-          //     search: false,
-          //     toolbar: false,
-          //     sorting: false,
-          //     rowStyle: {
-          //       wordBreak: "break-all",
-          //     },
-          //   }}
-          //   localization={{
-          //     header: {
-          //       actions: "",
-          //     },
-          //   }}
-          //   title=""
-          //   columns={columnsState}
-          //   data={dataState.data}
-          //   editable={{
-          //     onRowUpdate: (newData: any, oldData: any) =>
-          //       new Promise<void>((resolve, reject) => {
-          //         setTimeout(() => {
-          //           const question = newData.question.trim();
-          //           const answer = newData.answer.trim();
-          //           if (question === "" || answer === "") {
-          //             setColumnsState([]);
-          //             setEditFieldError({
-          //               error: true,
-          //               label: "required",
-          //               helperText: "Required",
-          //               validateInput: true,
-          //             });
-          //             reject();
-          //             return;
-          //           }
-          //           resolve();
-          //           if (oldData) {
-          //             dispatch({ type: "update", payload: newData });
-          //           }
-          //         }, 600);
-          //       }),
-          //     onRowDelete: (oldData) =>
-          //       new Promise<void>((resolve) => {
-          //         setTimeout(() => {
-          //           resolve();
-          //           dispatch({ type: "delete", payload: oldData });
-          //         }, 600);
-          //       }),
-          //   }}
-          // />
           <></>
         )}
       </Box>
