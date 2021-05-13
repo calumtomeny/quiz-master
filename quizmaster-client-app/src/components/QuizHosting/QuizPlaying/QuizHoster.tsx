@@ -101,7 +101,9 @@ export default function QuizHoster() {
     scores: ContestantAnswerScore[],
     contestantId: string,
   ): number {
-    return scores.find((x) => x.ContestantId == contestantId)?.BonusPoints ?? 0;
+    return (
+      scores.find((x) => x.ContestantId === contestantId)?.BonusPoints ?? 0
+    );
   }
 
   //---------------------------------------------------------------------------

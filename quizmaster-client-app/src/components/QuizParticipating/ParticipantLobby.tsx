@@ -11,7 +11,7 @@ export default function ParticipantLobby() {
   const [contestants, setContestants] = useState<string[]>([]);
   const participantName = localStorage.getItem("participantName");
 
-  const contestantList = contestants.filter((x) => x != participantName);
+  const contestantList = contestants.filter((x) => x !== participantName);
 
   useEffect(() => {
     // Build new Hub Connection, url is currently hard coded.
