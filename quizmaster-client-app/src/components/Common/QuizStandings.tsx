@@ -72,7 +72,7 @@ export default function QuizStandings(props: {
     props.contestantStandings
       .sort((a, b) => b.score - a.score)
       .forEach((contestant) => {
-        if (contestant.score == currentScore) {
+        if (contestant.score === currentScore) {
           newRankings[contestant.id] = currentRank;
           currentRankCount += 1;
         } else {
@@ -86,11 +86,11 @@ export default function QuizStandings(props: {
   }, [props.contestantStandings]);
 
   const getNameClass = (id: string) => {
-    return id == participantId ? classes.ownName : classes.otherName;
+    return id === participantId ? classes.ownName : classes.otherName;
   };
 
   const getRankClass = (id: string) => {
-    return id == participantId ? classes.ownRank : classes.otherRank;
+    return id === participantId ? classes.ownRank : classes.otherRank;
   };
 
   return (
@@ -124,8 +124,8 @@ export default function QuizStandings(props: {
                   {rankings[contestantStanding.id]}
                 </TableCell>
                 <TableCell align="center" className={classes.emojiCell}>
-                  {rankings[contestantStanding.id] == 1 &&
-                  props.quizState == QuizState.QuizEnded
+                  {rankings[contestantStanding.id] === 1 &&
+                  props.quizState === QuizState.QuizEnded
                     ? "👑"
                     : ""}
                 </TableCell>
