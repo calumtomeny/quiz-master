@@ -5,33 +5,16 @@ import React, {
   useState,
   ChangeEvent,
 } from "react";
+import { Box, Grid } from "@material-ui/core";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import Axios from "axios";
-import QuizQuestion from "../../../Common/QuizQuestion";
-// import { makeStyles } from "@material-ui/core/styles";
-import {
-  Box,
-  TableCell,
-  TextField,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableBody,
-  Paper,
-  IconButton,
-  Typography,
-} from "@material-ui/core";
-import { Edit, Delete, Check, DragHandle, Clear } from "@material-ui/icons";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import reducer from "./QuestionReducer";
 import QuestionInitialiser from "./QuestionInitialiser";
+import QuizQuestion from "../../../Common/QuizQuestion";
+import reducer from "./QuestionReducer";
 import Row from "./Row";
-
-// const useStyles = makeStyles(() => ({}));
+import Question from "./Question";
 
 export default function QuestionCreator(props: any) {
-  // const classes = useStyles();
-
   const [dataState, dispatch] = useReducer(reducer, {
     data: [],
   });
@@ -163,135 +146,6 @@ export default function QuestionCreator(props: any) {
     isFirstRun.current = false;
   }, [dataState, doneInitialGet, props.quizId]);
 
-  const row = (
-    x: Row,
-    i: number,
-    handleRemove: any,
-    startEditing: any,
-    stopEditing: any,
-    handleChange: any,
-  ) => {
-    const editingRow = currentlyEditing && editIndex === i;
-    const deletingRow = currentlyDeleting && deleteIndex === i;
-    return (
-      <Draggable key={x.number} draggableId={x.number.toString()} index={i}>
-        {(provided) => (
-          <TableRow
-            key={x.number}
-            {...provided.draggableProps}
-            innerRef={provided.innerRef}
-          >
-            <TableCell align="justify" {...provided.dragHandleProps}>
-              <DragHandle />
-            </TableCell>
-            <TableCell component="th" scope="row">
-              {i + 1}
-            </TableCell>
-            <TableCell>
-              {editingRow ? (
-                <TextField
-                  variant="standard"
-                  margin="normal"
-                  size="small"
-                  error={!editQAndA.question}
-                  fullWidth
-                  label={!editQAndA.question ? "Required" : "Question"}
-                  onChange={(e) => handleChange(e, "question")}
-                  value={editQAndA.question}
-                />
-              ) : deletingRow ? (
-                <>
-                  <Typography variant="body1" color="error">
-                    Are you sure you want to delete this?
-                  </Typography>
-                </>
-              ) : (
-                x.question
-              )}
-            </TableCell>
-            <TableCell>
-              {editingRow ? (
-                <TextField
-                  variant="standard"
-                  margin="normal"
-                  size="small"
-                  error={!editQAndA.answer}
-                  required
-                  fullWidth
-                  label={!editQAndA.answer ? "Required" : "Answer"}
-                  onChange={(e) => handleChange(e, "answer")}
-                  value={editQAndA.answer}
-                />
-              ) : deletingRow ? (
-                <></>
-              ) : (
-                x.answer
-              )}
-            </TableCell>
-            {editingRow ? (
-              <>
-                <TableCell>
-                  <IconButton aria-label="Edit" onClick={() => stopEditing()}>
-                    <Check />
-                  </IconButton>
-                </TableCell>
-                <TableCell>
-                  <IconButton aria-label="Edit" onClick={() => cancelEdit()}>
-                    <Clear />
-                  </IconButton>
-                </TableCell>
-              </>
-            ) : deletingRow ? (
-              <>
-                <TableCell>
-                  <IconButton
-                    aria-label="Edit"
-                    onClick={() => {
-                      handleRemove(i);
-                      stopEditing();
-                      resetEditQAndA();
-                      setCurrentlyDeleting(false);
-                    }}
-                  >
-                    <Check />
-                  </IconButton>
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    aria-label="Edit"
-                    onClick={() => {
-                      setCurrentlyDeleting(false);
-                    }}
-                  >
-                    <Clear />
-                  </IconButton>
-                </TableCell>
-              </>
-            ) : (
-              <>
-                <TableCell>
-                  <IconButton aria-label="Edit" onClick={() => startEditing(i)}>
-                    <Edit />
-                  </IconButton>
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    aria-label="Delete"
-                    onClick={() => startDeleting(i)}
-                  >
-                    <Delete />
-                  </IconButton>
-                </TableCell>
-              </>
-            )}
-          </TableRow>
-        )}
-      </Draggable>
-    );
-  };
-
-  // disable drag and drop for only one item
-
   return (
     <>
       <QuestionInitialiser
@@ -302,42 +156,40 @@ export default function QuestionCreator(props: any) {
       />
       <Box pt={3} pb={3}>
         {dataState.data.length || !doneInitialGet ? (
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>{/* Drag Handle */}</TableCell>
-                  <TableCell>{/* Number */}</TableCell>
-                  <TableCell>Question</TableCell>
-                  <TableCell>{currentlyDeleting ? "" : "Answer"}</TableCell>
-                  <TableCell>{/* Icon */}</TableCell>
-                  <TableCell>{/* Icon */}</TableCell>
-                </TableRow>
-              </TableHead>
-              <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="list">
-                  {(provided) => (
-                    <TableBody
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      {dataState.data.map((x: Row, i: number) =>
-                        row(
-                          x,
-                          i,
-                          handleRemove,
-                          startEditing,
-                          stopEditing,
-                          handleChange,
-                        ),
-                      )}
-                      {provided.placeholder}
-                    </TableBody>
-                  )}
-                </Droppable>
-              </DragDropContext>
-            </Table>
-          </TableContainer>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="list">
+              {(provided) => (
+                <Grid
+                  container
+                  spacing={1}
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  {dataState.data.map((x: Row, i: number) => (
+                    <Question
+                      key={x.number}
+                      x={x}
+                      i={i}
+                      editQAndA={editQAndA}
+                      currentlyEditing={currentlyEditing}
+                      currentlyDeleting={currentlyDeleting}
+                      editIndex={editIndex}
+                      deleteIndex={deleteIndex}
+                      setCurrentlyDeleting={setCurrentlyDeleting}
+                      startDeleting={startDeleting}
+                      handleRemove={handleRemove}
+                      resetEditQAndA={resetEditQAndA}
+                      startEditing={startEditing}
+                      stopEditing={stopEditing}
+                      cancelEdit={cancelEdit}
+                      handleChange={handleChange}
+                    />
+                  ))}
+                  {provided.placeholder}
+                </Grid>
+              )}
+            </Droppable>
+          </DragDropContext>
         ) : (
           <></>
         )}
