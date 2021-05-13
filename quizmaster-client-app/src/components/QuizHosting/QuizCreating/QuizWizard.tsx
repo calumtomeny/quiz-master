@@ -40,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
   stepContainer: {
     [theme.breakpoints.up("md")]: { minHeight: "420px" },
   },
+  hostUrl: {
+    wordWrap: "break-word",
+  },
 }));
 
 function getSteps() {
@@ -274,13 +277,13 @@ export default function QuizWizard() {
             <Typography variant="body2" gutterBottom>
               To come back to this quiz later as a Quiz Master, save the
               following link:
-              <div>
-                {quizName ? (
-                  <a data-testid="quiz-master-url" href={getQuizMasterUrl()}>
-                    {getQuizMasterUrl()}
-                  </a>
-                ) : null}
-              </div>
+            </Typography>
+            <Typography className={classes.hostUrl}>
+              {quizName ? (
+                <a data-testid="quiz-master-url" href={getQuizMasterUrl()}>
+                  {getQuizMasterUrl()}
+                </a>
+              ) : null}
             </Typography>
           </Box>
           <div className={classes.buttons}>
