@@ -9,19 +9,18 @@ import { Box, Grid } from "@material-ui/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import Axios from "axios";
 import QuestionInitialiser from "./QuestionInitialiser";
-import QuizQuestion from "../../../Common/QuizQuestion";
 import reducer from "./QuestionReducer";
-import Row from "./Row";
-import Question from "./Question";
+import QuizQuestion from "../../../Common/QuizQuestion";
+import QuestionDisplay from "./QuestionDisplay";
 
 export default function QuestionCreator(props: any) {
   const [dataState, dispatch] = useReducer(reducer, {
     data: [],
   });
-  const [editQAndA, setEditQAndA] = useState<Row>({
-    number: 0,
+  const [editedQuizQuestion, setEditedQuizQuestion] = useState<QuizQuestion>({
     question: "",
     answer: "",
+    number: 0,
   });
   const [currentlyEditing, setCurrentlyEditing] = useState<boolean>(false);
   const [currentlyDeleting, setCurrentlyDeleting] = useState<boolean>(false);
@@ -42,6 +41,7 @@ export default function QuestionCreator(props: any) {
     setQuestionsLoadingInProgress(true);
     Axios.get(`/api/quizzes/${props.quizId}/generatequestions`).then(
       (results) => {
+        console.log("results: ", results);
         dispatch({ type: "set", payload: results.data });
         setQuestionsLoadingInProgress(false);
         setDoneInitialGet(true);
@@ -58,8 +58,9 @@ export default function QuestionCreator(props: any) {
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
-    )
+    ) {
       return;
+    }
     const newData = Array.from(dataState.data);
 
     const changeItemPosition = (arr: Array<any>, from: number, to: number) => {
@@ -88,38 +89,44 @@ export default function QuestionCreator(props: any) {
     dispatch({ type: "delete", payload: dataState.data[i] });
   };
 
-  const resetEditQAndA = () =>
-    setEditQAndA({
-      number: 0,
+  const resetEditedQuizQuestion = () =>
+    setEditedQuizQuestion({
       question: "",
       answer: "",
+      number: 0,
     });
 
   const startEditing = (i: number) => {
-    const { number, question, answer } = dataState.data[i];
+    const { question, answer, number } = dataState.data[i];
     setEditIndex(i);
     setCurrentlyEditing(true);
-    setEditQAndA({ number, question, answer });
+    setEditedQuizQuestion({
+      question,
+      answer,
+      number,
+    });
   };
 
   const stopEditing = () => {
-    if (!editQAndA.question || !editQAndA.answer) return;
+    if (!editedQuizQuestion.question || !editedQuizQuestion.answer) return;
     setEditIndex(-1);
     setCurrentlyEditing(false);
-    dispatch({ type: "update", payload: editQAndA });
-    resetEditQAndA();
+    dispatch({ type: "update", payload: editedQuizQuestion });
+    resetEditedQuizQuestion();
   };
 
   const cancelEdit = () => {
     setEditIndex(-1);
     setCurrentlyEditing(false);
-    resetEditQAndA();
+    resetEditedQuizQuestion();
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
     const { value } = e.currentTarget;
-    if (field === "question") setEditQAndA({ ...editQAndA, question: value });
-    if (field === "answer") setEditQAndA({ ...editQAndA, answer: value });
+    if (field === "question")
+      setEditedQuizQuestion({ ...editedQuizQuestion, question: value });
+    if (field === "answer")
+      setEditedQuizQuestion({ ...editedQuizQuestion, answer: value });
   };
 
   useEffect(() => {
@@ -165,26 +172,28 @@ export default function QuestionCreator(props: any) {
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                 >
-                  {dataState.data.map((x: Row, i: number) => (
-                    <Question
-                      key={x.number}
-                      x={x}
-                      i={i}
-                      editQAndA={editQAndA}
-                      currentlyEditing={currentlyEditing}
-                      currentlyDeleting={currentlyDeleting}
-                      editIndex={editIndex}
-                      deleteIndex={deleteIndex}
-                      setCurrentlyDeleting={setCurrentlyDeleting}
-                      startDeleting={startDeleting}
-                      handleRemove={handleRemove}
-                      resetEditQAndA={resetEditQAndA}
-                      startEditing={startEditing}
-                      stopEditing={stopEditing}
-                      cancelEdit={cancelEdit}
-                      handleChange={handleChange}
-                    />
-                  ))}
+                  {dataState.data.map(
+                    (quizQuestion: QuizQuestion, i: number) => (
+                      <QuestionDisplay
+                        key={quizQuestion.number}
+                        quizQuestion={quizQuestion}
+                        i={i}
+                        editedQuizQuestion={editedQuizQuestion}
+                        currentlyEditing={currentlyEditing}
+                        currentlyDeleting={currentlyDeleting}
+                        editIndex={editIndex}
+                        deleteIndex={deleteIndex}
+                        setCurrentlyDeleting={setCurrentlyDeleting}
+                        startDeleting={startDeleting}
+                        handleRemove={handleRemove}
+                        resetEditedQuizQuestion={resetEditedQuizQuestion}
+                        startEditing={startEditing}
+                        stopEditing={stopEditing}
+                        cancelEdit={cancelEdit}
+                        handleChange={handleChange}
+                      />
+                    ),
+                  )}
                   {provided.placeholder}
                 </Grid>
               )}

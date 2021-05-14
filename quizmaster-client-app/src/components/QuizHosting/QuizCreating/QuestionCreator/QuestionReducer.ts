@@ -1,7 +1,7 @@
-import Row from "./Row";
+import QuizQuestion from "../../../Common/QuizQuestion";
 
 function Reducer(state: any, action: any) {
-  let data: Row[] = [...state.data];
+  let data: QuizQuestion[] = [...state.data];
   switch (action.type) {
     case "add":
       data.push(action.payload);
@@ -21,16 +21,12 @@ function Reducer(state: any, action: any) {
     case "dragAndDrop":
       data = action.payload;
       return { data };
-    case "onChange":
-      data = action.payload;
-      console.log("onChange reducer: ", data);
-      return { data };
     case "delete":
       data = state.data.filter((x: any) => x !== action.payload);
       return { ...state, data };
     case "set":
       data = action.payload;
-      data.sort((n1: Row, n2: Row) => n1.number - n2.number);
+      data.sort((n1: QuizQuestion, n2: QuizQuestion) => n1.number - n2.number);
       return {
         ...state,
         data,
