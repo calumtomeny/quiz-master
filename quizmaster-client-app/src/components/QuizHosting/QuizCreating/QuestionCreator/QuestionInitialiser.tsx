@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {
   Typography,
@@ -29,8 +29,6 @@ export default function QuestionInitialiser(props: any) {
   );
 
   const classes = useStyles();
-
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const onQuestionChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuestion(e.currentTarget.value);
@@ -71,9 +69,6 @@ export default function QuestionInitialiser(props: any) {
   }, [props.questionsLoadingInProgress]);
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
     setIsInvalidQuestion(false);
   }, [question]);
 
@@ -98,7 +93,6 @@ export default function QuestionInitialiser(props: any) {
           fullWidth
           id="question"
           name="question"
-          inputRef={inputRef}
           onChange={onQuestionChange}
           value={question}
           data-testid="question-input"
