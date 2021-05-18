@@ -40,7 +40,6 @@ const QuestionCreator = ({
   const [questionsLoadingInProgress, setQuestionsLoadingInProgress] = useState<
     boolean
   >(false);
-
   const setQuestion = (question: string, answer: string) => {
     dispatch({ type: "add", payload: { question: question, answer: answer } });
   };
