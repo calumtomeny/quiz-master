@@ -1,27 +1,45 @@
-import React, { KeyboardEvent } from "react";
+import React, { ChangeEvent, KeyboardEvent } from "react";
 import { Grid, TextField, Typography } from "@material-ui/core";
+import QuizQuestion from "../../../../Common/QuizQuestion";
 
-export default function Question(props: any) {
+type QuestionProps = {
+  quizQuestion: QuizQuestion;
+  editingRow: boolean;
+  deletingRow: boolean;
+  editedQuizQuestion: QuizQuestion;
+  handleChange: (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: string,
+  ) => void;
+};
+
+const Question = ({
+  quizQuestion,
+  editingRow,
+  deletingRow,
+  editedQuizQuestion,
+  handleChange,
+}: QuestionProps): JSX.Element => {
   const preventEnter = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.keyCode === 13) e.preventDefault();
   };
 
   return (
     <Grid item xs={12}>
-      {props.editingRow ? (
+      {editingRow ? (
         <TextField
           variant="outlined"
           margin="normal"
           size="small"
           multiline
           onKeyDown={(e) => preventEnter(e)}
-          error={!props.editedQuizQuestion.question}
+          error={!editedQuizQuestion.question}
           fullWidth
-          label={!props.editedQuizQuestion.question ? "Required" : "Question"}
-          onChange={(e) => props.handleChange(e, "question")}
-          value={props.editedQuizQuestion.question}
+          label={!editedQuizQuestion.question ? "Required" : "Question"}
+          onChange={(e) => handleChange(e, "question")}
+          value={editedQuizQuestion.question}
         />
-      ) : props.deletingRow ? (
+      ) : deletingRow ? (
         <>
           <Typography variant="body1" color="error">
             Are you sure you want to delete this?
@@ -29,9 +47,11 @@ export default function Question(props: any) {
         </>
       ) : (
         <Typography gutterBottom variant="body1">
-          {props.quizQuestion.question}
+          {quizQuestion.question}
         </Typography>
       )}
     </Grid>
   );
-}
+};
+
+export default Question;

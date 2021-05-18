@@ -1,26 +1,46 @@
+import React, { ChangeEvent } from "react";
 import { TextField, Typography } from "@material-ui/core";
-import React from "react";
+import QuizQuestion from "../../../../Common/QuizQuestion";
 
-export default function Answer(props: any) {
+type AnswerProps = {
+  quizQuestion: QuizQuestion;
+  editingRow: boolean;
+  deletingRow: boolean;
+  editedQuizQuestion: QuizQuestion;
+  handleChange: (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: string,
+  ) => void;
+};
+
+const Answer = ({
+  quizQuestion,
+  editingRow,
+  deletingRow,
+  editedQuizQuestion,
+  handleChange,
+}: AnswerProps): JSX.Element => {
   return (
     <>
-      {props.editingRow ? (
+      {editingRow ? (
         <TextField
           variant="outlined"
           margin="normal"
           size="small"
-          error={!props.editedQuizQuestion.answer}
+          error={!editedQuizQuestion.answer}
           required
           fullWidth
-          label={!props.editedQuizQuestion.answer ? "Required" : "Answer"}
-          onChange={(e) => props.handleChange(e, "answer")}
-          value={props.editedQuizQuestion.answer}
+          label={!editedQuizQuestion.answer ? "Required" : "Answer"}
+          onChange={(e) => handleChange(e, "answer")}
+          value={editedQuizQuestion.answer}
         />
-      ) : props.deletingRow ? (
+      ) : deletingRow ? (
         <></>
       ) : (
-        <Typography variant="body2">{props.quizQuestion.answer}</Typography>
+        <Typography variant="body2">{quizQuestion.answer}</Typography>
       )}
     </>
   );
-}
+};
+
+export default Answer;

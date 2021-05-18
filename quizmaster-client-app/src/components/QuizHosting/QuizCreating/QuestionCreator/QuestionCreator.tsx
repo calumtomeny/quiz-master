@@ -13,10 +13,10 @@ import reducer from "./QuestionReducer";
 import QuizQuestion from "../../../Common/QuizQuestion";
 import QuestionDisplay from "./QuestionDisplay";
 
-interface QuestionCreatorProps {
+type QuestionCreatorProps = {
   quizId: string;
   onQuestionsUpdated: (questionCount: number) => void;
-}
+};
 
 const QuestionCreator = ({
   quizId,
@@ -126,7 +126,10 @@ const QuestionCreator = ({
     resetEditedQuizQuestion();
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: string,
+  ) => {
     const { value } = e.currentTarget;
     if (field === "question")
       setEditedQuizQuestion({ ...editedQuizQuestion, question: value });

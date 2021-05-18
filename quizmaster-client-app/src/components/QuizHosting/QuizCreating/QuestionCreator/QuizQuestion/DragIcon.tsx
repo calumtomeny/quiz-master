@@ -1,3 +1,4 @@
+import React from "react";
 import {
   createStyles,
   Grid,
@@ -7,7 +8,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { DragIndicator } from "@material-ui/icons";
-import React from "react";
+import { DraggableProvided } from "react-beautiful-dnd";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -17,7 +18,12 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function DragIcon(props: any) {
+type DragIconProps = {
+  provided: DraggableProvided;
+  i: number;
+};
+
+const DragIcon = ({ provided, i }: DragIconProps): JSX.Element => {
   const classes = useStyles();
 
   return (
@@ -28,10 +34,12 @@ export default function DragIcon(props: any) {
       justify="space-between"
       alignItems="center"
     >
-      <Icon className={classes.handle} {...props.provided.dragHandleProps}>
+      <Icon className={classes.handle} {...provided.dragHandleProps}>
         <DragIndicator />
       </Icon>
-      <Typography variant="button">{props.i + 1}</Typography>
+      <Typography variant="button">{i + 1}</Typography>
     </Grid>
   );
-}
+};
+
+export default DragIcon;

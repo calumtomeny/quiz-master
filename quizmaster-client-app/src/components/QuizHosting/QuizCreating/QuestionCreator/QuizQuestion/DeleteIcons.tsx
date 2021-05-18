@@ -1,18 +1,32 @@
+import React from "react";
 import { IconButton } from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
-import React from "react";
 
-export default function DeleteIcons(props: any) {
+type DeleteIconsProps = {
+  i: number;
+  handleRemove: (i: number) => void;
+  stopEditing: () => void;
+  resetEditedQuizQuestion: () => void;
+  setCurrentlyDeleting: (currentlyDeleting: boolean) => void;
+};
+
+const DeleteIcons = ({
+  i,
+  handleRemove,
+  stopEditing,
+  resetEditedQuizQuestion,
+  setCurrentlyDeleting,
+}: DeleteIconsProps): JSX.Element => {
   return (
     <>
       <IconButton
         size="small"
         aria-label="Edit"
         onClick={() => {
-          props.handleRemove(props.i);
-          props.stopEditing();
-          props.resetEditedQuizQuestion();
-          props.setCurrentlyDeleting(false);
+          handleRemove(i);
+          stopEditing();
+          resetEditedQuizQuestion();
+          setCurrentlyDeleting(false);
         }}
       >
         <Check />
@@ -21,11 +35,13 @@ export default function DeleteIcons(props: any) {
         size="small"
         aria-label="Edit"
         onClick={() => {
-          props.setCurrentlyDeleting(false);
+          setCurrentlyDeleting(false);
         }}
       >
         <Clear />
       </IconButton>
     </>
   );
-}
+};
+
+export default DeleteIcons;

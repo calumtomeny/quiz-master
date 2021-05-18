@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import {
   Card,
   CardHeader,
@@ -6,7 +6,7 @@ import {
   Grid,
   makeStyles,
 } from "@material-ui/core";
-import { Draggable } from "react-beautiful-dnd";
+import { Draggable, DraggableProvided } from "react-beautiful-dnd";
 import DragIcon from "./QuizQuestion/DragIcon";
 import ModificationIcons from "./QuizQuestion/ModificationIcons";
 import Question from "./QuizQuestion/Question";
@@ -31,7 +31,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function QuestionDisplay(props: {
+type QuestionDisplayProps = {
   quizQuestion: QuizQuestion;
   i: number;
   editedQuizQuestion: QuizQuestion;
@@ -39,67 +39,85 @@ export default function QuestionDisplay(props: {
   currentlyDeleting: boolean;
   editIndex: number;
   deleteIndex: number;
-  setCurrentlyDeleting: any;
-  startDeleting: any;
-  handleRemove: any;
-  resetEditedQuizQuestion: any;
-  startEditing: any;
-  stopEditing: any;
-  cancelEdit: any;
-  handleChange: any;
-}) {
+  setCurrentlyDeleting: (currentlyDeleting: boolean) => void;
+  startDeleting: (i: number) => void;
+  handleRemove: (i: number) => void;
+  resetEditedQuizQuestion: () => void;
+  startEditing: (i: number) => void;
+  stopEditing: () => void;
+  cancelEdit: () => void;
+  handleChange: (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: string,
+  ) => void;
+};
+
+const QuestionDisplay = ({
+  quizQuestion,
+  i,
+  editedQuizQuestion,
+  currentlyEditing,
+  currentlyDeleting,
+  editIndex,
+  deleteIndex,
+  setCurrentlyDeleting,
+  startDeleting,
+  handleRemove,
+  resetEditedQuizQuestion,
+  startEditing,
+  stopEditing,
+  cancelEdit,
+  handleChange,
+}: QuestionDisplayProps): JSX.Element => {
   const classes = useStyles();
 
-  const editingRow = props.currentlyEditing && props.editIndex === props.i;
-  const deletingRow = props.currentlyDeleting && props.deleteIndex === props.i;
+  const editingRow = currentlyEditing && editIndex === i;
+  const deletingRow = currentlyDeleting && deleteIndex === i;
 
   return (
     <Grid container item xs={12}>
-      <Draggable
-        draggableId={props.quizQuestion.number.toString()}
-        index={props.i}
-      >
-        {(provided) => (
+      <Draggable draggableId={quizQuestion.number.toString()} index={i}>
+        {(provided: DraggableProvided) => (
           <Card
             className={classes.root}
-            key={props.quizQuestion.number}
+            key={quizQuestion.number}
             {...provided.draggableProps}
             innerRef={provided.innerRef}
             variant="outlined"
             raised
           >
             <CardHeader
-              avatar={<DragIcon provided={provided} i={props.i} />}
+              avatar={<DragIcon provided={provided} i={i} />}
               title={
                 <Question
-                  quizQuestion={props.quizQuestion}
+                  quizQuestion={quizQuestion}
                   editingRow={editingRow}
                   deletingRow={deletingRow}
-                  editedQuizQuestion={props.editedQuizQuestion}
-                  handleChange={props.handleChange}
+                  editedQuizQuestion={editedQuizQuestion}
+                  handleChange={handleChange}
                 />
               }
               subheader={
                 <Answer
-                  quizQuestion={props.quizQuestion}
+                  quizQuestion={quizQuestion}
                   editingRow={editingRow}
                   deletingRow={deletingRow}
-                  editedQuizQuestion={props.editedQuizQuestion}
-                  handleChange={props.handleChange}
+                  editedQuizQuestion={editedQuizQuestion}
+                  handleChange={handleChange}
                 />
               }
               action={
                 <ModificationIcons
-                  i={props.i}
+                  i={i}
                   editingRow={editingRow}
                   deletingRow={deletingRow}
-                  stopEditing={props.stopEditing}
-                  cancelEdit={props.cancelEdit}
-                  handleRemove={props.handleRemove}
-                  resetEditedQuizQuestion={props.resetEditedQuizQuestion}
-                  setCurrentlyDeleting={props.setCurrentlyDeleting}
-                  startEditing={props.startEditing}
-                  startDeleting={props.startDeleting}
+                  stopEditing={stopEditing}
+                  cancelEdit={cancelEdit}
+                  handleRemove={handleRemove}
+                  resetEditedQuizQuestion={resetEditedQuizQuestion}
+                  setCurrentlyDeleting={setCurrentlyDeleting}
+                  startEditing={startEditing}
+                  startDeleting={startDeleting}
                   classes={classes.action}
                 />
               }
@@ -110,4 +128,6 @@ export default function QuestionDisplay(props: {
       </Draggable>
     </Grid>
   );
-}
+};
+
+export default QuestionDisplay;
