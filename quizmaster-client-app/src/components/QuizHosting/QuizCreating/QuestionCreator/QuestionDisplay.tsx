@@ -53,8 +53,6 @@ export default function QuestionDisplay(props: {
   const editingRow = props.currentlyEditing && props.editIndex === props.i;
   const deletingRow = props.currentlyDeleting && props.deleteIndex === props.i;
 
-  console.log("quizQuestion: ", props.quizQuestion);
-
   return (
     <Grid container item xs={12}>
       <Draggable

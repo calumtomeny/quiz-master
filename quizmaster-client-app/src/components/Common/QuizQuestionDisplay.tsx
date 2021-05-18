@@ -3,6 +3,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import "../QuizHosting/QuizCreating/HostLobby.css";
 import { Paper, LinearProgress } from "@material-ui/core";
+import QuizQuestion from "./QuizQuestion";
 
 const useStyles = makeStyles((theme) => ({
   question: {
@@ -18,29 +19,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function QuizQuestionDisplay(props: any) {
+interface QuizQuestionDisplayProps {
+  quizQuestion: QuizQuestion;
+  timeLeftAsAPercentage: number;
+  totalTimeInSeconds: number;
+}
+
+const QuizQuestionDisplay = ({
+  quizQuestion,
+  timeLeftAsAPercentage,
+  totalTimeInSeconds,
+}: QuizQuestionDisplayProps): JSX.Element => {
   const classes = useStyles();
   return (
     <div>
       <Paper elevation={3} className={classes.question}>
         <Typography component="h1" variant="h5">
-          Question {props.quizQuestion.QuestionNumber}
+          Question {quizQuestion.question}
         </Typography>
-        {props.quizQuestion.Question}
+        {quizQuestion.question}
       </Paper>
       <div className={classes.progressBar}>
-        <LinearProgress
-          variant="determinate"
-          value={props.timeLeftAsAPercentage}
-        />
+        <LinearProgress variant="determinate" value={timeLeftAsAPercentage} />
         <Typography component="h1" variant="h5">
-          {(
-            (props.timeLeftAsAPercentage / 100.0) *
-            props.totalTimeInSeconds
-          ).toFixed(2)}{" "}
+          {((timeLeftAsAPercentage / 100.0) * totalTimeInSeconds).toFixed(2)}{" "}
           seconds remaining
         </Typography>
       </div>
     </div>
   );
-}
+};
+
+export default QuizQuestionDisplay;
