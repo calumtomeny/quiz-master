@@ -16,7 +16,7 @@ const DeleteIcons = ({
   stopEditing,
   resetEditedQuizQuestion,
   setCurrentlyDeleting,
-}: DeleteIconsProps): JSX.Element => {
+}: DeleteIconsProps) => {
   return (
     <>
       <IconButton

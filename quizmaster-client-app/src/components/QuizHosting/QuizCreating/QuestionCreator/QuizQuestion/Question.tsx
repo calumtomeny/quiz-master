@@ -19,7 +19,7 @@ const Question = ({
   deletingRow,
   editedQuizQuestion,
   handleChange,
-}: QuestionProps): JSX.Element => {
+}: QuestionProps) => {
   const preventEnter = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.keyCode === 13) e.preventDefault();
   };

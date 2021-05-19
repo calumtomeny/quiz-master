@@ -12,7 +12,7 @@ const DefaultIcons = ({
   i,
   startEditing,
   startDeleting,
-}: DefaultIconsProps): JSX.Element => {
+}: DefaultIconsProps) => {
   return (
     <>
       <IconButton

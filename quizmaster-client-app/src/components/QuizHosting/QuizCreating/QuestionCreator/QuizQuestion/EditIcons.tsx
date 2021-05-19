@@ -7,10 +7,7 @@ type EditIconsProps = {
   cancelEdit: () => void;
 };
 
-const EditIcons = ({
-  stopEditing,
-  cancelEdit,
-}: EditIconsProps): JSX.Element => {
+const EditIcons = ({ stopEditing, cancelEdit }: EditIconsProps) => {
   return (
     <>
       <IconButton size="small" aria-label="Edit" onClick={() => stopEditing()}>

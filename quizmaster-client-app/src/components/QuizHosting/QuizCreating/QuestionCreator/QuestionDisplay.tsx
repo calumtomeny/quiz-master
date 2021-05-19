@@ -68,7 +68,7 @@ const QuestionDisplay = ({
   stopEditing,
   cancelEdit,
   handleChange,
-}: QuestionDisplayProps): JSX.Element => {
+}: QuestionDisplayProps) => {
   const classes = useStyles();
 
   const editingRow = currentlyEditing && editIndex === i;

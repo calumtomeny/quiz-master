@@ -30,7 +30,7 @@ const ModificationIcons = ({
   startEditing,
   startDeleting,
   classes,
-}: ModificationIconsProps): JSX.Element => {
+}: ModificationIconsProps) => {
   return (
     <Grid
       container

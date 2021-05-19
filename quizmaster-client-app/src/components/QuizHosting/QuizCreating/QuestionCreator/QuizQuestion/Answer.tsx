@@ -19,7 +19,7 @@ const Answer = ({
   deletingRow,
   editedQuizQuestion,
   handleChange,
-}: AnswerProps): JSX.Element => {
+}: AnswerProps) => {
   return (
     <>
       {editingRow ? (

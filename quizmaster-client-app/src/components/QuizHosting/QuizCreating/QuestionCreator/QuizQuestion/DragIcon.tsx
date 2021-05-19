@@ -23,7 +23,7 @@ type DragIconProps = {
   i: number;
 };
 
-const DragIcon = ({ provided, i }: DragIconProps): JSX.Element => {
+const DragIcon = ({ provided, i }: DragIconProps) => {
   const classes = useStyles();
 
   return (
