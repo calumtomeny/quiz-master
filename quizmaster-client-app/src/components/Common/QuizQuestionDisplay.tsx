@@ -29,15 +29,14 @@ const QuizQuestionDisplay = ({
   quizQuestion,
   timeLeftAsAPercentage,
   totalTimeInSeconds,
-}: QuizQuestionDisplayProps): JSX.Element => {
+}: QuizQuestionDisplayProps) => {
   const classes = useStyles();
   return (
     <div>
       <Paper elevation={3} className={classes.question}>
         <Typography component="h1" variant="h5">
-          Question {quizQuestion.question}
+          {quizQuestion.question}
         </Typography>
-        {quizQuestion.question}
       </Paper>
       <div className={classes.progressBar}>
         <LinearProgress variant="determinate" value={timeLeftAsAPercentage} />
