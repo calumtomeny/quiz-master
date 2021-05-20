@@ -79,9 +79,7 @@ export default function QuizHoster() {
   const isFinalQuestion = () => currentQuestionNumber === quizQuestions.length;
 
   const getQuizQuestion = (questionNumber: number) => {
-    const question = quizQuestions.find(
-      (x) => x.QuestionNumber === questionNumber,
-    );
+    const question = quizQuestions.find((x) => x.number === questionNumber);
     return question;
   };
 
@@ -100,7 +98,9 @@ export default function QuizHoster() {
     scores: ContestantAnswerScore[],
     contestantId: string,
   ): number {
-    return scores.find((x) => x.ContestantId == contestantId)?.BonusPoints ?? 0;
+    return (
+      scores.find((x) => x.ContestantId === contestantId)?.BonusPoints ?? 0
+    );
   }
 
   //---------------------------------------------------------------------------
@@ -146,9 +146,9 @@ export default function QuizHoster() {
     const quizQuestion = getQuizQuestion(currentQuestionNumber);
     const message: QuizMasterMessage = {
       state: QuizState.QuestionInProgress,
-      question: quizQuestion?.Question ?? "",
+      question: quizQuestion?.question ?? "",
       answer: "",
-      questionNumber: quizQuestion?.QuestionNumber ?? 1,
+      questionNumber: quizQuestion?.number ?? 1,
       kick: false,
       standings: [],
       questionTimeInSeconds: totalTimeInSeconds,
@@ -510,7 +510,7 @@ export default function QuizHoster() {
                   totalTimeInSeconds={totalTimeInSeconds}
                 />
                 <Typography component="h1" variant="h5">
-                  Answer: {currentQuizQuestion.Answer}
+                  Answer: {currentQuizQuestion.answer}
                 </Typography>
               </>
             ) : currentQuizState === QuizState.NextQuestionReady ? (
@@ -532,7 +532,7 @@ export default function QuizHoster() {
                   {showQuizMarker ? (
                     <QuestionMarker
                       rows={answers}
-                      answer={currentQuizQuestion.Answer ?? ""}
+                      answer={currentQuizQuestion.answer ?? ""}
                       onAcceptAnswers={onAcceptAnswers}
                       showContinueAction={roundIsComplete()}
                     />
