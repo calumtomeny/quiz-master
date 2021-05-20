@@ -6,14 +6,22 @@ import React, {
   ChangeEvent,
 } from "react";
 import { Box, Grid } from "@material-ui/core";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import Axios from "axios";
 import QuestionInitialiser from "./QuestionInitialiser";
 import reducer from "./QuestionReducer";
 import QuizQuestion from "../../../Common/QuizQuestion";
 import QuestionDisplay from "./QuestionDisplay";
 
-export default function QuestionCreator(props: any) {
+type QuestionCreatorProps = {
+  quizId: string;
+  onQuestionsUpdated: (questionCount: number) => void;
+};
+
+const QuestionCreator = ({
+  quizId,
+  onQuestionsUpdated,
+}: QuestionCreatorProps) => {
   const [dataState, dispatch] = useReducer(reducer, {
     data: [],
   });
@@ -29,9 +37,9 @@ export default function QuestionCreator(props: any) {
   const [doneInitialGet, setDoneInitialGet] = useState<boolean>(false);
   const isFirstRun = useRef(true);
   const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
-  const [questionsLoadingInProgress, setQuestionsLoadingInProgress] = useState(
-    false,
-  );
+  const [questionsLoadingInProgress, setQuestionsLoadingInProgress] = useState<
+    boolean
+  >(false);
 
   const setQuestion = (question: string, answer: string) => {
     dispatch({ type: "add", payload: { question: question, answer: answer } });
@@ -39,18 +47,16 @@ export default function QuestionCreator(props: any) {
 
   const createTenQuestions = () => {
     setQuestionsLoadingInProgress(true);
-    Axios.get(`/api/quizzes/${props.quizId}/generatequestions`).then(
-      (results) => {
-        console.log("results: ", results);
-        dispatch({ type: "set", payload: results.data });
-        setQuestionsLoadingInProgress(false);
-        setDoneInitialGet(true);
-        setIsInitialQuestion(false);
-      },
-    );
+    Axios.get(`/api/quizzes/${quizId}/generatequestions`).then((results) => {
+      dispatch({ type: "set", payload: results.data });
+      setQuestionsLoadingInProgress(false);
+      setDoneInitialGet(true);
+      setIsInitialQuestion(false);
+    });
   };
 
-  const onDragEnd = (res: any) => {
+  const onDragEnd = (res: DropResult) => {
+    console.log("res: ", res, "typeof: ", typeof res);
     const { destination, source } = res;
     // if dropped outside table:
     if (!destination) return;
@@ -121,7 +127,10 @@ export default function QuestionCreator(props: any) {
     resetEditedQuizQuestion();
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: string,
+  ) => {
     const { value } = e.currentTarget;
     if (field === "question")
       setEditedQuizQuestion({ ...editedQuizQuestion, question: value });
@@ -130,28 +139,31 @@ export default function QuestionCreator(props: any) {
   };
 
   useEffect(() => {
-    props.onQuestionsUpdated(dataState.data.length);
-  }, [dataState, props]);
+    onQuestionsUpdated(dataState.data.length);
+    // check the dependancy array doesn't need all props:
+    // the previous code included 'props' (i.e. all props)
+    // as well as dataState
+  }, [dataState]);
 
   useEffect(() => {
-    Axios.get(`/api/quizzes/${props.quizId}/questions`).then((results) => {
+    Axios.get(`/api/quizzes/${quizId}/questions`).then((results) => {
       dispatch({ type: "set", payload: results.data });
       setDoneInitialGet(true);
       setIsInitialQuestion(results.data.length === 0);
     });
-  }, [props.quizId]);
+  }, [quizId]);
 
   useEffect(() => {
     if (!isFirstRun.current && doneInitialGet && dataState.data.length) {
       Axios.post(
-        `/api/quizzes/${props.quizId}/questions`,
+        `/api/quizzes/${quizId}/questions`,
         dataState.data.map(
           (x: any) => new QuizQuestion(x.question, x.answer, x.number),
         ),
       );
     }
     isFirstRun.current = false;
-  }, [dataState, doneInitialGet, props.quizId]);
+  }, [dataState, doneInitialGet, quizId]);
 
   return (
     <>
@@ -205,4 +217,6 @@ export default function QuestionCreator(props: any) {
       </Box>
     </>
   );
-}
+};
+
+export default QuestionCreator;

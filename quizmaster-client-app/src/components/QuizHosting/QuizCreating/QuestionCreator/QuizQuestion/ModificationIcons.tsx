@@ -4,7 +4,33 @@ import DefaultIcons from "./DefaultIcons";
 import DeleteIcons from "./DeleteIcons";
 import EditIcons from "./EditIcons";
 
-export default function ModificationIcons(props: any) {
+type ModificationIconsProps = {
+  i: number;
+  editingRow: boolean;
+  deletingRow: boolean;
+  stopEditing: () => void;
+  cancelEdit: () => void;
+  handleRemove: (i: number) => void;
+  resetEditedQuizQuestion: () => void;
+  setCurrentlyDeleting: (currentlyDeleting: boolean) => void;
+  startEditing: (i: number) => void;
+  startDeleting: (i: number) => void;
+  classes?: any;
+};
+
+const ModificationIcons = ({
+  i,
+  editingRow,
+  deletingRow,
+  stopEditing,
+  cancelEdit,
+  handleRemove,
+  resetEditedQuizQuestion,
+  setCurrentlyDeleting,
+  startEditing,
+  startDeleting,
+  classes,
+}: ModificationIconsProps) => {
   return (
     <Grid
       container
@@ -13,28 +39,27 @@ export default function ModificationIcons(props: any) {
       direction="column"
       justify="space-between"
       alignItems="center"
-      className={props.classes}
+      className={classes}
     >
-      {props.editingRow ? (
-        <EditIcons
-          stopEditing={props.stopEditing}
-          cancelEdit={props.cancelEdit}
-        />
-      ) : props.deletingRow ? (
+      {editingRow ? (
+        <EditIcons stopEditing={stopEditing} cancelEdit={cancelEdit} />
+      ) : deletingRow ? (
         <DeleteIcons
-          i={props.i}
-          handleRemove={props.handleRemove}
-          stopEditing={props.stopEditing}
-          resetEditedQuizQuestion={props.resetEditedQuizQuestion}
-          setCurrentlyDeleting={props.setCurrentlyDeleting}
+          i={i}
+          handleRemove={handleRemove}
+          stopEditing={stopEditing}
+          resetEditedQuizQuestion={resetEditedQuizQuestion}
+          setCurrentlyDeleting={setCurrentlyDeleting}
         />
       ) : (
         <DefaultIcons
-          i={props.i}
-          startEditing={props.startEditing}
-          startDeleting={props.startDeleting}
+          i={i}
+          startEditing={startEditing}
+          startDeleting={startDeleting}
         />
       )}
     </Grid>
   );
-}
+};
+
+export default ModificationIcons;
