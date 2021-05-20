@@ -55,6 +55,7 @@ namespace QuizMaster.Application.Quizzes
             public long TimeRemainingMs { get; set; }
             public float TimeRemainingPerc { get; set; }
             public List<Contestant> ContestantScores { get; set; }
+            public int QuestionTimeInSeconds { get; set; }
         }
 
         public class QuizMasterQuizDetails
@@ -67,6 +68,7 @@ namespace QuizMaster.Application.Quizzes
             public long? CurrentQuestionStartTime { get; set; }
             public string CurrentQuestion { get; set; }
             public List<ContestantAnswer> CurrentContestantAnswers { get; set; }
+            public int QuestionTimeInSeconds { get; set; }
         }
 
         public class QuizStateValues
@@ -147,6 +149,7 @@ namespace QuizMaster.Application.Quizzes
                         TimeRemainingMs = timeRemainingMs,
                         TimeRemainingPerc = timeRemainingPerc,
                         ContestantScores = allContestants,
+                        QuestionTimeInSeconds = quiz.QuestionTimeInSeconds,
                     };
                 }
             }
@@ -191,6 +194,7 @@ namespace QuizMaster.Application.Quizzes
                         CurrentQuestionStartTime = quiz.QuestionStartTime,
                         CurrentQuestion = questionText,
                         CurrentContestantAnswers = contestantAnswers,
+                        QuestionTimeInSeconds = quiz.QuestionTimeInSeconds,
                     };
                 }
             }

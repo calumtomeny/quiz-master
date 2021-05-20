@@ -51,7 +51,6 @@ export default function QuizHoster() {
   const [showQuizMarker, setShowQuizMarker] = useState<boolean>(true);
   const [answers, setAnswers] = useState<Data[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
-  const settingsTotalTimeInSeconds = 90;
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
   const [questionStartTime, setQuestionStartTime] = useState<number>(0);
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState<number>(1);
@@ -88,7 +87,7 @@ export default function QuizHoster() {
 
   const roundIsComplete = () =>
     (timeLeftAsAPercentage === 0 || answers.length === contestants.length) &&
-    answers.length > 0;
+    contestants.length > 0;
 
   function getContestantScoreForRound(
     scores: ContestantAnswerScore[],
@@ -152,10 +151,10 @@ export default function QuizHoster() {
       questionNumber: quizQuestion?.QuestionNumber ?? 1,
       kick: false,
       standings: [],
+      questionTimeInSeconds: totalTimeInSeconds,
     };
 
     axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
-    setTotalTimeInSeconds(settingsTotalTimeInSeconds);
     setQuestionStartTime(Date.now());
     setTimeLeftAsAPercentage(100);
   };
@@ -168,6 +167,7 @@ export default function QuizHoster() {
       questionNumber: currentQuestionNumber + 1,
       kick: false,
       standings: [],
+      questionTimeInSeconds: totalTimeInSeconds,
     };
 
     axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
@@ -181,6 +181,7 @@ export default function QuizHoster() {
       questionNumber: 0,
       kick: false,
       standings: [],
+      questionTimeInSeconds: totalTimeInSeconds,
     };
 
     axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
@@ -208,6 +209,7 @@ export default function QuizHoster() {
         questionNumber: 0,
         kick: false,
         standings: contestants,
+        questionTimeInSeconds: totalTimeInSeconds,
       };
       await updateQuizStateFinished();
       axios
@@ -357,7 +359,7 @@ export default function QuizHoster() {
     let contestantsList: Contestant[] = [];
     axios.get(`/api/quizzes/${id}/details`).then((res) => {
       setQuizName(res.data.quizName);
-      setTotalTimeInSeconds(settingsTotalTimeInSeconds);
+      setTotalTimeInSeconds(res.data.questionTimeInSeconds);
 
       contestantsList = res.data.contestants.map((contestant: any) => {
         return {
@@ -408,6 +410,7 @@ export default function QuizHoster() {
           questionNumber: 1,
           kick: false,
           standings: [],
+          questionTimeInSeconds: totalTimeInSeconds,
         };
         axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
       } else if (res.data.quizState === QuizState.QuestionInProgress) {

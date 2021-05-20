@@ -15,6 +15,7 @@ namespace QuizMaster.Domain
             this.State = QuizState.QuizNotStarted;
             this.QuestionNo = 0;
             this.QuestionStartTime = 0;
+            this.QuestionTimeInSeconds = 30;
         }
 
         public Quiz(Guid id, String name, String code)
@@ -32,6 +33,7 @@ namespace QuizMaster.Domain
         public long QuestionStartTime { get; set; }
         public List<Contestant> Contestants { get; set; }
         public List<QuizQuestion> QuizQuestions { get; set; }
+        public int QuestionTimeInSeconds { get; set; }
 
         static string GenerateCode()
         {

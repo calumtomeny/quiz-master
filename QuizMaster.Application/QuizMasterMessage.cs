@@ -11,5 +11,6 @@ namespace QuizMaster.Application
         public int QuestionNumber { get; set; }
         public bool Kick { get; set; }
         public List<ContestantScore> Standings { get; set; }
+        public int QuestionTimeInSeconds { get; set; }
     }
 }

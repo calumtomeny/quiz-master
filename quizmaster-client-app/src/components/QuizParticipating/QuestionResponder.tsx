@@ -66,7 +66,6 @@ export default function QuestionResponder() {
   const { id } = useParams<{ id: string }>();
   const [participantId, setParticipantId] = useState<string>("");
   const [startTime, setStartTime] = useState<number>(0);
-  const settingsTotalTimeInSeconds = 90;
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
   const [answerSubmitted, setAnswerSubmitted] = useState<boolean>(false);
   const [kicked, setKicked] = useState<boolean>(false);
@@ -157,11 +156,11 @@ export default function QuestionResponder() {
         setPageLoading(false);
         setQuizName(res.data.quizName);
         setQuestionNo(res.data.questionNo);
+        setTotalTimeInSeconds(res.data.questionTimeInSeconds);
         if (res.data.quizState === QuizState.QuestionInProgress) {
           setQuizQuestion(
             new QuizQuestion(res.data.question, "", res.data.questionNo),
           );
-          setTotalTimeInSeconds(settingsTotalTimeInSeconds);
           setStartTime(res.data.questionStartTime);
           if (res.data.answer !== "") {
             setAnswerSubmitted(true);
@@ -233,7 +232,7 @@ export default function QuestionResponder() {
               ),
             );
             setQuestionNo(message.questionNumber);
-            setTotalTimeInSeconds(settingsTotalTimeInSeconds);
+            setTotalTimeInSeconds(message.questionTimeInSeconds);
             setStartTime(Date.now());
             setAnswerSubmitted(false);
             setTimeLeftAsAPercentage(100);
