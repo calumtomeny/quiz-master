@@ -59,14 +59,28 @@ namespace QuizMaster.Application.Quizzes
                 {
                     var answers = quiz.Contestants.Select(x =>
                     {
-                        var contestantAnswer = question.ContestantAnswers.Single(c => c.ContestantId == x.Id);
-                        return new ContestantResponse
+                        var contestantAnswer = question.ContestantAnswers.SingleOrDefault(c => c.ContestantId == x.Id);
+                        if (contestantAnswer == null)
                         {
-                            Name = x.Name,
-                            Answer = contestantAnswer.Answer,
-                            AnsweredCorrectly = contestantAnswer.Correct,
-                            AnsweredCorrectlyFastest = contestantAnswer.Fastest,
-                        };
+                            return new ContestantResponse
+                            {
+                                Name = x.Name,
+                                Answer = "",
+                                AnsweredCorrectly = false,
+                                AnsweredCorrectlyFastest = false,
+                            };
+                        }
+                        else
+                        {
+                            return new ContestantResponse
+                            {
+                                Name = x.Name,
+                                Answer = contestantAnswer.Answer,
+                                AnsweredCorrectly = contestantAnswer.Correct,
+                                AnsweredCorrectlyFastest = contestantAnswer.Fastest,
+                            };
+                        }
+
                     });
                     questionSummaries.Add(
                         new QuestionSummary
