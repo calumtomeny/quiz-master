@@ -2,7 +2,7 @@ import React from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
 import "./Layout.css";
-import { Paper, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import Header from "../../components/Common/Header";
 
 const useStyles = makeStyles((theme) => ({
@@ -20,7 +20,7 @@ export default function Layout(props: any) {
   return (
     <div>
       <Header />
-      <Container component={Paper} maxWidth="md">
+      <Container maxWidth="md">
         <CssBaseline />
         <div className={classes.paper}>{props.children}</div>
       </Container>

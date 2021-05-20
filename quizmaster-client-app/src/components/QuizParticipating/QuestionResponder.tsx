@@ -57,7 +57,9 @@ export default function QuestionResponder() {
   const classes = useStyles();
   const [quizName, setQuizName] = useState<string>("");
   const [answer, setAnswer] = useState<string>("");
-  const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>();
+  const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>(
+    new QuizQuestion("", "", 0),
+  );
   const [isAnswerRequired, setIsAnswerRequired] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(0);
@@ -226,6 +228,7 @@ export default function QuestionResponder() {
             setQuizState(message.state);
           } else {
             setQuizQuestion(
+              // make sure the type is correct here
               new QuizQuestion(
                 message.question,
                 message.answer,
