@@ -1,24 +1,36 @@
+import React from "react";
 import { IconButton } from "@material-ui/core";
 import { Delete, Edit } from "@material-ui/icons";
-import React from "react";
 
-export default function DefaultIcons(props: any) {
+type DefaultIconsProps = {
+  i: number;
+  startEditing: (i: number) => void;
+  startDeleting: (i: number) => void;
+};
+
+const DefaultIcons = ({
+  i,
+  startEditing,
+  startDeleting,
+}: DefaultIconsProps) => {
   return (
     <>
       <IconButton
         size="small"
         aria-label="Edit"
-        onClick={() => props.startEditing(props.i)}
+        onClick={() => startEditing(i)}
       >
         <Edit />
       </IconButton>
       <IconButton
         size="small"
         aria-label="Delete"
-        onClick={() => props.startDeleting(props.i)}
+        onClick={() => startDeleting(i)}
       >
         <Delete />
       </IconButton>
     </>
   );
-}
+};
+
+export default DefaultIcons;

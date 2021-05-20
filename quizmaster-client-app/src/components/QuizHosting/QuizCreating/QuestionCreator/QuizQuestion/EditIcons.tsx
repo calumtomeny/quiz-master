@@ -1,24 +1,23 @@
+import React from "react";
 import { IconButton } from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
-import React from "react";
 
-export default function EditIcons(props: any) {
+type EditIconsProps = {
+  stopEditing: () => void;
+  cancelEdit: () => void;
+};
+
+const EditIcons = ({ stopEditing, cancelEdit }: EditIconsProps) => {
   return (
     <>
-      <IconButton
-        size="small"
-        aria-label="Edit"
-        onClick={() => props.stopEditing()}
-      >
+      <IconButton size="small" aria-label="Edit" onClick={() => stopEditing()}>
         <Check />
       </IconButton>
-      <IconButton
-        size="small"
-        aria-label="Edit"
-        onClick={() => props.cancelEdit()}
-      >
+      <IconButton size="small" aria-label="Edit" onClick={() => cancelEdit()}>
         <Clear />
       </IconButton>
     </>
   );
-}
+};
+
+export default EditIcons;
