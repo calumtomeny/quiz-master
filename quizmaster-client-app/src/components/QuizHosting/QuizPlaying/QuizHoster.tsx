@@ -46,9 +46,15 @@ export default function QuizHoster() {
   const classes = useStyles();
   const history = useHistory();
   const [quizName, setQuizName] = useState<string>("");
-  const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(0);
+  const [timeLeftAsAPercentage, setTimeLeftAsAPercentage] = useState<number>(
+    -1,
+  );
   const [contestants, setContestants] = useState<Contestant[]>([]);
   const [showQuizMarker, setShowQuizMarker] = useState<boolean>(true);
+  /**
+   *  Feature needs to compare the contestants state ids and the answers state ids and
+   *  determing who isn't included
+   */
   const [answers, setAnswers] = useState<Data[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(0);
@@ -60,6 +66,11 @@ export default function QuizHoster() {
   const [currentQuizState, setCurrentQuizState] = useState<QuizState>(
     QuizState.QuizNotStarted,
   );
+  // console.log(
+  //   "question ended point?: ",
+  //   timeLeftAsAPercentage === 0 &&
+  //     currentQuizState === QuizState.QuestionInProgress,
+  // );
   const [finalQuestionCompleted, setFinalQuestionCompleted] = useState<boolean>(
     false,
   );
@@ -86,6 +97,25 @@ export default function QuizHoster() {
   const roundIsComplete = () =>
     (timeLeftAsAPercentage === 0 || answers.length === contestants.length) &&
     contestants.length > 0;
+
+  const getContestantsWhoFailedToAnswer = () => {
+    const missingContestants: Array<Contestant> = contestants.filter(
+      (contestant) => !answers.some((answer) => answer.id === contestant.id),
+    );
+
+    const missingAnswers: Array<QuestionResponse> = missingContestants.map(
+      (contestant) => {
+        return {
+          answer: "",
+          id: contestant.id,
+          name: contestant.name,
+          answerTimeLeftAsAPercentage: 0,
+        };
+      },
+    );
+
+    setAnswers((answers) => [...answers, ...missingAnswers]);
+  };
 
   function getContestantScoreForRound(
     scores: ContestantAnswerScore[],
@@ -336,12 +366,15 @@ export default function QuizHoster() {
           const increment =
             (100 * (Date.now() - questionStartTime)) /
             (totalTimeInSeconds * 1000);
+          // console.log("inital timer: ", Math.max(100 - increment, 0));
           return Math.max(100 - increment, 0);
         });
       }
     }
 
     const timer = setInterval(progress, interval);
+
+    if (roundIsComplete()) getContestantsWhoFailedToAnswer();
 
     return () => {
       clearInterval(timer);
@@ -414,6 +447,7 @@ export default function QuizHoster() {
         };
         axios.post(`/api/quizzes/${id}/command/quizmastermessage`, message);
       } else if (res.data.quizState === QuizState.QuestionInProgress) {
+        // Need to introduce non-answer contestants here:
         setShowQuizMarker(true);
         setAnswers(() =>
           res.data.currentContestantAnswers.map((x: any) => {
@@ -465,6 +499,7 @@ export default function QuizHoster() {
           });
 
         hubConnect.on("QuizMasterUpdate", (message: ParticipantMessage) => {
+          // Is this where the Host collects the contestants answers?
           setAnswers((answers) => [
             ...answers,
             {
@@ -542,6 +577,7 @@ export default function QuizHoster() {
                       variant="contained"
                       color="primary"
                       className={classes.nextQuestion}
+                      // onClick
                       onClick={onGoToNextQuestion}
                     >
                       {currentQuizState === QuizState.ResultsReady
