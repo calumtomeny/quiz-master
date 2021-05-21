@@ -8,6 +8,7 @@ interface QuizMasterMessage {
   questionNumber: number;
   kick: boolean;
   standings: Contestant[];
+  questionTimeInSeconds: number;
 }
 
 export default QuizMasterMessage;

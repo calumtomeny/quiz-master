@@ -17,6 +17,7 @@ import { Alert } from "@material-ui/lab";
 import QuizState from "../../Common/QuizState";
 import ResetQuizModal from "./ResetQuizModal";
 import StartQuizModal from "./StartQuizModal";
+import QuizOptions from "./QuizOptions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,11 +77,15 @@ export default function QuizWizard() {
   const [resetSuccessOpen, setResetSuccessOpen] = useState<boolean>(false);
   const [startQuizAlertOpen, setStartQuizAlertOpen] = useState<boolean>(false);
   const [contestantsArrived, setContestantsArrived] = useState<boolean>(false);
+  const [questionTimeInSeconds, setQuestionTimeInSeconds] = useState<number>(
+    10,
+  );
 
   useEffect(() => {
     axios.get(`/api/quizzes/${id}`).then((res) => {
       setQuizCode(res.data.code);
       setQuizName(res.data.name);
+      setQuestionTimeInSeconds(res.data.questionTimeInSeconds);
     });
   }, [id]);
 
@@ -99,6 +104,10 @@ export default function QuizWizard() {
     }
   };
 
+  const onUpdateQuestionTime = (seconds: number) => {
+    setQuestionTimeInSeconds(seconds);
+  };
+
   const getStepContent = () => {
     return activeStep === 0 ? (
       <div className={classes.stepContainer}>
@@ -108,7 +117,12 @@ export default function QuizWizard() {
         />
       </div>
     ) : activeStep === 1 ? (
-      <div className={classes.stepContainer}>No options yet.</div>
+      <div className={classes.stepContainer}>
+        <QuizOptions
+          questionTimeInSeconds={questionTimeInSeconds}
+          onUpdateQuestionTime={onUpdateQuestionTime}
+        />
+      </div>
     ) : (
       <div className={classes.stepContainer}>
         <HostLobby
