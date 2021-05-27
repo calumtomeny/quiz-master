@@ -124,7 +124,7 @@ export default function QuizOptions(props: {
                     reject();
                     return;
                   } else if (
-                    !secondsStr.match(/\d+/) ||
+                    !secondsStr.match(/^\d+$/) ||
                     parseInt(secondsStr) < 5 ||
                     parseInt(secondsStr) > 300
                   ) {
