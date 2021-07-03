@@ -21,7 +21,7 @@ const useStyles = makeStyles({
 export default function QuestionInitialiser(props: any) {
   const [question, setQuestion] = useState<string>("");
   const [answer, setAnswer] = useState<string>("");
-  const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(true);
+  const [isInitialQuestion, setIsInitialQuestion] = useState<boolean>(false);
   const [isInvalidQuestion, setIsInvalidQuestion] = useState(false);
   const [isInvalidAnswer, setIsInvalidAnswer] = useState(false);
   const [questionsLoadingInProgress, setQuestionsLoadingInProgress] = useState(
@@ -39,7 +39,6 @@ export default function QuestionInitialiser(props: any) {
   const onCreateTenQuestions = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     props.onCreateTenQuestions();
-    setIsInitialQuestion(false);
   };
 
   const onQuestionSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -62,7 +61,7 @@ export default function QuestionInitialiser(props: any) {
 
   useEffect(() => {
     setIsInitialQuestion(props.isInitialQuestion);
-  }, []);
+  }, [props.isInitialQuestion]);
 
   useEffect(() => {
     setQuestionsLoadingInProgress(props.questionsLoadingInProgress);
