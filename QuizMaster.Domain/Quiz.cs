@@ -37,10 +37,17 @@ namespace QuizMaster.Domain
 
         static string GenerateCode()
         {
-            // Taken from: https://stackoverflow.com/a/41723783/193717
-            var ticks = new DateTime(2016, 1, 1).Ticks;
-            var ans = DateTime.Now.Ticks - ticks;
-            var uniqueId = ans.ToString("x");
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            var length = 4;
+            var stringChars = new char[length];
+            var random = new Random();
+
+            for (int i = 0; i < length; i++)
+            {
+                stringChars[i] = chars[random.Next(chars.Length)];
+            }
+
+            var uniqueId = new String(stringChars);
             return uniqueId;
         }
 
@@ -55,3 +62,4 @@ namespace QuizMaster.Domain
         }
     }
 }
+

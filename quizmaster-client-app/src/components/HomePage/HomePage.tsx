@@ -113,7 +113,7 @@ function HomePage() {
   const onQuizNameChange = (e: ChangeEvent<HTMLInputElement>) =>
     setQuizName(e.currentTarget.value);
   const onQuizCodeChange = (e: ChangeEvent<HTMLInputElement>) =>
-    setQuizCode(e.currentTarget.value);
+    setQuizCode(e.currentTarget.value.toUpperCase());
 
   return (
     <div>
