@@ -12,6 +12,7 @@ import QuestionInitialiser from "./QuestionInitialiser";
 import reducer from "./QuestionReducer";
 import QuizQuestion from "../../../Common/QuizQuestion";
 import QuestionDisplay from "./QuestionDisplay";
+import GenerateQuestionsModal from "./GenerateQuestionsModal";
 
 type QuestionCreatorProps = {
   quizId: string;
@@ -40,12 +41,24 @@ const QuestionCreator = ({
   const [questionsLoadingInProgress, setQuestionsLoadingInProgress] = useState<
     boolean
   >(false);
+  const [generateQuestionsAlertOpen, setGenerateQuestionsAlertOpen] = useState<
+    boolean
+  >(false);
 
   const setQuestion = (question: string, answer: string) => {
     dispatch({ type: "add", payload: { question: question, answer: answer } });
   };
 
-  const createTenQuestions = () => {
+  const handleGenerateQuestionsAlertClose = () => {
+    setGenerateQuestionsAlertOpen(false);
+  };
+
+  const handleCancelGenerateQuestions = () => {
+    setGenerateQuestionsAlertOpen(false);
+  };
+
+  const handleConfirmGenerateQuestions = () => {
+    setGenerateQuestionsAlertOpen(false);
     setQuestionsLoadingInProgress(true);
     Axios.get(`/api/quizzes/${quizId}/generatequestions`).then((results) => {
       dispatch({ type: "set", payload: results.data });
@@ -53,6 +66,10 @@ const QuestionCreator = ({
       setDoneInitialGet(true);
       setIsInitialQuestion(false);
     });
+  };
+
+  const createTenQuestions = () => {
+    setGenerateQuestionsAlertOpen(true);
   };
 
   const onDragEnd = (res: DropResult) => {
@@ -215,6 +232,12 @@ const QuestionCreator = ({
           <></>
         )}
       </Box>
+      <GenerateQuestionsModal
+        open={generateQuestionsAlertOpen}
+        onClose={handleGenerateQuestionsAlertClose}
+        handleCancelStart={handleCancelGenerateQuestions}
+        handleConfirmStart={handleConfirmGenerateQuestions}
+      />
     </>
   );
 };
