@@ -32,7 +32,7 @@ export default function GenerateQuestionsModal(props: any) {
         <DialogContentText id="alert-dialog-description">
           WARNING: These questions were automatically sourced from the web and
           can sometimes be inaccurate and of poor quality. They can also be
-          opinionated and culturally baised and these questions do not represent
+          opinionated and culturally biased and these questions do not represent
           the views of Quiz.Coffee.
           <br />
           We recommend curating the questions in your quiz or better still, come
