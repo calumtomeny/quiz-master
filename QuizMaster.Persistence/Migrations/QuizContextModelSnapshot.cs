@@ -103,6 +103,19 @@ namespace QuizMaster.Persistence.Migrations
                     b.ToTable("ExampleQuestions");
                 });
 
+            modelBuilder.Entity("QuizMaster.Domain.GeneralSetting", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Name");
+
+                    b.ToTable("GeneralSettings");
+                });
+
             modelBuilder.Entity("QuizMaster.Domain.Quiz", b =>
                 {
                     b.Property<Guid>("Id")
@@ -110,6 +123,9 @@ namespace QuizMaster.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Code")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreationDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Key")
