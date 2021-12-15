@@ -33,6 +33,7 @@ namespace QuizMaster.Api
 
             services.AddScoped<ApiKeyAuthAttribute>();
             services.AddScoped<ContestantsApiKeyAuthAttribute>();
+            services.AddScoped<AdminApiKeyAuthAttribute>();
 
             services.AddControllers();
             services.AddSignalR();

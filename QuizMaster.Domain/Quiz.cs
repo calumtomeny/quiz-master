@@ -16,6 +16,7 @@ namespace QuizMaster.Domain
             this.QuestionNo = 0;
             this.QuestionStartTime = 0;
             this.QuestionTimeInSeconds = 30;
+            this.CreationDate = DateTime.Now;
         }
 
         public Quiz(Guid id, String name, String code)
@@ -34,6 +35,7 @@ namespace QuizMaster.Domain
         public List<Contestant> Contestants { get; set; }
         public List<QuizQuestion> QuizQuestions { get; set; }
         public int QuestionTimeInSeconds { get; set; }
+        public DateTime CreationDate { get; set; }
 
         static string GenerateCode()
         {

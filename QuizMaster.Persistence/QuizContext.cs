@@ -15,10 +15,11 @@ namespace QuizMaster.Persistence
         public DbSet<QuizQuestion> QuizQuestions { get; set; }
         public DbSet<ContestantAnswer> ContestantAnswers { get; set; }
         public DbSet<ExampleQuestion> ExampleQuestions { get; set; }
+        public DbSet<GeneralSetting> GeneralSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
+            builder.Entity<GeneralSetting>().HasKey(g => g.Name);
         }
     }
 }
